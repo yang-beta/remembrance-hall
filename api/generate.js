@@ -1,4 +1,4 @@
-// api/generate.js (通用 API 轉發 - 最新大模型版)
+// api/generate.js (通用 API 轉發 - Llama 3.3 最新版)
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -22,8 +22,8 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${apiKey.trim()}`
             },
             body: JSON.stringify({
-                // 🎯 核心修正：更換為 Groq 目前官方最新的 Llama 3 70B 穩定版模型
-                model: "llama3-70b-8192", 
+                // 🎯 核心修正：更換為 Groq 目前在線、文字極具文學美感的 Llama 3.3 旗艦模型
+                model: "llama-3.3-70b-specdec", 
                 messages: [
                     { role: "user", content: prompt }
                 ],
