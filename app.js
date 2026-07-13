@@ -1,20 +1,14 @@
-// --- AI 驅動：思念終點館 核心邏輯 ---
-import { GoogleGenerativeAI } from 'https://esm.run/@google/generative-ai';
+// --- AI 驅動：思念終點館 核心邏輯 (Vercel 安全轉發版) ---
 
 // 1. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
-// 💡 免寫死金鑰的秘密：直接貼上你剛剛在 Google 申請那串完整的 AQ... 金鑰
-// （註：因為我們在 Vercel 是純前端，沒用 Next.js 框架，瀏覽器執行期完全無法識別 process.env）
-const GEMINI_API_KEY = "AQ.Ab8RN6IqGvMD73laXgbGoSu-oKaYLYn0WNVAODB5nbyIp2PG8w"; 
+// 💡 提示：前端不再需要放置任何 GEMINI 金鑰字串，完全由 Vercel 後端代勞！
 
-// 2. 初始化雲端服務
+// 2. 初始化 Supabase 雲端服務
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// 🎯 初始化 Google AI 實例
-const ai = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,7 +75,6 @@ window.generateRemembrance = async function() {
     }
 };
 
-// 🌟 修正：回歸官方標準 SDK 純前端連線，徹底不呼叫不存在的後端 /api/generate 路由
 async function generateAIQuote(targetType, name, userMemory) {
     let targetLabel = targetType === 'relative' ? '親人' : targetType === 'friend' ? '朋友' : '寵物';
     
@@ -99,10 +92,22 @@ async function generateAIQuote(targetType, name, userMemory) {
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 🎯 修正後：改成官方目前最穩定的最新輕量大模型代號
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    const result = await model.generateContent(prompt);
-    return result.response.text().trim();
+    // 🚀 向我們剛剛建立的 Vercel 後端 API 發送請求[cite: 3]
+    const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: prompt })[cite: 3]
+    });
+
+    if (!response.ok) {
+        const errData = await response.json();[cite: 3]
+        throw new Error(errData.error || '後端伺服器錯誤');[cite: 3]
+    }
+
+    const data = await response.json();[cite: 3]
+    return data.text; // 順利拿到後端轉發回來、AI 生成的文字[cite: 3]
 }
 
 // 資料庫寫入
