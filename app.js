@@ -1,6 +1,9 @@
+// 🚀 1. 直接從官方 ESM CDN 引入正確的 GoogleGenAI 元件
+import { GoogleGenAI } from 'https://esm.run/@google/generative-ai';
+
 // --- AI 驅動：思念終點館 核心邏輯 (環境變數安全版) ---
 
-// 1. 連線設定 
+// 2. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
@@ -9,54 +12,15 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
     || window?.ENV?.NEXT_PUBLIC_GEMINI_KEY 
     || "NEXT_PUBLIC_GEMINI_KEY_PLACEHOLDER"; 
 
-// 2. 初始化雲端服務
+// 3. 初始化雲端服務
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🎯 先宣告全域變數
-let ai;
+// 🎯 4. 直接初始化 AI 物件，乾淨又穩定
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 萬能動態識別：檢查所有可能的 Google Gemini SDK 全域變數命名空間
-    try {
-        // 1. 印出目前全域狀態，方便排查
-        console.log("偵測全域變數:", {
-            googleGenerativeAI: window.googleGenerativeAI,
-            GoogleGenAI: window.GoogleGenAI,
-            GoogleGenerativeAI: window.GoogleGenerativeAI
-        });
-
-        // 2. 尋找有效的 SDK 進入點
-        const targetSDK = window.GoogleGenAI || window.googleGenerativeAI || window.GoogleGenerativeAI;
-
-        if (targetSDK) {
-            // 情況 A：如果 SDK 是一個包含建構函式的物件 (e.g., { GoogleGenAI: ... })
-            if (targetSDK.GoogleGenAI) {
-                ai = new targetSDK.GoogleGenAI({ apiKey: GEMINI_API_KEY });
-            } 
-            // 情況 B：如果 SDK 本身就是一個建構函式，且需要物件參數
-            else if (typeof targetSDK === 'function') {
-                try {
-                    ai = new targetSDK({ apiKey: GEMINI_API_KEY });
-                } catch(e) {
-                    // 情況 C：如果建構函式只需要純字串參數
-                    ai = new targetSDK(GEMINI_API_KEY);
-                }
-            }
-            
-            if (ai) {
-                console.log("✅ Gemini AI 成功連線！", ai);
-            } else {
-                throw new Error("無法成功實例化 ai 物件");
-            }
-        } else {
-            console.error("Gemini SDK 載入失敗，請檢查網路或 CDN 連結");
-        }
-    } catch (e) {
-        console.error("初始化 Gemini 失敗，錯誤回報:", e);
-    }
-
     fetchWallMessages();
     initDragScroll();
     
@@ -68,14 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
 let currentTarget = 'relative';
 
 // 選擇對象切換
-function setTarget(target, element) {
+// 💡 由於使用了 type="module"，HTML 中的 onclick 無法直接存取此函數，需要將其綁定到 window 上
+window.setTarget = function(target, element) {
     currentTarget = target;
     document.querySelectorAll('.target-btn').forEach(btn => btn.classList.remove('active'));
     element.classList.add('active');
-}
+};
 
 // 核心：生成思念儀式卡片
-async function generateRemembrance() {
+// 💡 將函數綁定到 window，確保 HTML 中的 onclick="generateRemembrance()" 能順利觸發
+window.generateRemembrance = async function() {
     const nickname = document.getElementById('nickname').value.trim();
     const memory = document.getElementById('memory').value.trim();
     const submitBtn = document.querySelector('.btn-submit');
@@ -120,7 +86,7 @@ async function generateRemembrance() {
         submitBtn.innerText = "⚡ 生成思念儀式卡片";
         submitBtn.disabled = false;
     }
-}
+};
 
 // 🌟 核心：Gemini AI 智慧提示詞工程函數
 async function generateAIQuote(targetType, name, userMemory) {
@@ -140,7 +106,7 @@ async function generateAIQuote(targetType, name, userMemory) {
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 呼叫 Google 官方 UMD 規範的模型獲取方法
+    // 呼叫 Google 官方規範的模型獲取方法
     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     return result.response.text().trim();
@@ -207,7 +173,7 @@ async function fetchWallMessages() {
 }
 
 // 橫向箭頭滑動
-function slideWall(direction) {
+window.slideWall = function(direction) {
     const container = document.getElementById('slider-container');
     const scrollAmount = 304; 
     if (direction === 'left') {
@@ -215,7 +181,7 @@ function slideWall(direction) {
     } else {
         container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-}
+};
 
 // 滑鼠拖曳滑動
 function initDragScroll() {
@@ -236,7 +202,7 @@ function initDragScroll() {
 }
 
 // 卡片導出下載
-function downloadCard() {
+window.downloadCard = function() {
     const cardNode = document.getElementById('printable-card');
     html2canvas(cardNode, {
         scale: 3, 
@@ -251,4 +217,4 @@ function downloadCard() {
         console.error('卡片生成失敗:', err);
         alert('卡片導出失敗，請再試一次。');
     });
-}
+};
