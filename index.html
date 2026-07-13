@@ -19,22 +19,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<!-- 後台動畫畫布：負責渲染粒子與幾何線條 -->
-    <!--
+
+    <!-- 1. 後台動畫畫布：負責渲染粒子與幾何線條 -->
     <canvas id="mandalaCanvas"></canvas>
-    -->
-    <!-- 前台文字圖層：低調奢華的排版 -->
-    <!--
+
+    <!-- 2. 前台全螢幕 Banner 圖層 -->
     <div class="hero-container">
         <h1 class="brand-title">洸限</h1>
         <p class="main-question">如果還有一次機會，你最想做什麼？</p>
         
-        <div class="scroll-hint">
+        <div class="scroll-hint" onclick="scrollToContent()">
             <span class="arrow">↓</span>
         </div>
     </div>
-    -->
-    <div class="wrapper">
+
+    <!-- 3. 情緒留言板主內容區 -->
+    <div class="wrapper" id="main-content">
         <!-- 頂部展館主題 -->
         <header>
             <h1>洸限</h1>
@@ -61,6 +61,83 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="nickname">如何稱呼他/她/牠？</label>
+                    <input type="text" id="nickname" placeholder="例如：外婆、老友小宇、橘貓咪咪">
+                </div>
+
+                <div class="form-group">
+                    <label for="memory">腦海中第一個浮現的畫面或細節</label>
+                    <textarea id="memory" rows="3" placeholder="例如：廚房裡的飯菜香、一同看海的下午、在腳邊呼嚕嚕的溫度"></textarea>
+                </div>
+
+                <button class="btn-submit" onclick="generateRemembrance()">⚡ 生成思念儀式卡片</button>
+            </div>
+
+            <!-- 精美卡片展示區 -->
+            <div class="output-section" id="output-section">
+                <div class="card-container" id="printable-card">
+                    <div class="card-header">
+                        <span class="card-tag" id="card-tag-display">思念致意錄 / 親人</span>
+                        <span class="card-icon" id="card-icon-display"><i class="fa-solid fa-hands-holding-child"></i></span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="card-quote" id="card-text-display">
+                            記憶中的細節，如同不滅的光亮，溫柔地照亮往後的路。
+                        </div>
+                        <div class="card-sign" id="card-sign-display">
+                            — 致 外婆
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date" id="card-date-display">2026.07.13</span>
+                        <span class="card-brand">洸限 GUANG</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存美學卡片 (PNG)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 歷史留言牆 -->
+        <div class="wall-section">
+            <div class="wall-header-wrapper">
+                <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
+                <div class="slider-arrows">
+                    <button class="arrow-btn" onclick="slideWall('left')"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="arrow-btn" onclick="slideWall('right')"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <!-- 橫向滑動視窗容器 -->
+            <div class="slider-container" id="slider-container">
+                <div class="wall-grid-row" id="wall-grid">
+                    <div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">
+                        正在開啟思念終點館通道...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入外部邏輯腳本 -->
+    <script src="script.js"></script>
+    <!-- ⚡ 確保 app.js 引入時加上 type="module" -->
+    <script src="app.js" type="module"></script>
+    
+    <!-- 額外補充：點擊箭頭滑動跳出 Banner 的小指令 -->
+    <script>
+        function scrollToContent() {
+            document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>                </div>
 
                 <div class="form-group">
                     <label for="nickname">如何稱呼他/她/牠？</label>
