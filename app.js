@@ -18,28 +18,45 @@ let ai;
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 精准對接 GoogleGenAI 全域物件
+    // 🚀 萬能動態識別：檢查所有可能的 Google Gemini SDK 全域變數命名空間
     try {
-        if (typeof window.GoogleGenAI !== 'undefined') {
-            // 官方標準用法：直接傳入物件 { apiKey }
-            ai = new window.GoogleGenAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
-            console.log("✅ Gemini AI 成功連線");
+        // 1. 印出目前全域狀態，方便排查
+        console.log("偵測全域變數:", {
+            googleGenerativeAI: window.googleGenerativeAI,
+            GoogleGenAI: window.GoogleGenAI,
+            GoogleGenerativeAI: window.GoogleGenerativeAI
+        });
+
+        // 2. 尋找有效的 SDK 進入點
+        const targetSDK = window.GoogleGenAI || window.googleGenerativeAI || window.GoogleGenerativeAI;
+
+        if (targetSDK) {
+            // 情況 A：如果 SDK 是一個包含建構函式的物件 (e.g., { GoogleGenAI: ... })
+            if (targetSDK.GoogleGenAI) {
+                ai = new targetSDK.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            } 
+            // 情況 B：如果 SDK 本身就是一個建構函式，且需要物件參數
+            else if (typeof targetSDK === 'function') {
+                try {
+                    ai = new targetSDK({ apiKey: GEMINI_API_KEY });
+                } catch(e) {
+                    // 情況 C：如果建構函式只需要純字串參數
+                    ai = new targetSDK(GEMINI_API_KEY);
+                }
+            }
+            
+            if (ai) {
+                console.log("✅ Gemini AI 成功連線！", ai);
+            } else {
+                throw new Error("無法成功實例化 ai 物件");
+            }
         } else {
             console.error("Gemini SDK 載入失敗，請檢查網路或 CDN 連結");
         }
     } catch (e) {
-        console.error("初始化 Gemini 失敗:", e);
+        console.error("初始化 Gemini 失敗，錯誤回報:", e);
     }
 
-    fetchWallMessages();
-    initDragScroll();
-    
-    const today = new Date();
-    document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
-});
-
-// 當頁面加載完成自動執行
-document.addEventListener('DOMContentLoaded', () => {
     fetchWallMessages();
     initDragScroll();
     
