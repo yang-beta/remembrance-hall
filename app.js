@@ -9,30 +9,43 @@ const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 語句模板庫
-const templates = {
-    relative: [
-        "「致 ${name}：記憶中那份 ${memory}，如同深夜裡不熄的暖光，溫柔指引著我前行的道路。縱使光陰流逝，這份思念從不曾褪色。」",
-        "「親愛的 ${name}：謝謝你留給我的 ${memory}。每當在日常裡悄然泛起這份溫暖，我便知道，你一直不曾真正離去。」"
-    ],
-    friend: [
-        "「致 ${name}：那段伴隨着 ${memory} 的歲月，是我生命中最澄澈的章節。謝謝你出現在我的青春裡，溫暖了漫長時光。」",
-        "「給老友 ${name}：每當想起 ${memory}，風裡彷彿就有我們曾並肩笑過的聲音。即使長路漫漫，這份情誼依然在歲月裡刻骨銘心。」"
-    ],
-    pet: [
-        "「致 ${name}：耳畔彷彿還能聽見 ${memory} 的動靜。謝謝你用短短的一生，毫無保留地教會了我什麼是最純粹的守護與愛。」",
-        "「小天使 ${name}：你留下的 ${memory} 溫暖了整個家。現在的你，一定也在彩虹橋的另一端，無憂無慮地奔跑著吧。」"
-    ]
+// 準備一個空的容器來裝資料庫抓下來的模板
+let templates = {
+    relative: [],
+    friend: [],
+    pet: []
 };
 
 // 頁面加載完成自動執行
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. 網頁打開時，先去資料庫把模板庫抓下來
+    await fetchTemplates();
+    // 2. 接著抓取留言牆
     fetchWallMessages();
-    initDragScroll(); // 啟用滑鼠拖曳滑動功能
+    initDragScroll(); 
     
     const today = new Date();
     document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 });
+
+// 新增一個函數：從資料庫抓取模板
+async function fetchTemplates() {
+    try {
+        const { data, error } = await supabaseClient.from('templates').select('*');
+        if (error) throw error;
+        
+        // 將資料庫裡的模板分類放進我們準備好的容器裡
+        if (data) {
+            data.forEach(item => {
+                if (templates[item.category]) {
+                    templates[item.category].push(item.content);
+                }
+            });
+        }
+    } catch (err) {
+        console.error('抓取模板失敗:', err);
+    }
+}
 
 // 選擇對象切換
 function setTarget(target, element) {
