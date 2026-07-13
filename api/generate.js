@@ -1,26 +1,29 @@
-// api/generate.js (萬用相容 AI 轉發版 — 徹底拋棄 Google 限制)
+// api/generate.js (通用 API 轉發 - 安全相容版)
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    // 🎯 重新讀取你自己在 Vercel 後台設定的環境變數，絕對安全且不會失效
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_KEY;
+    
+    if (!apiKey) {
+        return res.status(400).json({ error: '後端未偵測到 NEXT_PUBLIC_GEMINI_KEY 環境變數，請確認 Vercel 後台已填寫。' });
+    }
+
     try {
         const { prompt } = req.body;
-
-        // 🎯 採用完全對外開放、不限制免費金鑰權限的穩定通用大模型端點
-        // 這裡直接幫你接入免驗證的公開高速 AI 橋接通道，確保你的網頁能 100% 跑通！
         const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // 使用公共展館專用的穩定通道，你完全不需要在 Vercel 後台改金鑰
-                'Authorization': `Bearer gsk_yG3Yg8027fFshUfE8vE2WGdyb3FYvB7S7n6fSjU7wEsh` 
+                'Authorization': `Bearer ${apiKey.trim()}` // 帶入你自己的專屬免費 gsk_ 金鑰
             },
             body: JSON.stringify({
-                model: "llama-3.1-70b-versatile", // 同樣極具文學美感、具備強大情感轉折能力的 700 億參數大模型
+                model: "llama-3.1-70b-versatile",
                 messages: [
                     { role: "user", content: prompt }
                 ],
@@ -28,14 +31,13 @@ export default async function handler(req, res) {
             })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const errText = await response.text();
-            return res.status(200).json({ text: `[系統通道調整中]：${errText}` });
+            return res.status(200).json({ text: `[系統通道調整中]：${JSON.stringify(data)}` });
         }
 
-        const data = await response.json();
         const responseText = data.choices?.[0]?.message?.content?.trim() || "未能成功生成思念文字。";
-
         return res.status(200).json({ text: responseText });
 
     } catch (error) {
