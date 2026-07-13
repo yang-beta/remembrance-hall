@@ -1,17 +1,133 @@
-/* --- 視覺美學定義 (極簡奢華 × 灰白清水模) --- */
-.wrapper {
+/* ==========================================================================
+   00. 視覺美學變數定義 (極簡奢華 × 懸浮清水模)
+   ========================================================================== */
+:root {
+    --bg-banner: #1a1a1a;      /* Banner 保持深炭灰色基底，承接進場動畫 */
+    --concrete-gray: #FAF8F5;  /* 清水模/展館主色調：溫潤灰米白 */
+    --card-bg: #FFFFFF;        /* 純白卡片襯底 */
+    --text-main: #2C2C2C;      /* 清水模卡片內的主文字深炭灰 */
+    --text-muted: #7F7F7F;     /* 煙燻灰 */
+    --accent-gold: #B59E74;    /* 洸限經典金 */
+    --border-color: #E2DDD5;   /* 細緻米褐框線 */
+    --font-serif: 'Noto Serif TC', serif;
+    --font-sans: 'Noto Sans TC', sans-serif;
+}
+
+/* ==========================================================================
+   01. 基礎重設與網頁環境
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth; /* 點擊向下箭頭時平滑滾動 */
+    background-color: var(--bg-banner);
+}
+
+body {
     width: 100%;
-    background-color: transparent; /* ➔ 改為透明，露出底部的深炭灰與曼陀羅 Canvas */
-    color: #e5e5e5; /* ➔ 外層文字維持輕銀灰 */
-    padding: 80px 0;
-    position: relative;
-    z-index: 3;
+    min-height: 100vh;
+    background-color: var(--bg-banner); /* 全網頁大底圖保持深色星空炭灰 */
+    color: #e5e5e5; /* 外層文字預設為輕銀灰 */
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    overflow-y: hidden; /* 初始由 JS 進場動畫鎖定，完成後解鎖 */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* 限制表單與頁首的寬度 */
+/* ==========================================================================
+   02. 全螢幕 Banner 與 Canvas 動畫圖層
+   ========================================================================== */
+#mandalaCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none; /* 讓滑鼠點擊可以穿透畫布，不干擾下層互動 */
+}
+
+.hero-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0; /* 防止被下方內容擠壓變形 */
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.brand-title {
+    font-size: 3.5rem;
+    font-weight: 300;
+    letter-spacing: 0.8rem;
+    color: #e5e5e5;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    opacity: 0; /* 初始隱藏，由 JS 控制進場 */
+    margin-bottom: 2rem;
+}
+
+.main-question {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.4rem;
+    color: #c5a880; /* 低飽和度的冷金色 */
+    opacity: 0; /* 初始隱藏，由 JS 控制進場 */
+    line-height: 2;
+}
+
+.scroll-hint {
+    position: absolute;
+    bottom: 8%;
+    opacity: 0;
+    cursor: pointer;
+    transition: transform 0.3s;
+    z-index: 5;
+}
+
+.scroll-hint:hover {
+    transform: scale(1.2);
+}
+
+.scroll-hint .arrow {
+    font-size: 1.5rem;
+    color: #c5a880;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* ==========================================================================
+   03. 主內容包裝器 (情緒留言板：懸浮透空感)
+   ========================================================================== */
+.wrapper {
+    width: 100%;
+    background-color: transparent; /* 去除滿版色塊，露出底部流沙 Canvas */
+    padding: 80px 0;
+    position: relative;
+    z-index: 3; /* 確保在畫布上方，以便進行表單點擊與互動 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 限制表單與頁首的寬度 (維持精緻置中) */
 header, .grid-layout {
     max-width: 800px;
     width: 100%;
@@ -30,7 +146,7 @@ header h1 {
     font-size: 32px;
     font-weight: 700;
     letter-spacing: 2px;
-    color: #e5e5e5; /* ➔ 標題改為高質感銀白 */
+    color: #e5e5e5; /* 標題改為高質感銀白，在深底上浮現 */
     margin-bottom: 8px;
 }
 
@@ -46,14 +162,16 @@ header p {
     gap: 40px;
 }
 
-/* ➔ 核心修正：將輸入表單卡片「化為懸浮的灰白清水模島嶼」 */
+/* ==========================================================================
+   04. 輸入表單卡片 (化為懸浮的灰白清水模島嶼)
+   ========================================================================== */
 .input-card {
-    background: #FAF8F5; /* ➔ 清水模灰米白只留在卡片本身 */
+    background: var(--concrete-gray); /* 清水模灰米白留在卡片本身 */
     border: 1px solid var(--border-color);
     padding: 30px;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); /* ➔ 加強深色陰影，使其強烈浮動於底圖上 */
-    color: #2C2C2C; /* ➔ 卡片內文字改回深色 */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); /* 強烈陰影，營造浮動感 */
+    color: var(--text-main);
 }
 
 .form-group {
@@ -66,7 +184,7 @@ header p {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 10px;
-    color: #2C2C2C;
+    color: var(--text-main);
 }
 
 .target-selector {
@@ -83,7 +201,7 @@ header p {
     font-size: 15px;
     cursor: pointer;
     transition: all 0.3s;
-    color: #7F7F7F;
+    color: var(--text-muted);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -96,19 +214,19 @@ header p {
 }
 
 .target-btn.active {
-    background-color: #2C2C2C;
+    background-color: var(--text-main);
     color: #FFFFFF;
-    border-color: #2C2C2C;
+    border-color: var(--text-main);
 }
 
 input[type="text"], textarea {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid var(--border-color);
-    background-color: #F5F2EC; /* ➔ 輸入框微深，做出清水模層次 */
+    background-color: #F5F2EC; /* 微深灰米色，做出清水模內部層次 */
     font-family: var(--font-sans);
     font-size: 15px;
-    color: #2C2C2C;
+    color: var(--text-main);
     outline: none;
     transition: all 0.3s;
 }
@@ -135,7 +253,9 @@ input[type="text"]:focus, textarea:focus {
     background-color: #9C855C;
 }
 
-/* --- 3. 儀式卡片輸出區 --- */
+/* ==========================================================================
+   05. 儀式卡片輸出區 (保留實體高質感白底)
+   ========================================================================== */
 .output-section {
     display: none;
     flex-direction: column;
@@ -146,18 +266,17 @@ input[type="text"]:focus, textarea:focus {
 .card-container {
     width: 380px;
     height: 520px;
-    background-color: #FAF8F5;
+    background-color: #FAF8F5; /* 保留經典溫潤白底，下載印刷才好看 */
     border: 1px solid var(--border-color);
     padding: 40px;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     overflow: hidden;
 }
 
-/* 卡片維持原設定... */
 .card-container::before {
     content: '';
     position: absolute;
@@ -203,7 +322,7 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-serif);
     font-size: 18px;
     line-height: 1.8;
-    color: #2C2C2C;
+    color: var(--text-main);
     text-align: justify;
     margin-bottom: 20px;
     letter-spacing: 0.5px;
@@ -227,6 +346,12 @@ input[type="text"]:focus, textarea:focus {
     z-index: 2;
 }
 
+.card-brand {
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+/* 卡片操作按鈕 */
 .card-actions {
     margin-top: 25px;
     display: flex;
@@ -240,26 +365,33 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-sans);
     font-size: 14px;
     cursor: pointer;
-    border: 1px solid #FAF8F5;
+    border: 1px solid var(--concrete-gray);
     background: none;
-    color: #FAF8F5; /* ➔ 改成白色系，使其在深色底上清晰 */
+    color: var(--concrete-gray); /* 改為淺色字，使其在深色底圖上清晰 */
     transition: all 0.3s;
 }
 
 .btn-action.download {
-    background-color: #FAF8F5;
-    color: #2C2C2C;
+    background-color: var(--concrete-gray);
+    color: var(--text-main);
 }
 
-/* --- 4. 歷史思念牆 (滿版浮動修正) --- */
+.btn-action.download:hover {
+    background-color: #e2ddd5;
+}
+
+/* ==========================================================================
+   06. 歷史思念牆 (100% 螢幕滿版 × 懸浮清水模卡片)
+   ========================================================================== */
 .wall-section {
     margin-top: 80px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* 在暗底上使用極淡的分割線 */
     padding-top: 50px;
     position: relative;
-    width: 100%;
+    width: 100%; /* 強制滿版拉開 */
 }
 
+/* 歷史牆頂部控制列：維持與上方表單對齊的對齊線 */
 .wall-header-wrapper {
     display: flex;
     justify-content: space-between;
@@ -279,7 +411,7 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #e5e5e5; /* ➔ 牆面標題改為白色 */
+    color: #e5e5e5; /* 標題改為白色系 */
 }
 
 .wall-section h2 i {
@@ -306,14 +438,15 @@ input[type="text"]:focus, textarea:focus {
     color: var(--accent-gold);
 }
 
+/* 橫向滑動視窗容器：完全解鎖至左右螢幕邊緣 */
 .slider-container {
     width: 100%;
     overflow-x: auto;
     position: relative;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none; /* Firefox 隱藏滾動條 */
+    -ms-overflow-style: none; /* IE 隱藏滾動條 */
     cursor: grab;
-    padding: 10px 40px 30px 40px;
+    padding: 10px 40px 30px 40px; /* 左右保留 40px 呼吸空間，讓卡片不貼邊 */
 }
 
 .slider-container:active {
@@ -321,7 +454,7 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .slider-container::-webkit-scrollbar {
-    display: none;
+    display: none; /* Chrome/Safari 隱藏滾動條 */
 }
 
 .wall-grid-row {
@@ -330,9 +463,9 @@ input[type="text"]:focus, textarea:focus {
     width: max-content;
 }
 
-/* ➔ 大家留下的留言卡片：化為一座座漂浮在星空中的清水模小島 */
+/* 漂浮在星空中的清水模留言小島卡片 */
 .wall-card {
-    background: #FAF8F5; /* ➔ 漂浮清水模色 */
+    background: var(--concrete-gray); /* 回歸清水模主色調 */
     border: 1px solid var(--border-color);
     padding: 24px;
     position: relative;
@@ -342,7 +475,7 @@ input[type="text"]:focus, textarea:focus {
     width: 290px;
     min-height: 220px;
     flex-shrink: 0;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* ➔ 強烈的陰影，營造浮動感 */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* 強烈陰影，做出完美的離地漂浮感 */
 }
 
 .wall-card::before {
@@ -368,7 +501,7 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-serif);
     font-size: 14px;
     line-height: 1.7;
-    color: #2C2C2C; /* ➔ 內文改回深炭灰，確保在白卡片上清晰 */
+    color: var(--text-main); /* 字體使用深色，確保在清水模卡片上清晰好讀 */
     margin-bottom: 15px;
     text-align: justify;
 }
