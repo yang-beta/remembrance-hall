@@ -14,7 +14,7 @@ const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 🎯 初始化 AI 大腦
-const ai = new window.googleGenerativeAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const ai = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
