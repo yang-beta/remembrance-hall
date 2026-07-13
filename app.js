@@ -1,11 +1,10 @@
-// --- AI 驅動：思念終點館 核心邏輯 (環境變數安全版) ---
+// --- AI 驅動：思念終點館 核心邏輯 (全域環境變數相容版) ---
 
 // 1. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
-// 💡 讀取 Vercel 環境變數的正確前端寫法
-// Vercel 會在打包時自動將變數注入，如果本地測試沒有，則預設為後方的暫時字串
+// 💡 讀取 Vercel 環境變數的防呆寫法（無 import 模組環境專用）
 const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GEMINI_KEY) 
     || window?.ENV?.NEXT_PUBLIC_GEMINI_KEY 
     || "NEXT_PUBLIC_GEMINI_KEY_PLACEHOLDER"; 
@@ -14,7 +13,7 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 使用 Google 官方 UMD 規範的全域物件初始化 AI 大腦
+// 🎯 重點修正：完全使用瀏覽器 UMD 全域物件來初始化，不殘留任何 import 語法
 const ai = new window.googleGenerativeAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 // 當頁面加載完成自動執行
@@ -84,11 +83,10 @@ async function generateRemembrance() {
     }
 }
 
-// 🌟 核心：Gemini AI 智慧提示詞工程函數 (剛剛漏掉的就是這個！)
+// 🌟 核心：Gemini AI 智慧提示詞工程函數
 async function generateAIQuote(targetType, name, userMemory) {
     let targetLabel = targetType === 'relative' ? '親人' : targetType === 'friend' ? '朋友' : '寵物';
     
-    // 這段 Prompt 完美控管了語意通順度與情緒轉折
     const prompt = `
         你是一位文字極具情感穿透力、細膩且內斂的當次CIS展覽文案大師。
         現在有一位參展者，他想念的對象是【${targetLabel}】，他稱呼對方為【${name}】。
@@ -98,12 +96,12 @@ async function generateAIQuote(targetType, name, userMemory) {
         
         【核心美學限制與情緒轉折指令】：
         1. 語句必須完美、流暢地將參展者輸入的記憶細節融合進去，不得顯得突兀或語法不通。
-        2. 重要：請敏銳分析使用者的字句。如果偵測到沉重、後悔、悲傷、寫到「過往時間無法挽回」、「遺憾」、「痛」等走不出的負面情緒，請在文案後半段巧妙地進行溫柔的意境轉折，改以溫暖、療癒、陪伴、或是賦予前行力量、釋懷的鼓勵方式結尾。
+        2. 重要：請敏銳分析使用者的字句。如果偵測到沉重、後悔、悲傷、寫到「過往時間無法挽回 Foroever」、「遺憾」、「痛」等走不出的負面情緒，請在文案後半段巧妙地進行溫柔的意境轉折，改以溫暖、療癒、陪伴、或是賦予前行力量、釋懷的鼓勵方式結尾。
         3. 必須以第一人稱或致敬的宏觀視角書寫（例如：以「「致 ${name}：...」」或「「親愛的 ${name}：...」」為開頭，文字頭尾請加上引號「」）。
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 呼叫 Google 官方規範的最新輕量模型
+    // 呼叫 Google 官方 UMD 規範的模型獲取方法
     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     return result.response.text().trim();
