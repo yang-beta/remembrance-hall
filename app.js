@@ -1,10 +1,10 @@
-// --- AI 驅動：思念終點館 核心邏輯 (全域環境變數相容版) ---
+// --- AI 驅動：思念終點館 核心邏輯 (環境變數安全版) ---
 
 // 1. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
-// 💡 讀取 Vercel 環境變數的防呆寫法（無 import 模組環境專用）
+// 💡 讀取 Vercel 環境變數的防呆寫法
 const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GEMINI_KEY) 
     || window?.ENV?.NEXT_PUBLIC_GEMINI_KEY 
     || "NEXT_PUBLIC_GEMINI_KEY_PLACEHOLDER"; 
@@ -13,7 +13,7 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🎯 重點修正：完全使用瀏覽器 UMD 全域物件來初始化，不殘留任何 import 語法
+// 🎯 初始化 AI 大腦
 const ai = new window.googleGenerativeAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 // 當頁面加載完成自動執行
