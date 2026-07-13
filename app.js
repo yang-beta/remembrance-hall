@@ -99,8 +99,8 @@ async function generateAIQuote(targetType, name, userMemory) {
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 🚀 核心修正點：直接利用前端 SDK 向 Google 官方請求，不走 /api/generate 後端
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // 🎯 修正後：改成官方目前最穩定的最新輕量大模型代號
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const result = await model.generateContent(prompt);
     return result.response.text().trim();
 }
