@@ -13,8 +13,31 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🎯 初始化 AI 大腦
-const ai = new GoogleGenerativeAI(GEMINI_API_KEY);
+// 🎯 先宣告全域變數，不立刻 new
+let ai;
+
+// 當頁面加載完成自動執行
+document.addEventListener('DOMContentLoaded', () => {
+    // 🚀 在這裡安全地初始化 Gemini，確保 CDN 已經完全載入
+    try {
+        const sdk = window.googleGenerativeAI || window.GoogleGenerativeAI;
+        if (sdk && sdk.GoogleGenAI) {
+            ai = new sdk.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+        } else if (typeof GoogleGenerativeAI !== 'undefined') {
+            ai = new GoogleGenerativeAI(GEMINI_API_KEY);
+        } else {
+            console.error("Gemini SDK 載入失敗，請檢查網路或 CDN 連結");
+        }
+    } catch (e) {
+        console.error("初始化 Gemini 失敗:", e);
+    }
+
+    fetchWallMessages();
+    initDragScroll();
+    
+    const today = new Date();
+    document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
+});
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
