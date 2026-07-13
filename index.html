@@ -532,51 +532,23 @@
     <script>
         // --- 核心邏輯處理 ---
         let currentTarget = 'relative';
-        let supabaseClient = null;
+        
+        // 1. 直接在這裡填入你的 Supabase 連線資訊 (請將引號內換成你的真實金鑰)
+        const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
-        // 溫潤、打動人心的句子模板庫
-        const templates = {
-            relative: [
-                "「致 ${name}：記憶中那份 ${memory}，如同深夜裡不熄的暖光，溫柔指引著我前行的道路。縱使光陰流逝，這份思念從不曾褪色。」",
-                "「親愛的 ${name}：謝謝你留給我的 ${memory}。每當在日常裡悄然泛起這份溫暖，我便知道，你一直不曾真正離去。」"
-            ],
-            friend: [
-                "「致 ${name}：那段伴隨着 ${memory} 的歲月，是我生命中最澄澈的章節。謝謝你出現在我的青春裡，溫暖了漫長時光。」",
-                "「給老友 ${name}：每當想起 ${memory}，風裡彷彿就有我們曾並肩笑過的聲音。即使長路漫漫，這份情誼依然在歲月裡刻骨銘心。」"
-            ],
-            pet: [
-                "「致 ${name}：耳畔彷彿還能聽見 ${memory} 的動靜。謝謝你用短短的一生，毫無保留地教會了我什麼是最純粹的守護與愛。」",
-                "「小天使 ${name}：你留下的 ${memory} 溫暖了整個家。現在的你，一定也在彩虹橋的另一端，無憂無慮地奔跑著吧。」"
-            ]
-        };
+        // 2. 讓網頁一打開就自動初始化並抓取留言牆
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 開關資料庫設定面板
-        function toggleConfig() {
-            const panel = document.getElementById('config-inputs');
-            const arrow = document.getElementById('config-arrow');
-            if (panel.style.display === 'flex' || panel.style.display === 'grid') {
-                panel.style.display = 'none';
-                arrow.innerText = '▼';
-            } else {
-                panel.style.display = 'grid';
-                arrow.innerText = '▲';
-            }
-        }
-
-        // 儲存資料庫連線資訊
-        function saveConfig() {
-            const url = document.getElementById('db-url').value.trim();
-            const key = document.getElementById('db-key').value.trim();
-            if (url && key) {
-                localStorage.setItem('supabase_url', url);
-                localStorage.setItem('supabase_key', key);
-                initSupabase();
-                alert('連線成功設定！已為您加載歷史留言牆。');
-                toggleConfig();
-            } else {
-                alert('請完整填入 URL 與 Key。');
-            }
-        }
+        // 頁面載入完成後的動作
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchWallMessages(); // 自動讀取歷史留言牆
+            
+            // 預設日期為今天
+            const today = new Date();
+            document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
+        });
 
         // 初始化 Supabase 連線
         function initSupabase() {
