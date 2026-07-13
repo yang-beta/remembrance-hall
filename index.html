@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思念終點館 — 沉浸式思念留言板</title>
+    <!-- 引入思念風格字體與圖示 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- 引入 html2canvas 以支援卡片下載功能 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 引入 Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* --- 視覺美學定義 (參考展覽簡報風格) --- */
+        :root {
+            --bg-color: #FAF8F5;       /* 溫潤灰米白底 */
+            --card-bg: #FFFFFF;        /* 純白卡片 */
+            --text-main: #2C2C2C;      /* 深炭灰 */
+            --text-muted: #7F7F7F;     /* 煙燻灰 */
+            --accent-gold: #B59E74;    /* 洸限經典金 */
+            --border-color: #E2DDD5;   /* 細緻米褐框線 */
+            --font-serif: 'Noto Serif TC', serif;
+            --font-sans: 'Noto Sans TC', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* --- 頂部標題區 (仿展覽展館視覺) --- */
+        header {
+            margin-bottom: 50px;
+            text-align: left;
+            position: relative;
+            padding-left: 20px;
+            border-left: 5px solid var(--accent-gold);
+        }
+
+        header h1 {
+            font-family: var(--font-serif);
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* --- 設定面板 (折疊區，可手動填入 Supabase 資訊) --- */
+        .config-panel {
+            background-color: #F1ECE3;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+        .config-title {
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            color: #5C5446;
+        }
+        .config-inputs {
+            display: none;
+            margin-top: 10px;
+            gap: 10px;
+        }
+        .config-inputs input {
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        /* --- 主要操作區塊 --- */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        /* --- 輸入表單 --- */
+        .input-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(181, 158, 116, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        /* 對象選擇按鈕 */
+        .target-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .target-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            font-family: var(--font-serif);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .target-btn i {
+            font-size: 18px;
+        }
+
+        .target-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .target-btn.active {
+            background-color: var(--text-main);
+            color: #FFFFFF;
+            border-color: var(--text-main);
+        }
+
+        /* 輸入框體 */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            background-color: #FAFAFA;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--accent-gold);
+            background-color: #FFFFFF;
+        }
+
+        .btn-submit {
+            background-color: var(--accent-gold);
+            color: #FFFFFF;
+            width: 100%;
+            padding: 14px;
+            font-family: var(--font-serif);
+            font-size: 16px;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #9C855C;
+        }
+
+        /* --- 觸動人心卡片輸出區 (重頭戲) --- */
+        .output-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* 精美儀式感實體卡片樣式 */
+        .card-container {
+            width: 380px;
+            height: 520px;
+            background-color: #FAF8F5; /* 溫潤內頁底 */
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* 卡片裝飾框線 */
+        .card-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            border: 1px dashed var(--accent-gold);
+            pointer-events: none;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            z-index: 2;
+        }
+
+        .card-tag {
+            font-family: var(--font-serif);
+            font-size: 13px;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+        }
+
+        .card-icon {
+            font-size: 16px;
+            color: var(--accent-gold);
+        }
+
+        .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 10px;
+            z-index: 2;
+        }
+
+        .card-quote {
+            font-family: var(--font-serif);
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-main);
+            text-align: justify;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-sign {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .card-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+
+        .card-brand {
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* 下載與操作按鈕 */
+        .card-actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid var(--text-main);
+            background: none;
+            transition: all 0.3s;
+        }
+
+        .btn-action.download {
+            background-color: var(--text-main);
+            color: #FFFFFF;
+        }
+
+        .btn-action.download:hover {
+            background-color: #4A4A4A;
+        }
+
+        .btn-action.share {
+            color: var(--text-main);
+        }
+
+        .btn-action.share:hover {
+            background-color: #EEEEEE;
+        }
+
+        /* --- 歷史思念牆 (留言板) --- */
+        .wall-section {
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 40px;
+        }
+
+        .wall-section h2 {
+            font-family: var(--font-serif);
+            font-size: 22px;
+            letter-spacing: 1.5px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wall-section h2 i {
+            font-size: 18px;
+            color: var(--accent-gold);
+        }
+
+        .wall-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .wall-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-container {
+                width: 100%;
+            }
+        }
+
+        /* 牆上縮小版卡片 */
+        .wall-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+        }
+
+        .wall-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            bottom: 15%;
+            width: 3px;
+            background-color: var(--accent-gold);
+        }
+
+        .wall-card-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--accent-gold);
+            font-family: var(--font-serif);
+            margin-bottom: 15px;
+        }
+
+        .wall-card-body {
+            font-family: var(--font-serif);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .wall-card-footer {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- 頂部展館主題 -->
+        <header>
+            <h1>思念終點館</h1>
+            <p>XUAN XIAN • MEMORIAL HALL / 2026</p>
+        </header>
+
+        <!-- Supabase 填入面板 (點擊展開，直接填入你之前的 Supabase 金鑰即可運作) -->
+        <div class="config-panel">
+            <div class="config-title" onclick="toggleConfig()">
+                <span><i class="fa-solid fa-gears"></i> 本地資料庫連線設定 (點此展開填寫)</span>
+                <span id="config-arrow">▼</span>
+            </div>
+            <div class="config-inputs" id="config-inputs">
+                <p style="margin-bottom: 10px; color: var(--text-muted);">請填入您在上一個專案申請的 Supabase 資訊，留言即可同步儲存！</p>
+                <div style="margin-bottom: 8px;">
+                    <label>Project URL:</label>
+                    <input type="text" id="db-url" placeholder="https://xxxx.supabase.co">
+                </div>
+                <div>
+                    <label>Anon Public Key:</label>
+                    <input type="text" id="db-key" placeholder="eyJhbGciOiJIUzI1Ni...">
+                </div>
+                <button onclick="saveConfig()" style="margin-top: 10px; padding: 6px 12px; background: var(--text-main); color: white; border: none; cursor: pointer;">儲存並連線</button>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- 左側：輸入表單 -->
+            <div class="input-card">
+                <!-- 1. 選擇對象 -->
+                <div class="form-group">
+                    <label>思念的對象</label>
+                    <div class="target-selector">
+                        <button class="target-btn active" onclick="setTarget('relative', this)">
+                            <i class="fa-solid fa-hands-holding-child"></i>
+                            <span>親人</span>
+                        </button>
+                        <button class="target-btn" onclick="setTarget('friend', this)">
+                            <i class="fa-solid fa-user-group"></i>
+                            <span>朋友</span>
+                        </button>
+                        <button class="target-btn" onclick="setTarget('pet', this)">
+                            <i class="fa-solid fa-paw"></i>
+                            <span>寵物</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. 輸入稱呼 -->
+                <div class="form-group">
+                    <label for="nickname">如何稱呼他/她/牠？</label>
+                    <input type="text" id="nickname" placeholder="例如：外婆、老友小宇、橘貓咪咪">
+                </div>
+
+                <!-- 3. 輸入思念細節 -->
+                <div class="form-group">
+                    <label for="memory">腦海中第一個浮現的畫面或細節</label>
+                    <textarea id="memory" rows="3" placeholder="例如：廚房裡的飯菜香、一同看海的下午、在腳邊呼嚕嚕的溫度"></textarea>
+                </div>
+
+                <button class="btn-submit" onclick="generateRemembrance()">⚡ 生成思念儀式卡片</button>
+            </div>
+
+            <!-- 右側：生成的精美卡片展示 (動態生成時顯示) -->
+            <div class="output-section" id="output-section">
+                <!-- 將下載的實體卡片節點 -->
+                <div class="card-container" id="printable-card">
+                    <div class="card-header">
+                        <span class="card-tag" id="card-tag-display">思念致意錄 / 親人</span>
+                        <span class="card-icon" id="card-icon-display"><i class="fa-solid fa-hands-holding-child"></i></span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="card-quote" id="card-text-display">
+                            記憶中的細節，如同不滅的光亮，溫柔地照亮往後的路。
+                        </div>
+                        <div class="card-sign" id="card-sign-display">
+                            — 致 外婆
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date" id="card-date-display">2026.07.13</span>
+                        <span class="card-brand">洸限 GUANG</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存美學卡片 (PNG)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 歷史留言牆 -->
+        <div class="wall-section">
+            <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
+            <div class="wall-grid" id="wall-grid">
+                <!-- 動態載入歷史卡片 -->
+                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">
+                    請先在上方設定 Supabase 連線，以讀取與發布思念留言板。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 核心邏輯處理 ---
+        let currentTarget = 'relative';
+        let supabaseClient = null;
+
+        // 溫潤、打動人心的句子模板庫
+        const templates = {
+            relative: [
+                "「致 ${name}：記憶中那份 ${memory}，如同深夜裡不熄的暖光，溫柔指引著我前行的道路。縱使光陰流逝，這份思念從不曾褪色。」",
+                "「親愛的 ${name}：謝謝你留給我的 ${memory}。每當在日常裡悄然泛起這份溫暖，我便知道，你一直不曾真正離去。」"
+            ],
+            friend: [
+                "「致 ${name}：那段伴隨着 ${memory} 的歲月，是我生命中最澄澈的章節。謝謝你出現在我的青春裡，溫暖了漫長時光。」",
+                "「給老友 ${name}：每當想起 ${memory}，風裡彷彿就有我們曾並肩笑過的聲音。即使長路漫漫，這份情誼依然在歲月裡刻骨銘心。」"
+            ],
+            pet: [
+                "「致 ${name}：耳畔彷彿還能聽見 ${memory} 的動靜。謝謝你用短短的一生，毫無保留地教會了我什麼是最純粹的守護與愛。」",
+                "「小天使 ${name}：你留下的 ${memory} 溫暖了整個家。現在的你，一定也在彩虹橋的另一端，無憂無慮地奔跑著吧。」"
+            ]
+        };
+
+        // 開關資料庫設定面板
+        function toggleConfig() {
+            const panel = document.getElementById('config-inputs');
+            const arrow = document.getElementById('config-arrow');
+            if (panel.style.display === 'flex' || panel.style.display === 'grid') {
+                panel.style.display = 'none';
+                arrow.innerText = '▼';
+            } else {
+                panel.style.display = 'grid';
+                arrow.innerText = '▲';
+            }
+        }
+
+        // 儲存資料庫連線資訊
+        function saveConfig() {
+            const url = document.getElementById('db-url').value.trim();
+            const key = document.getElementById('db-key').value.trim();
+            if (url && key) {
+                localStorage.setItem('supabase_url', url);
+                localStorage.setItem('supabase_key', key);
+                initSupabase();
+                alert('連線成功設定！已為您加載歷史留言牆。');
+                toggleConfig();
+            } else {
+                alert('請完整填入 URL 與 Key。');
+            }
+        }
+
+        // 初始化 Supabase 連線
+        function initSupabase() {
+            const url = localStorage.getItem('supabase_url');
+            const key = localStorage.getItem('supabase_key');
+            if (url && key) {
+                document.getElementById('db-url').value = url;
+                document.getElementById('db-key').value = key;
+                supabaseClient = supabase.createClient(url, key);
+                fetchWallMessages();
+            }
+        }
+
+        // 頁面初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initSupabase();
+            // 預設日期為今天
+            const today = new Date();
+            document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
+        });
+
+        // 選擇對象切換
+        function setTarget(target, element) {
+            currentTarget = target;
+            document.querySelectorAll('.target-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // 核心功能：生成思念卡片
+        async function generateRemembrance() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const memory = document.getElementById('memory').value.trim();
+
+            if (!nickname || !memory) {
+                alert('請填入稱呼與記憶細節，讓思念具體落地。');
+                return;
+            }
+
+            // 1. 隨機抽選模板並渲染句子
+            const groupTemplates = templates[currentTarget];
+            const randomTemplate = groupTemplates[Math.floor(Math.random() * groupTemplates.length)];
+            const finalQuote = randomTemplate
+                .replace('${name}', nickname)
+                .replace('${memory}', memory);
+
+            // 2. 更新卡片 DOM 顯示
+            let targetChinese = currentTarget === 'relative' ? '親人' : currentTarget === 'friend' ? '朋友' : '寵物';
+            let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
+
+            document.getElementById('card-tag-display').innerText = `思念致意錄 / ${targetChinese}`;
+            document.getElementById('card-icon-display').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+            document.getElementById('card-text-display').innerText = finalQuote;
+            document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
+            
+            const today = new Date();
+            document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
+
+            // 展開卡片預覽區
+            document.getElementById('output-section').style.display = 'flex';
+
+            // 3. 同步推送到 Supabase 資料庫 (若有設定連線)
+            if (supabaseClient) {
+                await saveToSupabase(targetChinese, finalQuote, nickname);
+            }
+        }
+
+        // 將思念卡片同步至 Supabase
+        async function saveToSupabase(category, quote, nickname) {
+            try {
+                // 為相容上一關的資料表 community_sentences，直接將格式化後的內容塞入 text 欄位
+                // 這樣不需重建 Table，省下大量設定時間！
+                const fullText = `[${category}] ${quote} (${nickname})`;
+                const { error } = await supabaseClient
+                    .from('community_sentences')
+                    .insert([{ text: fullText }]);
+
+                if (error) throw error;
+                fetchWallMessages(); // 刷新留言牆
+            } catch (err) {
+                console.error('儲存留言失敗:', err);
+            }
+        }
+
+        // 讀取歷史留言並渲染
+        async function fetchWallMessages() {
+            if (!supabaseClient) return;
+
+            try {
+                const { data: list, error } = await supabaseClient
+                    .from('community_sentences')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const wallGrid = document.getElementById('wall-grid');
+                if (list.length === 0) {
+                    wallGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">牆上目前空無一物，留下第一份思念吧。</div>`;
+                    return;
+                }
+
+                wallGrid.innerHTML = '';
+                list.forEach(item => {
+                    // 解析存進去的資料結構 [對象] 句子 (稱呼)
+                    const match = item.text.match(/^\[(.*?)\] (.*?) \((.*?)\)$/);
+                    let category = '留白處';
+                    let quote = item.text;
+                    let nickname = '思念者';
+
+                    if (match) {
+                        category = match[1];
+                        quote = match[2];
+                        nickname = match[3];
+                    }
+
+                    const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
+
+                    wallGrid.innerHTML += `
+                        <div class="wall-card">
+                            <div class="wall-card-header">
+                                <span>思念致意錄 / ${category}</span>
+                                <span style="color: var(--text-muted);">${dateStr}</span>
+                            </div>
+                            <div class="wall-card-body">
+                                ${quote}
+                            </div>
+                            <div class="wall-card-footer">
+                                — 致 ${nickname}
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error('讀取留言牆失敗:', err);
+            }
+        }
+
+        // 🌟 重頭戲：一鍵下載美學卡片 (利用 html2canvas 將 DOM 轉成實體 PNG)
+        function downloadCard() {
+            const cardNode = document.getElementById('printable-card');
+            
+            // 使用最優雅的倍率（確保高解析度，文字不模糊）
+            html2canvas(cardNode, {
+                scale: 3, 
+                backgroundColor: null,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `思念致意卡-${document.getElementById('nickname').value}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('卡片生成失敗:', err);
+                alert('卡片導出失敗，請再試一次。');
+            });
+        }
+    </script>
+</body>
+</html>
