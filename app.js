@@ -75,13 +75,14 @@ window.generateRemembrance = async function() {
     }
 };
 
+// 🌟 核心：向我們自己的 Vercel 後端發送請求
 async function generateAIQuote(targetType, name, userMemory) {
     let targetLabel = targetType === 'relative' ? '親人' : targetType === 'friend' ? '朋友' : '寵物';
     
     const prompt = `
         你是一位文字極具情感穿透力、細膩且內斂的當次CIS展覽文案大師。
         現在有一位參展者，他想念的對象是【${targetLabel}】，他稱呼對方為【${name}】。
-        他留下的思念細節與記憶畫面是：『${userMemory}』。
+        He 留下的思念細節與記憶畫面是：『${userMemory}』。
 
         請為他撰寫一段 1 到 2 句、字數在 50~80 字內、極具文學美感的思念語錄。
         
@@ -92,22 +93,22 @@ async function generateAIQuote(targetType, name, userMemory) {
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 🚀 向我們剛剛建立的 Vercel 後端 API 發送請求[cite: 3]
+    // 🚀 向我們的 Vercel 後端 API 發送請求 (修正了括號語法)
     const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt: prompt })[cite: 3]
+        body: JSON.stringify({ prompt: prompt })
     });
 
     if (!response.ok) {
-        const errData = await response.json();[cite: 3]
-        throw new Error(errData.error || '後端伺服器錯誤');[cite: 3]
+        const errData = await response.json();
+        throw new Error(errData.error || '後端伺服器錯誤');
     }
 
-    const data = await response.json();[cite: 3]
-    return data.text; // 順利拿到後端轉發回來、AI 生成的文字[cite: 3]
+    const data = await response.json();
+    return data.text; 
 }
 
 // 資料庫寫入
