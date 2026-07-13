@@ -1,7 +1,7 @@
-// 🚀 1. 直接從官方 ESM CDN 引入正確的 GoogleGenAI 元件
-import { GoogleGenAI } from 'https://esm.run/@google/generative-ai';
+// 🚀 1. 修正導出名稱：改用官方標準的 GoogleGenerativeAI
+import { GoogleGenerativeAI } from 'https://esm.run/@google/generative-ai';
 
-// --- AI 驅動：思念終點館 核心邏輯 (環境變數安全版) ---
+// --- AI 驅動：思念終點館 核心邏輯 ---
 
 // 2. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
@@ -16,8 +16,8 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🎯 4. 直接初始化 AI 物件，乾淨又穩定
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// 🎯 4. 修正初始化方法：直接 new GoogleGenerativeAI 並傳入 API Key
+const ai = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
