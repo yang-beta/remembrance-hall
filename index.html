@@ -114,8 +114,8 @@
    <!-- 1. 引入 Google AI Gemini 官方瀏覽器專用 SDK 檔案 -->
     <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai@latest/dist/index.umd.min.js"></script>
     
-    <!-- 2. 引入你的外部邏輯腳本 -->
-    <script src="app.js"></script>
+    <!-- 2. 引入你的外部邏輯腳本 (加上 defer 確保乖乖排隊執行) -->
+    <script src="app.js" defer></script>
     
 </body>
 </html>
