@@ -13,18 +13,17 @@ const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBL
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🎯 先宣告全域變數，不立刻 new
+// 🎯 先宣告全域變數
 let ai;
 
 // 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
-    // 🚀 在這裡安全地初始化 Gemini，確保 CDN 已經完全載入
+    // 🚀 精准對接 GoogleGenAI 全域物件
     try {
-        const sdk = window.googleGenerativeAI || window.GoogleGenerativeAI;
-        if (sdk && sdk.GoogleGenAI) {
-            ai = new sdk.GoogleGenAI({ apiKey: GEMINI_API_KEY });
-        } else if (typeof GoogleGenerativeAI !== 'undefined') {
-            ai = new GoogleGenerativeAI(GEMINI_API_KEY);
+        if (typeof window.GoogleGenAI !== 'undefined') {
+            // 官方標準用法：直接傳入物件 { apiKey }
+            ai = new window.GoogleGenAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            console.log("✅ Gemini AI 成功連線");
         } else {
             console.error("Gemini SDK 載入失敗，請檢查網路或 CDN 連結");
         }
