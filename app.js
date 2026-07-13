@@ -1,18 +1,23 @@
-// --- AI 驅動：思念終點館 核心邏輯 ---
-import { GoogleGenAI } from "https://esm.run/@google/generative-ai";
+// --- AI 驅動：思念終點館 核心邏輯 (環境變數安全版) ---
 
-// 1. 連線設定 (請確保換成你自己的金鑰)
+// 1. 連線設定 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
-// 改用 Vercel 內建的環境變數讀取語法
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_KEY || "AIzaSy_暫時留空";
+
+// 💡 讀取 Vercel 環境變數的正確前端寫法
+// Vercel 會在打包時自動將變數注入，如果本地測試沒有，則預設為後方的暫時字串
+const GEMINI_API_KEY = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GEMINI_KEY) 
+    || window?.ENV?.NEXT_PUBLIC_GEMINI_KEY 
+    || "NEXT_PUBLIC_GEMINI_KEY_PLACEHOLDER"; 
 
 // 2. 初始化雲端服務
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const ai = new GoogleGenAI(GEMINI_API_KEY);
 
-// 當頁面加載完成
+// 使用 Google 官方 UMD 規範的全域物件初始化 AI 大腦
+const ai = new window.googleGenerativeAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+// 當頁面加載完成自動執行
 document.addEventListener('DOMContentLoaded', () => {
     fetchWallMessages();
     initDragScroll();
@@ -21,16 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 });
 
-// 全域變數與按鈕事件綁定
+// 全域變數定義
 let currentTarget = 'relative';
-window.setTarget = function(target, element) {
+
+// 選擇對象切換
+function setTarget(target, element) {
     currentTarget = target;
     document.querySelectorAll('.target-btn').forEach(btn => btn.classList.remove('active'));
     element.classList.add('active');
-};
+}
 
-// 讓 HTML 能夠直接觸發按鈕點擊
-window.generateRemembrance = async function() {
+// 核心：生成思念儀式卡片
+async function generateRemembrance() {
     const nickname = document.getElementById('nickname').value.trim();
     const memory = document.getElementById('memory').value.trim();
     const submitBtn = document.querySelector('.btn-submit');
@@ -41,14 +48,14 @@ window.generateRemembrance = async function() {
     }
 
     try {
-        // 優化體驗：讓按鈕變成加載中狀態
+        // 優化體驗：讓按鈕變成加載中狀態，防止重複點擊
         submitBtn.innerText = "⏳ 正在引導 AI 梳理思念之緒...";
         submitBtn.disabled = true;
 
-        // 3. 呼叫 AI 進行「情緒分析、語意通順優化與溫暖轉折」
+        // 3. 呼叫下方強大的 AI 生成函數
         const finalQuote = await generateAIQuote(currentTarget, nickname, memory);
 
-        // 4. 更新卡片 DOM 顯示
+        // 4. 更新卡片畫面的 DOM 顯示
         let targetChinese = currentTarget === 'relative' ? '親人' : currentTarget === 'friend' ? '朋友' : '寵物';
         let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
 
@@ -62,7 +69,7 @@ window.generateRemembrance = async function() {
 
         document.getElementById('output-section').style.display = 'flex';
 
-        // 5. 將 AI 生成的完美短句存入 Supabase 資料庫
+        // 5. 將 AI 生成的完美短句同步存入 Supabase 資料庫
         if (supabaseClient) {
             await saveToSupabase(targetChinese, finalQuote, nickname);
         }
@@ -75,15 +82,15 @@ window.generateRemembrance = async function() {
         submitBtn.innerText = "⚡ 生成思念儀式卡片";
         submitBtn.disabled = false;
     }
-};
+}
 
-// 🌟 核心：Gemini AI 智慧提示詞工程 (Prompt Engineering)
+// 🌟 核心：Gemini AI 智慧提示詞工程函數 (剛剛漏掉的就是這個！)
 async function generateAIQuote(targetType, name, userMemory) {
     let targetLabel = targetType === 'relative' ? '親人' : targetType === 'friend' ? '朋友' : '寵物';
     
     // 這段 Prompt 完美控管了語意通順度與情緒轉折
     const prompt = `
-        你是一位文字極具情感穿透力、細膩且內斂的當代CIS展覽文案大師。
+        你是一位文字極具情感穿透力、細膩且內斂的當次CIS展覽文案大師。
         現在有一位參展者，他想念的對象是【${targetLabel}】，他稱呼對方為【${name}】。
         他留下的思念細節與記憶畫面是：『${userMemory}』。
 
@@ -96,7 +103,7 @@ async function generateAIQuote(targetType, name, userMemory) {
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
     `;
 
-    // 呼叫 Google 最新、速度最快的輕量大模型
+    // 呼叫 Google 官方規範的最新輕量模型
     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     return result.response.text().trim();
@@ -163,7 +170,7 @@ async function fetchWallMessages() {
 }
 
 // 橫向箭頭滑動
-window.slideWall = function(direction) {
+function slideWall(direction) {
     const container = document.getElementById('slider-container');
     const scrollAmount = 304; 
     if (direction === 'left') {
@@ -171,7 +178,7 @@ window.slideWall = function(direction) {
     } else {
         container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-};
+}
 
 // 滑鼠拖曳滑動
 function initDragScroll() {
@@ -192,7 +199,7 @@ function initDragScroll() {
 }
 
 // 卡片導出下載
-window.downloadCard = function() {
+function downloadCard() {
     const cardNode = document.getElementById('printable-card');
     html2canvas(cardNode, {
         scale: 3, 
@@ -207,4 +214,4 @@ window.downloadCard = function() {
         console.error('卡片生成失敗:', err);
         alert('卡片導出失敗，請再試一次。');
     });
-};
+}
