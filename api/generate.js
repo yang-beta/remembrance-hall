@@ -1,11 +1,10 @@
-// api/generate.js (通用 API 轉發 - 安全相容版)
+// api/generate.js (通用 API 轉發 - 最新大模型版)
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    // 🎯 重新讀取你自己在 Vercel 後台設定的環境變數，絕對安全且不會失效
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_KEY;
     
     if (!apiKey) {
@@ -20,10 +19,11 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey.trim()}` // 帶入你自己的專屬免費 gsk_ 金鑰
+                'Authorization': `Bearer ${apiKey.trim()}`
             },
             body: JSON.stringify({
-                model: "llama-3.1-70b-versatile",
+                // 🎯 核心修正：更換為 Groq 目前官方最新的 Llama 3 70B 穩定版模型
+                model: "llama3-70b-8192", 
                 messages: [
                     { role: "user", content: prompt }
                 ],
