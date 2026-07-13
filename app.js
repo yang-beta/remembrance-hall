@@ -80,7 +80,7 @@ async function saveToSupabase(category, quote, nickname) {
     try {
         const fullText = `[${category}] ${quote} (${nickname})`;
         const { error } = await supabaseClient
-            .from('community_sentences')
+            .from('remembrance-db')
             .insert([{ text: fullText }]);
 
         if (error) throw error;
@@ -96,7 +96,7 @@ async function fetchWallMessages() {
 
     try {
         const { data: list, error } = await supabaseClient
-            .from('community_sentences')
+            .from('remembrance-db')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(12);
