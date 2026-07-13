@@ -1,128 +1,17 @@
 /* --- 視覺美學定義 (極簡奢華 × 灰白清水模) --- */
-:root {
-    --bg-banner: #1a1a1a;      /* Banner 保持深炭灰色基底，承接進場動畫 */
-    --bg-content: #FAF8F5;     /* 留言板改回：溫潤灰米白（清水模/展館主色調） */
-    --card-bg: #FFFFFF;        /* 純白卡片，與清水模背景形成對比 */
-    --text-main: #2C2C2C;      /* 主文字改回深炭灰，確保淺色底清晰好讀 */
-    --text-muted: #7F7F7F;     /* 煙燻灰 */
-    --accent-gold: #B59E74;    /* 洸限經典金 */
-    --border-color: #E2DDD5;   /* 細緻米褐框線 */
-    --font-serif: 'Noto Serif TC', serif;
-    --font-sans: 'Noto Sans TC', sans-serif;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* 網頁全域環境設定 */
-html {
-    scroll-behavior: smooth;
-    background-color: var(--bg-banner);
-}
-
-body {
-    width: 100%;
-    min-height: 100vh;
-    background-color: var(--bg-banner); /* 初始背景為深色 */
-    color: var(--text-main);
-    font-family: var(--font-sans);
-    line-height: 1.6;
-    overflow-x: hidden;
-    overflow-y: hidden; /* 初始由 JS 進場動畫鎖定，完成後解鎖 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: background-color 0.8s ease; /* 讓背景過渡更平滑 */
-}
-
-/* --- 1. 全螢幕 Banner 圖層 --- */
-#mandalaCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.hero-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    flex-shrink: 0;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-}
-
-.brand-title {
-    font-size: 3.5rem;
-    font-weight: 300;
-    letter-spacing: 0.8rem;
-    color: #e5e5e5;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-    opacity: 0;
-    margin-bottom: 2rem;
-}
-
-.main-question {
-    font-size: 1.2rem;
-    font-weight: 300;
-    letter-spacing: 0.4rem;
-    color: #c5a880; /* 進場動畫中的冷金 */
-    opacity: 0;
-    line-height: 2;
-}
-
-.scroll-hint {
-    position: absolute;
-    bottom: 8%;
-    opacity: 0;
-    cursor: pointer;
-    transition: transform 0.3s;
-    z-index: 5;
-}
-
-.scroll-hint:hover {
-    transform: scale(1.2);
-}
-
-.scroll-hint .arrow {
-    font-size: 1.5rem;
-    color: #c5a880;
-    display: inline-block;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
-}
-
-/* --- 2. 主內容包裝器 (情緒留言板：改為灰白清水模風格) --- */
 .wrapper {
     width: 100%;
-    background-color: var(--bg-content); /* 獨立出來的灰白清水模底色 */
-    color: var(--text-main);
-    padding: 80px 0; /* 左右內縮交給內部元件，主外殼拉滿 */
+    background-color: transparent; /* ➔ 改為透明，露出底部的深炭灰與曼陀羅 Canvas */
+    color: #e5e5e5; /* ➔ 外層文字維持輕銀灰 */
+    padding: 80px 0;
     position: relative;
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 -20px 40px rgba(0,0,0,0.2); /* 向上推時的陰影層次 */
 }
 
-/* 限制表單與頁首的寬度 (維持精緻置中) */
+/* 限制表單與頁首的寬度 */
 header, .grid-layout {
     max-width: 800px;
     width: 100%;
@@ -141,7 +30,7 @@ header h1 {
     font-size: 32px;
     font-weight: 700;
     letter-spacing: 2px;
-    color: var(--text-main);
+    color: #e5e5e5; /* ➔ 標題改為高質感銀白 */
     margin-bottom: 8px;
 }
 
@@ -157,13 +46,14 @@ header p {
     gap: 40px;
 }
 
-/* 清水模風輸入表單 */
+/* ➔ 核心修正：將輸入表單卡片「化為懸浮的灰白清水模島嶼」 */
 .input-card {
-    background: var(--card-bg);
+    background: #FAF8F5; /* ➔ 清水模灰米白只留在卡片本身 */
     border: 1px solid var(--border-color);
     padding: 30px;
     position: relative;
-    box-shadow: 0 4px 20px rgba(181, 158, 116, 0.05);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); /* ➔ 加強深色陰影，使其強烈浮動於底圖上 */
+    color: #2C2C2C; /* ➔ 卡片內文字改回深色 */
 }
 
 .form-group {
@@ -176,7 +66,7 @@ header p {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 10px;
-    color: var(--text-main);
+    color: #2C2C2C;
 }
 
 .target-selector {
@@ -186,14 +76,14 @@ header p {
 }
 
 .target-btn {
-    background: none;
+    background: rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border-color);
     padding: 12px;
     font-family: var(--font-serif);
     font-size: 15px;
     cursor: pointer;
     transition: all 0.3s;
-    color: var(--text-muted);
+    color: #7F7F7F;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -206,19 +96,19 @@ header p {
 }
 
 .target-btn.active {
-    background-color: var(--text-main);
+    background-color: #2C2C2C;
     color: #FFFFFF;
-    border-color: var(--text-main);
+    border-color: #2C2C2C;
 }
 
 input[type="text"], textarea {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid var(--border-color);
-    background-color: #FAFAFA;
+    background-color: #F5F2EC; /* ➔ 輸入框微深，做出清水模層次 */
     font-family: var(--font-sans);
     font-size: 15px;
-    color: var(--text-main);
+    color: #2C2C2C;
     outline: none;
     transition: all 0.3s;
 }
@@ -263,10 +153,11 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     overflow: hidden;
 }
 
+/* 卡片維持原設定... */
 .card-container::before {
     content: '';
     position: absolute;
@@ -312,7 +203,7 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-serif);
     font-size: 18px;
     line-height: 1.8;
-    color: var(--text-main);
+    color: #2C2C2C;
     text-align: justify;
     margin-bottom: 20px;
     letter-spacing: 0.5px;
@@ -336,11 +227,6 @@ input[type="text"]:focus, textarea:focus {
     z-index: 2;
 }
 
-.card-brand {
-    letter-spacing: 1px;
-    font-weight: 500;
-}
-
 .card-actions {
     margin-top: 25px;
     display: flex;
@@ -354,30 +240,26 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-sans);
     font-size: 14px;
     cursor: pointer;
-    border: 1px solid var(--text-main);
+    border: 1px solid #FAF8F5;
     background: none;
+    color: #FAF8F5; /* ➔ 改成白色系，使其在深色底上清晰 */
     transition: all 0.3s;
 }
 
 .btn-action.download {
-    background-color: var(--text-main);
-    color: #FFFFFF;
+    background-color: #FAF8F5;
+    color: #2C2C2C;
 }
 
-.btn-action.download:hover {
-    background-color: #4A4A4A;
-}
-
-/* --- 4. 歷史思念牆 (⭐ 調整為 100% 寬度滿版) --- */
+/* --- 4. 歷史思念牆 (滿版浮動修正) --- */
 .wall-section {
     margin-top: 80px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 50px;
     position: relative;
-    width: 100%; /* 強制滿版 */
+    width: 100%;
 }
 
-/* 歷史思念牆標題：維持與上方表單對齊的精緻感 */
 .wall-header-wrapper {
     display: flex;
     justify-content: space-between;
@@ -387,7 +269,7 @@ input[type="text"]:focus, textarea:focus {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 20px; /* 貼合對齊線 */
+    padding: 0 20px;
 }
 
 .wall-section h2 {
@@ -397,7 +279,7 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--text-main);
+    color: #e5e5e5; /* ➔ 牆面標題改為白色 */
 }
 
 .wall-section h2 i {
@@ -424,7 +306,6 @@ input[type="text"]:focus, textarea:focus {
     color: var(--accent-gold);
 }
 
-/* 滑動容器拉開至螢幕 100% 邊緣，創造橫向無限延伸的遼闊感 */
 .slider-container {
     width: 100%;
     overflow-x: auto;
@@ -432,7 +313,7 @@ input[type="text"]:focus, textarea:focus {
     scrollbar-width: none;
     -ms-overflow-style: none;
     cursor: grab;
-    padding: 10px 40px 30px 40px; /* 左右留白讓滑動的卡片不會太貼螢幕邊緣 */
+    padding: 10px 40px 30px 40px;
 }
 
 .slider-container:active {
@@ -449,9 +330,9 @@ input[type="text"]:focus, textarea:focus {
     width: max-content;
 }
 
-/* 歷史留言卡片 */
+/* ➔ 大家留下的留言卡片：化為一座座漂浮在星空中的清水模小島 */
 .wall-card {
-    background: var(--card-bg);
+    background: #FAF8F5; /* ➔ 漂浮清水模色 */
     border: 1px solid var(--border-color);
     padding: 24px;
     position: relative;
@@ -461,7 +342,7 @@ input[type="text"]:focus, textarea:focus {
     width: 290px;
     min-height: 220px;
     flex-shrink: 0;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03); /* 輕微柔和的立體陰影 */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* ➔ 強烈的陰影，營造浮動感 */
 }
 
 .wall-card::before {
@@ -487,7 +368,7 @@ input[type="text"]:focus, textarea:focus {
     font-family: var(--font-serif);
     font-size: 14px;
     line-height: 1.7;
-    color: var(--text-main);
+    color: #2C2C2C; /* ➔ 內文改回深炭灰，確保在白卡片上清晰 */
     margin-bottom: 15px;
     text-align: justify;
 }
