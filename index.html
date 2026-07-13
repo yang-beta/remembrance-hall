@@ -111,6 +111,17 @@
     </div>
 
     <!-- 引入外部邏輯腳本 -->
+    <!-- 在 app.js 之前，引入 Google AI Gemini SDK 的 CDN -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <!-- 原本的 app.js 保持在最下方 -->
+    <script src="app.js" type="module"></script> <!-- 💡 重點：請在這裡補上 type="module" -->
     <script src="app.js"></script>
+    
 </body>
 </html>
