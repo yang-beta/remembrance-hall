@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
 
 // 💡 免寫死金鑰的秘密：直接貼上你剛剛在 Google 申請那串完整的 AQ... 金鑰
 // （註：因為我們在 Vercel 是純前端，沒用 Next.js 框架，瀏覽器執行期完全無法識別 process.env）
-const GEMINI_API_KEY = "將你正確的AQ開頭金鑰直接貼在引號內"; 
+const GEMINI_API_KEY = "AQ.Ab8RN6IqGvMD73laXgbGoSu-oKaYLYn0WNVAODB5nbyIp2PG8w"; 
 
 // 2. 初始化雲端服務
 const { createClient } = supabase;
