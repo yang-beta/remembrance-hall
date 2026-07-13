@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
-
+    
+    console.log("GEMINI_API_KEY exists:", !!process.env.GEMINI_API_KEY);
+    console.log("Key prefix:", process.env.GEMINI_API_KEY?.substring(0, 5));
+    
     // 🎯 防呆：確保能拿到環境變數
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_KEY;
     
@@ -29,4 +32,5 @@ export default async function handler(req, res) {
         // 🎯 將真實的錯誤訊息傳回前端，方便我們抓漏
         return res.status(200).json({ text: `[後端錯誤報告]：${error.message}` });
     }
+    console.log("API Key exists:", !!process.env.GEMINI_API_KEY);
 }
