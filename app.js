@@ -1,91 +1,105 @@
-// --- 核心邏輯與資料庫處理 ---
-let currentTarget = 'relative';
+// --- AI 驅動：思念終點館 核心邏輯 ---
+import { GoogleGenAI } from "@google/generative-ai";
 
-// 🌟 請在此處填入你新專案的真實金鑰 (確保結尾沒有斜線與多餘路徑)
+// 1. 連線設定 (請確保換成你自己的金鑰)
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
+// 改用 Vercel 內建的環境變數讀取語法
+const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_KEY || "AIzaSy_暫時留空";
 
-// 初始化 Supabase
+// 2. 初始化雲端服務
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-// 準備一個空的容器來裝資料庫抓下來的模板
-let templates = {
-    relative: [],
-    friend: [],
-    pet: []
-};
-
-// 頁面加載完成自動執行
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. 網頁打開時，先去資料庫把模板庫抓下來
-    await fetchTemplates();
-    // 2. 接著抓取留言牆
+// 當頁面加載完成
+document.addEventListener('DOMContentLoaded', () => {
     fetchWallMessages();
-    initDragScroll(); 
+    initDragScroll();
     
     const today = new Date();
     document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 });
 
-// 新增一個函數：從資料庫抓取模板
-async function fetchTemplates() {
-    try {
-        const { data, error } = await supabaseClient.from('templates').select('*');
-        if (error) throw error;
-        
-        // 將資料庫裡的模板分類放進我們準備好的容器裡
-        if (data) {
-            data.forEach(item => {
-                if (templates[item.category]) {
-                    templates[item.category].push(item.content);
-                }
-            });
-        }
-    } catch (err) {
-        console.error('抓取模板失敗:', err);
-    }
-}
-
-// 選擇對象切換
-function setTarget(target, element) {
+// 全域變數與按鈕事件綁定
+let currentTarget = 'relative';
+window.setTarget = function(target, element) {
     currentTarget = target;
     document.querySelectorAll('.target-btn').forEach(btn => btn.classList.remove('active'));
     element.classList.add('active');
-}
+};
 
-// 生成卡片主邏輯
-async function generateRemembrance() {
+// 讓 HTML 能夠直接觸發按鈕點擊
+window.generateRemembrance = async function() {
     const nickname = document.getElementById('nickname').value.trim();
     const memory = document.getElementById('memory').value.trim();
+    const submitBtn = document.querySelector('.btn-submit');
 
     if (!nickname || !memory) {
         alert('請填入稱呼與記憶細節，讓思念具體落地。');
         return;
     }
 
-    const groupTemplates = templates[currentTarget];
-    const randomTemplate = groupTemplates[Math.floor(Math.random() * groupTemplates.length)];
-    const finalQuote = randomTemplate
-        .replace('${name}', nickname)
-        .replace('${memory}', memory);
+    try {
+        // 優化體驗：讓按鈕變成加載中狀態
+        submitBtn.innerText = "⏳ 正在引導 AI 梳理思念之緒...";
+        submitBtn.disabled = true;
 
-    let targetChinese = currentTarget === 'relative' ? '親人' : currentTarget === 'friend' ? '朋友' : '寵物';
-    let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
+        // 3. 呼叫 AI 進行「情緒分析、語意通順優化與溫暖轉折」
+        const finalQuote = await generateAIQuote(currentTarget, nickname, memory);
 
-    document.getElementById('card-tag-display').innerText = `思念致意錄 / ${targetChinese}`;
-    document.getElementById('card-icon-display').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
-    document.getElementById('card-text-display').innerText = finalQuote;
-    document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
-    
-    const today = new Date();
-    document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
+        // 4. 更新卡片 DOM 顯示
+        let targetChinese = currentTarget === 'relative' ? '親人' : currentTarget === 'friend' ? '朋友' : '寵物';
+        let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
 
-    document.getElementById('output-section').style.display = 'flex';
+        document.getElementById('card-tag-display').innerText = `思念致意錄 / ${targetChinese}`;
+        document.getElementById('card-icon-display').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+        document.getElementById('card-text-display').innerText = finalQuote;
+        document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
+        
+        const today = new Date();
+        document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 
-    if (supabaseClient) {
-        await saveToSupabase(targetChinese, finalQuote, nickname);
+        document.getElementById('output-section').style.display = 'flex';
+
+        // 5. 將 AI 生成的完美短句存入 Supabase 資料庫
+        if (supabaseClient) {
+            await saveToSupabase(targetChinese, finalQuote, nickname);
+        }
+
+    } catch (err) {
+        console.error('AI 生成或儲存失敗:', err);
+        alert('通道暫時擁擠，請再試一次。');
+    } finally {
+        // 還原按鈕狀態
+        submitBtn.innerText = "⚡ 生成思念儀式卡片";
+        submitBtn.disabled = false;
     }
+};
+
+// 🌟 核心：Gemini AI 智慧提示詞工程 (Prompt Engineering)
+async function generateAIQuote(targetType, name, userMemory) {
+    let targetLabel = targetType === 'relative' ? '親人' : targetType === 'friend' ? '朋友' : '寵物';
+    
+    // 這段 Prompt 完美控管了語意通順度與情緒轉折
+    const prompt = `
+        你是一位文字極具情感穿透力、細膩且內斂的當代CIS展覽文案大師。
+        現在有一位參展者，他想念的對象是【${targetLabel}】，他稱呼對方為【${name}】。
+        他留下的思念細節與記憶畫面是：『${userMemory}』。
+
+        請為他撰寫一段 1 到 2 句、字數在 50~80 字內、極具文學美感的思念語錄。
+        
+        【核心美學限制與情緒轉折指令】：
+        1. 語句必須完美、流暢地將參展者輸入的記憶細節融合進去，不得顯得突兀或語法不通。
+        2. 重要：請敏銳分析使用者的字句。如果偵測到沉重、後悔、悲傷、寫到「過往時間無法挽回」、「遺憾」、「痛」等走不出的負面情緒，請在文案後半段巧妙地進行溫柔的意境轉折，改以溫暖、療癒、陪伴、或是賦予前行力量、釋懷的鼓勵方式結尾。
+        3. 必須以第一人稱或致敬的宏觀視角書寫（例如：以「「致 ${name}：...」」或「「親愛的 ${name}：...」」為開頭，文字頭尾請加上引號「」）。
+        4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
+    `;
+
+    // 呼叫 Google 最新、速度最快的輕量大模型
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    return result.response.text().trim();
 }
 
 // 資料庫寫入
@@ -99,14 +113,13 @@ async function saveToSupabase(category, quote, nickname) {
         if (error) throw error;
         fetchWallMessages(); 
     } catch (err) {
-        console.error('儲存留言失敗:', err);
+        console.error('儲存至資料庫失敗:', err);
     }
 }
 
-// 資料庫抓取最新 12 筆
+// 資料庫抓取最新 12 筆卡片
 async function fetchWallMessages() {
     if (!supabaseClient) return;
-
     try {
         const { data: list, error } = await supabaseClient
             .from('remembrance-db')
@@ -117,7 +130,7 @@ async function fetchWallMessages() {
         if (error) throw error;
 
         const wallGrid = document.getElementById('wall-grid');
-        if (list.length === 0) {
+        if (!list || list.length === 0) {
             wallGrid.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">牆上目前空無一物，留下第一份思念吧。</div>`;
             return;
         }
@@ -129,11 +142,7 @@ async function fetchWallMessages() {
             let quote = item.text;
             let nickname = '思念者';
 
-            if (match) {
-                category = match[1];
-                quote = match[2];
-                nickname = match[3];
-            }
+            if (match) { category = match[1]; quote = match[2]; nickname = match[3]; }
 
             const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
 
@@ -143,12 +152,8 @@ async function fetchWallMessages() {
                         <span>思念致意錄 / ${category}</span>
                         <span style="color: var(--text-muted);">${dateStr}</span>
                     </div>
-                    <div class="wall-card-body">
-                        ${quote}
-                    </div>
-                    <div class="wall-card-footer">
-                        — 致 ${nickname}
-                    </div>
+                    <div class="wall-card-body">${quote}</div>
+                    <div class="wall-card-footer">— 致 ${nickname}</div>
                 </div>
             `;
         });
@@ -157,8 +162,8 @@ async function fetchWallMessages() {
     }
 }
 
-// 箭頭滑動
-function slideWall(direction) {
+// 橫向箭頭滑動
+window.slideWall = function(direction) {
     const container = document.getElementById('slider-container');
     const scrollAmount = 304; 
     if (direction === 'left') {
@@ -166,26 +171,17 @@ function slideWall(direction) {
     } else {
         container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-}
+};
 
 // 滑鼠拖曳滑動
 function initDragScroll() {
     const slider = document.getElementById('slider-container');
-    let isDown = false;
-    let startX;
-    let scrollLeft;
-
+    let isDown = false; let startX; let scrollLeft;
     slider.addEventListener('mousedown', (e) => {
-        isDown = true;
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
+        isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
     });
-    slider.addEventListener('mouseleave', () => {
-        isDown = false;
-    });
-    slider.addEventListener('mouseup', () => {
-        isDown = false;
-    });
+    slider.addEventListener('mouseleave', () => { isDown = false; });
+    slider.addEventListener('mouseup', () => { isDown = false; });
     slider.addEventListener('mousemove', (e) => {
         if(!isDown) return;
         e.preventDefault();
@@ -195,8 +191,8 @@ function initDragScroll() {
     });
 }
 
-// 卡片匯出下載
-function downloadCard() {
+// 卡片導出下載
+window.downloadCard = function() {
     const cardNode = document.getElementById('printable-card');
     html2canvas(cardNode, {
         scale: 3, 
@@ -211,4 +207,4 @@ function downloadCard() {
         console.error('卡片生成失敗:', err);
         alert('卡片導出失敗，請再試一次。');
     });
-}
+};
