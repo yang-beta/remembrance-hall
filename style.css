@@ -1,0 +1,399 @@
+/* --- 視覺美學定義 (參考展覽簡報風格) --- */
+:root {
+    --bg-color: #FAF8F5;       /* 溫潤灰米白底 */
+    --card-bg: #FFFFFF;        /* 純白卡片 */
+    --text-main: #2C2C2C;      /* 深炭灰 */
+    --text-muted: #7F7F7F;     /* 煙燻灰 */
+    --accent-gold: #B59E74;    /* 洸限經典金 */
+    --border-color: #E2DDD5;   /* 細緻米褐框線 */
+    --font-serif: 'Noto Serif TC', serif;
+    --font-sans: 'Noto Sans TC', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.wrapper {
+    max-width: 800px;
+    width: 100%;
+}
+
+/* --- 頂部展館主題 --- */
+header {
+    margin-bottom: 50px;
+    text-align: left;
+    position: relative;
+    padding-left: 20px;
+    border-left: 5px solid var(--accent-gold);
+}
+
+header h1 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+}
+
+/* --- 輸入表單 --- */
+.input-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(181, 158, 116, 0.05);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.target-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.target-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.target-btn i {
+    font-size: 18px;
+}
+
+.target-btn:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.target-btn.active {
+    background-color: var(--text-main);
+    color: #FFFFFF;
+    border-color: var(--text-main);
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    background-color: #FAFAFA;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.3s;
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: var(--accent-gold);
+    background-color: #FFFFFF;
+}
+
+.btn-submit {
+    background-color: var(--accent-gold);
+    color: #FFFFFF;
+    width: 100%;
+    padding: 14px;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #9C855C;
+}
+
+/* --- 實體卡片輸出區 --- */
+.output-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.card-container {
+    width: 380px;
+    height: 520px;
+    background-color: #FAF8F5;
+    border: 1px solid var(--border-color);
+    padding: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-container::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    border: 1px dashed var(--accent-gold);
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    z-index: 2;
+}
+
+.card-tag {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--accent-gold);
+    letter-spacing: 1px;
+}
+
+.card-icon {
+    font-size: 16px;
+    color: var(--accent-gold);
+}
+
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 10px;
+    z-index: 2;
+}
+
+.card-quote {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-main);
+    text-align: justify;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.card-sign {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.card-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    z-index: 2;
+}
+
+.card-brand {
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.card-actions {
+    margin-top: 25px;
+    display: flex;
+    width: 100%;
+    max-width: 380px;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--text-main);
+    background: none;
+    transition: all 0.3s;
+}
+
+.btn-action.download {
+    background-color: var(--text-main);
+    color: #FFFFFF;
+}
+
+.btn-action.download:hover {
+    background-color: #4A4A4A;
+}
+
+/* --- 歷史思念牆 --- */
+.wall-section {
+    margin-top: 60px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
+    position: relative;
+}
+
+.wall-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.wall-section h2 {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wall-section h2 i {
+    font-size: 18px;
+    color: var(--accent-gold);
+}
+
+.slider-arrows {
+    display: flex;
+    gap: 15px;
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 5px;
+}
+
+.arrow-btn:hover {
+    color: var(--accent-gold);
+}
+
+.slider-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+    padding-bottom: 10px;
+}
+
+.slider-container:active {
+    cursor: grabbing;
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none;
+}
+
+.wall-grid-row {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+}
+
+.wall-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 280px;
+    min-height: 220px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.wall-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 3px;
+    background-color: var(--accent-gold);
+}
+
+.wall-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-family: var(--font-serif);
+    margin-bottom: 15px;
+}
+
+.wall-card-body {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-main);
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.wall-card-footer {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+}
