@@ -103,6 +103,13 @@ tl.to(animationParams, { particleConvergence: 1, coreGlow: 0.8, duration: 1.5, e
 tl.to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.5, ease: "power1.out" }, "-=0.2");
 tl.to(animationParams, { mandalaProgress: 1, duration: 2, ease: "power2.out" }, "-=0.5");
 tl.to(".main-question", { opacity: 1, y: -10, duration: 1.5, ease: "power1.out" }, "-=0.5");
-tl.to(".scroll-hint", { opacity: 1, duration: 1, onComplete: () => { document.body.style.overflow = "auto"; } });
+// ❌ 刪除強制等待的設定：
+// tl.to(".scroll-hint", { opacity: 1, duration: 1, onComplete: () => { document.body.style.overflow = "auto"; } });
+
+// 🎯 改為更平滑的純淡入顯示即可：
+tl.to(".scroll-hint", {
+    opacity: 1,
+    duration: 1
+});
 
 gsap.to(animationParams, { mandalaRotation: Math.PI * 2, duration: 120, repeat: -1, ease: "none" });
