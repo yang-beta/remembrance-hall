@@ -1,4 +1,4 @@
-// api/generate.js (通用 API 轉發 - 2026 長青旗艦版)
+// api/generate.js (通用 API 轉發 - 20260714)
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -22,7 +22,6 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${apiKey.trim()}`
             },
             body: JSON.stringify({
-                // 🎯 核心修正：更換為目前官方最穩定、絕對在線的 Llama 3.3 旗艦萬用大模型
                 model: "llama-3.3-70b-versatile", 
                 messages: [
                     { role: "user", content: prompt }
