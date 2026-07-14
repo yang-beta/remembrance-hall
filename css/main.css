@@ -1,1 +1,420 @@
+/* css/main.css ─── 視覺變數與清水模 UI 設計 ─── */
 
+:root {
+    --bg-banner: #1a1a1a;      
+    --concrete-gray: #FAF8F5;  
+    --card-bg: #FFFFFF;        
+    --text-main: #2C2C2C;      
+    --text-muted: #7F7F7F;     
+    --accent-gold: #B59E74;    
+    --border-color: #E2DDD5;   
+    --font-serif: 'Noto Serif TC', serif;
+    --font-sans: 'Noto Sans TC', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth; 
+    background-color: var(--bg-banner);
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-banner); 
+    color: #e5e5e5; 
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    overflow-y: hidden; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wrapper {
+    width: 100%;
+    background-color: transparent; 
+    padding: 80px 0;
+    position: relative;
+    z-index: 3; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header, .grid-layout {
+    max-width: 800px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+header {
+    margin-bottom: 50px;
+    text-align: left;
+    position: relative;
+    border-left: 5px solid var(--accent-gold);
+}
+
+header h1 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #e5e5e5; 
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+}
+
+.input-card {
+    background: var(--concrete-gray); 
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
+    color: var(--text-main);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.target-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.target-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.target-btn:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.target-btn.active {
+    background-color: var(--text-main);
+    color: #FFFFFF;
+    border-color: var(--text-main);
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    background-color: #F5F2EC; 
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.3s;
+}
+
+input[type="text"]:focus, textarea:focus {
+    border-color: var(--accent-gold);
+    background-color: #FFFFFF;
+}
+
+.btn-submit {
+    background-color: var(--accent-gold);
+    color: #FFFFFF;
+    width: 100%;
+    padding: 14px;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #9C855C;
+}
+
+.output-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.card-container {
+    width: 380px;
+    height: 520px;
+    background-color: #FAF8F5; 
+    border: 1px solid var(--border-color);
+    padding: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.card-container::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    border: 1px dashed var(--accent-gold);
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    z-index: 2;
+}
+
+.card-tag {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--accent-gold);
+    letter-spacing: 1px;
+}
+
+.card-icon {
+    font-size: 16px;
+    color: var(--accent-gold);
+}
+
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 10px;
+    z-index: 2;
+}
+
+.card-quote {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-main);
+    text-align: justify;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.card-sign {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.card-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    z-index: 2;
+}
+
+.card-brand {
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.card-actions {
+    margin-top: 25px;
+    display: flex;
+    width: 100%;
+    max-width: 380px;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--concrete-gray);
+    background: none;
+    color: var(--concrete-gray); 
+    transition: all 0.3s;
+}
+
+.btn-action.download {
+    background-color: var(--concrete-gray);
+    color: var(--text-main);
+}
+
+.btn-action.download:hover {
+    background-color: #e2ddd5;
+}
+
+.wall-section {
+    margin-top: 80px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); 
+    padding-top: 50px;
+    position: relative;
+    width: 100%; 
+}
+
+.wall-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    max-width: 800px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+}
+
+.wall-section h2 {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e5e5e5; 
+}
+
+.wall-section h2 i {
+    font-size: 18px;
+    color: var(--accent-gold);
+}
+
+.slider-arrows {
+    display: flex;
+    gap: 15px;
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 5px;
+}
+
+.arrow-btn:hover {
+    color: var(--accent-gold);
+}
+
+.slider-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    cursor: grab;
+    padding: 10px 40px 30px 40px; 
+}
+
+.slider-container:active {
+    cursor: grabbing;
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; 
+}
+
+.wall-grid-row {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+}
+
+.wall-card {
+    background: var(--concrete-gray); 
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 290px;
+    min-height: 220px;
+    flex-shrink: 0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); 
+}
+
+.wall-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 3px;
+    background-color: var(--accent-gold);
+}
+
+.wall-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-family: var(--font-serif);
+    margin-bottom: 15px;
+}
+
+.wall-card-body {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-main); 
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.wall-card-footer {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+}
