@@ -68,3 +68,26 @@
     40% { transform: translateY(-10px); }
     60% { transform: translateY(-5px); }
 }
+
+/* 🎯 略過動畫按鈕美學樣式 */
+.skip-anim-btn {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: none;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    color: #c5a880;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 1px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.skip-anim-btn:hover {
+    background-color: #c5a880;
+    color: #1a1a1a;
+    border-color: #c5a880;
+}
