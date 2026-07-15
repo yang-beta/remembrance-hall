@@ -24,6 +24,11 @@ window.setTarget = function(target, element) {
 };
 
 // 核心：生成思念儀式卡片
+// ⚡ 新增全域狀態鎖：紀錄使用者是否體驗過放手（僅生成一次）
+let hasExperiencedRelease = false;
+// ⚡ 紀錄目前使用者剛生成的卡片 ID 或內容，用來在思念牆上比對「是不是自己的卡片」
+let myLatestMessageText = ""; 
+
 window.generateRemembrance = async function() {
     const nickname = document.getElementById('nickname').value.trim();
     const memory = document.getElementById('memory').value.trim();
@@ -39,10 +44,10 @@ window.generateRemembrance = async function() {
         submitBtn.disabled = true;
 
         const finalQuote = await generateAIQuote(currentTarget, nickname, memory);
-
         let targetChinese = currentTarget === 'relative' ? '親人' : currentTarget === 'friend' ? '朋友' : '寵物';
         let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
 
+        // 填入全螢幕 Modal 卡片的內容（備用）
         document.getElementById('card-tag-display').innerText = `思念致意錄 / ${targetChinese}`;
         document.getElementById('card-icon-display').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
         document.getElementById('card-text-display').innerText = finalQuote;
@@ -51,11 +56,25 @@ window.generateRemembrance = async function() {
         const today = new Date();
         document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 
-        document.getElementById('output-section').style.display = 'flex';
+        // 🎯 核心改變點：此處不再直接開啟 output-section！
+        // 而是儲存這筆內容特徵，供思念牆識別
+        myLatestMessageText = `[${targetChinese}] ${finalQuote} (${nickname})`;
+        
+        // 重置狀態鎖，新卡片被建立，允許再次放手
+        hasExperiencedRelease = false;
+        localStorage.setItem('hasExperiencedRelease', 'false');
 
+        // 寫入 Supabase 資料庫
         if (supabaseClient) {
             await saveToSupabase(targetChinese, finalQuote, nickname);
         }
+
+        // 🎯 自動引導使用者向下平滑捲動到歷史思念牆
+        document.querySelector('.wall-section').scrollIntoView({ behavior: 'smooth' });
+
+        // 清空輸入表單，像沙子被拿走一樣
+        document.getElementById('nickname').value = "";
+        document.getElementById('memory').value = "";
 
     } catch (err) {
         console.error('AI 生成或儲存失敗:', err);
