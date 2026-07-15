@@ -367,7 +367,7 @@ input[type="text"]:focus, textarea:focus {
     scrollbar-width: none; 
     -ms-overflow-style: none; 
     cursor: grab;
-    padding: 10px 40px 30px 40px; 
+    padding: 100px 40px 100px 40px; 
 }
 
 .slider-container:active {
