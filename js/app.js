@@ -56,23 +56,25 @@ window.generateRemembrance = async function() {
         const today = new Date();
         document.getElementById('card-date-display').innerText = today.toLocaleDateString('zh-TW').replace(/\//g, '.');
 
-        // 🎯 核心改變點：此處不再直接開啟 output-section！
-        // 而是儲存這筆內容特徵，供思念牆識別
-        myLatestMessageText = finalQuote; // 🎯 儲存這筆內容，以便滾動時進行高亮配對
+        // 🎯 儲存這筆內容，以便滾動時進行高亮配對
+        myLatestMessageText = finalQuote; 
         
-        // 重置狀態鎖，新卡片被建立，允許再次放手
+        // 重置狀態鎖，新卡片被建立，允許再次放手[cite: 18]
         hasExperiencedRelease = false;
         localStorage.setItem('hasExperiencedRelease', 'false');
 
-        // 寫入 Supabase 資料庫
-        if (supabaseClient) {
-            await saveToSupabase(targetChinese, finalQuote, nickname);
-        }
-
-        // 🎯 自動引導使用者向下平滑捲動到歷史思念牆
+        // 🎯 1. 優先觸發自動引導使用者向下平滑捲動到歷史思念牆[cite: 18]
         document.querySelector('.wall-section').scrollIntoView({ behavior: 'smooth' });
 
-        // 清空輸入表單，像沙子被拿走一樣
+        // 🎯 2. 稍微延遲 300ms（在滾動途中），才進行資料庫寫入與留言牆重新渲染[cite: 18]
+        // 這樣能保證使用者看著牆面時，卡片才剛好加載並播放「1.2秒的延遲飛入動畫」！
+        setTimeout(async () => {
+            if (supabaseClient) {
+                await saveToSupabase(targetChinese, finalQuote, nickname);
+            }
+        }, 300);
+
+        // 清空輸入表單，像沙子被拿走一樣[cite: 18]
         document.getElementById('nickname').value = "";
         document.getElementById('memory').value = "";
 
