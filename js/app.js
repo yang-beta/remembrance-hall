@@ -247,3 +247,23 @@ window.downloadCard = function() {
         alert('卡片導出失敗，請再試一次。');
     });
 };
+
+// ==========================================
+// 🎯 階段三：重逢（點擊牆上卡片，開啟全螢幕 Modal）
+// ==========================================
+window.clickWallCard = function(category, quote, nickname, isMyNewCard) {
+    // 1. 將卡片內容塞入 Modal 
+    document.getElementById('card-tag-display').innerText = `思念致意錄 / ${category}`;
+    document.getElementById('card-text-display').innerText = quote;
+    document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
+    
+    // 2. 開啟並淡入全螢幕覆蓋層
+    const outputSection = document.getElementById('output-section');
+    outputSection.style.display = 'flex';
+    
+    // 使用 GSAP 製作全螢幕卡片微微放大的細緻登場動畫
+    gsap.fromTo("#printable-card", 
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.6, ease: "power2.out" }
+    );
+};
