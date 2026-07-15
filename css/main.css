@@ -170,13 +170,24 @@ input[type="text"]:focus, textarea:focus {
     background-color: #9C855C;
 }
 
+/* 🎯 階段三與四專用的全螢幕重逢儀式覆蓋層 */
 .output-section {
-    display: none;
+    display: none; /* 預設隱藏，點擊思念牆自己的卡片才開啟 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(26, 26, 26, 0.95); /* 深炭灰遮罩，黑化背景 */
+    z-index: 100; /* 確保蓋在最上層 */
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(8px); /* 輕微模糊背景 */
 }
 
+/* 讓儀式卡片在全螢幕中完美居中 */
 .card-container {
     width: 380px;
     height: 520px;
@@ -187,8 +198,10 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); /* 加強全螢幕下的懸浮陰影 */
     overflow: hidden;
+    transform: scale(0.9); /* 配合 GSAP 進場動畫縮放 */
+    opacity: 0;
 }
 
 .card-container::before {
