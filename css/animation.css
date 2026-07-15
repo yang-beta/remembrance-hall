@@ -95,30 +95,33 @@
 /* ==========================================
    🎯 階段二：連結與延伸 專用動畫 (20260715)
    ========================================== */
-/* 1. 金色呼吸發光邊框 (確保 animation 本身帶有 !important) */
+/* 1. 金色呼吸發光邊框 */
 .wall-card.my-new-card {
     border: 2px solid #c5a880 !important; 
-    position: relative;
-    z-index: 10;
     background: #FFFFFF !important;
-    /* ➔ 啟動動畫 */
-    animation: goldGlowPulse 2.5s infinite ease-in-out !important;
+    
+    /* 🎯 核心修正一：給予絕對強大的定位層級，強制讓它浮在所有卡片的最上層，防止發光被鄰近卡片吃掉 */
+    position: relative !important;
+    z-index: 9999 !important; 
+    
+    /* 🎯 核心修正二：確保動畫在最頂端執行 */
+    animation: goldGlowPulse 2s infinite ease-in-out !important;
 }
 
-/* 🎯 核心修正：拔除 keyframes 內部的所有 !important，改用標準 CSS 動畫語法 */
+/* 🎯 核心修正三：不使用任何 CSS 變數，直接用精確的 rgba/hex 顏色值，防止瀏覽器載入時間差導致動畫失效 */
 @keyframes goldGlowPulse {
     0%, 100% {
-        /* 💡 基礎狀態：深色卡片陰影 + 淡淡的金色光暈 */
+        /* 基礎狀態：卡片原有陰影 + 亮金色微光 */
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 
-                    0 0 12px rgba(197, 168, 128, 0.4);
-        border-color: #B59E74;
+                    0 0 15px rgba(197, 168, 128, 0.4) !important;
+        border-color: #B59E74 !important;
     }
     50% {
-        /* 💡 呼吸頂點：大幅向外擴散、調亮金黃色發光 (加強在暗底上的視覺對比) */
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 
-                    0 0 35px rgba(197, 168, 128, 0.95),
-                    0 0 12px rgba(255, 255, 255, 0.5);
-        border-color: #ffffff; /* 邊框呼吸時微微發白 */
+        /* 呼吸頂點：大幅向外漫延、調亮金黃色發光 */
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 
+                    0 0 45px rgba(197, 168, 128, 0.95), 
+                    0 0 15px rgba(255, 255, 255, 0.6) !important;
+        border-color: #ffffff !important;
     }
 }
 
@@ -147,5 +150,5 @@
 .slider-container .wall-card:hover {
     transform: translateY(-12px) scale(1.03) !important;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
-    border-color: var(--accent-gold) !important;
+    border-color: #B59E74 !important;
 }
