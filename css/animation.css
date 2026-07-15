@@ -93,45 +93,67 @@
 }
 
 /* ==========================================
-   🎯 階段二：連結與延伸 專用動畫 (虛擬元素發光版)
+   🎯 階段二：連結與延伸 專用動畫 (外框+超強背光雙重優化版)
    ========================================== */
-/* 1. 金色發光新卡片主體 (降低 z-index 確保能被 Modal 正常遮罩) */
+
+/* 1. 金色發光新卡片主體 (外框直接加粗並啟用邊框呼吸) */
 .wall-card.my-new-card {
-    border: 2px solid #c5a880 !important; 
+    border: 3px solid #c5a880 !important; /* 邊框加粗到 3px 更加吸睛 */
     position: relative !important;
-    z-index: 5 !important; /* 💡 設為 5，既能浮在普通卡片 (預設 z-index 無) 之上，又絕對低於 Modal 的 100 */
+    z-index: 5 !important; 
     background: #FFFFFF !important;
+    /* 讓邊框本體直接執行 border-color 呼吸動畫 */
+    animation: goldBorderPulse 2.5s infinite ease-in-out !important;
 }
 
-/* 🎯 核心創新：利用 ::after 創建一個位於卡片底部的金光，完全不受 overflow 裁剪影響，且發光效果極其高階 */
+/* 🎯 邊框本體的呼吸動畫 (從冷金過渡到高亮純白金) */
+@keyframes goldBorderPulse {
+    0%, 100% {
+        border-color: #B59E74 !important;
+    }
+    50% {
+        border-color: #FFFFFF !important; /* 呼吸至頂點時，邊框直接亮白，極度明顯 */
+    }
+}
+
+/* 2. 🎯 內裡（背後）發光暈大增強 */
 .wall-card.my-new-card::after {
     content: '';
     position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: radial-gradient(circle, rgba(197, 168, 128, 0.6) 0%, rgba(197, 168, 128, 0) 70%);
-    z-index: -1; /* 確保在卡片本體後方 */
-    border-radius: 4px;
+    /* 大幅向外擴張暈光邊界，從 -5px 擴大到 -15px */
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    
+    /* 🎯 多重漸變：核心是亮白色，向外擴散為溫暖強烈的冷金色 */
+    background: radial-gradient(
+        circle, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(197, 168, 128, 0.7) 40%, 
+        rgba(197, 168, 128, 0) 75%
+    ) !important;
+    
+    z-index: -1; 
+    border-radius: 8px;
     pointer-events: none;
-    /* 啟動透明度呼吸動畫 */
+    /* 內裡暈光透明度與縮放雙重呼吸 */
     animation: goldGlowPulse 2.5s infinite ease-in-out;
 }
 
-/* 🎯 呼吸動畫只控制 opacity，100% 穩定，且絕對不會自打嘴巴使用 !important */
+/* 🎯 內裡暈光的呼吸動畫 (不透明度增強，縮放更具張力) */
 @keyframes goldGlowPulse {
     0%, 100% {
-        opacity: 0.3;
+        opacity: 0.4;
         transform: scale(1);
     }
     50% {
-        opacity: 1;
-        transform: scale(1.08); /* 呼吸時金光微微向外擴散 */
+        opacity: 1; /* 頂點完全不透明，釋放最強光芒 */
+        transform: scale(1.12); /* 暈光向外膨脹得更大 */
     }
 }
 
-/* 2. 新卡片誕生時的飛入登場 */
+/* 3. 新卡片誕生時的飛入登場 */
 .wall-card.card-fly-in {
     animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
@@ -147,7 +169,7 @@
     }
 }
 
-/* 3. 歷史思念牆卡片 Hover 的「浮動離地感」 */
+/* 4. 歷史思念牆卡片 Hover 的「浮動離地感」 */
 .slider-container .wall-card {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     cursor: pointer !important;
