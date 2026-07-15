@@ -95,27 +95,39 @@
 /* ==========================================
    🎯 階段二：連結與延伸 專用動畫 (20260715)
    ========================================== */
-/* 1. 金色呼吸發光邊框 (只有類別選擇器上可以、也需要放 !important 來搶權重) */
+/* 1. 金色發光新卡片主體 (降低 z-index 確保能被 Modal 正常遮罩) */
 .wall-card.my-new-card {
     border: 2px solid #c5a880 !important; 
     position: relative !important;
-    z-index: 99 !important; 
+    z-index: 5 !important; /* 💡 設為 5，既能浮在普通卡片 (預設 z-index 無) 之上，又絕對低於 Modal 的 100 */
     background: #FFFFFF !important;
-    animation: goldGlowPulse 2.5s infinite ease-in-out !important;
 }
 
-/* 🎯 關鍵修正：keyframes 內部已經 100% 乾淨，絕對沒有半個 !important */
+/* 🎯 核心創新：利用 ::after 創建一個位於卡片底部的金光，完全不受 overflow 裁剪影響，且發光效果極其高階 */
+.wall-card.my-new-card::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.6) 0%, rgba(197, 168, 128, 0) 70%);
+    z-index: -1; /* 確保在卡片本體後方 */
+    border-radius: 4px;
+    pointer-events: none;
+    /* 啟動透明度呼吸動畫 */
+    animation: goldGlowPulse 2.5s infinite ease-in-out;
+}
+
+/* 🎯 呼吸動畫只控制 opacity，100% 穩定，且絕對不會自打嘴巴使用 !important */
 @keyframes goldGlowPulse {
     0%, 100% {
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 
-                    0 0 15px rgba(197, 168, 128, 0.4);
-        border-color: #B59E74;
+        opacity: 0.3;
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 
-                    0 0 45px rgba(197, 168, 128, 0.95), 
-                    0 0 15px rgba(255, 255, 255, 0.6);
-        border-color: #ffffff;
+        opacity: 1;
+        transform: scale(1.08); /* 呼吸時金光微微向外擴散 */
     }
 }
 
