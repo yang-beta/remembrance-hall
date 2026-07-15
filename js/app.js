@@ -67,12 +67,17 @@ window.generateRemembrance = async function() {
         document.querySelector('.wall-section').scrollIntoView({ behavior: 'smooth' });
 
         // 🎯 2. 稍微延遲 300ms（在滾動途中），才進行資料庫寫入與留言牆重新渲染[cite: 18]
-        // 這樣能保證使用者看著牆面時，卡片才剛好加載並播放「1.2秒的延遲飛入動畫」！
         setTimeout(async () => {
             if (supabaseClient) {
                 await saveToSupabase(targetChinese, finalQuote, nickname);
             }
         }, 300);
+
+        // 🎯 新增：延遲 3.5 秒後才將比對變數清空。
+        // 這樣能保證在滾動、資料寫入刷新期間，卡片都一直保有 .my-new-card 的呼吸光暈狀態！
+        setTimeout(() => {
+            myLatestMessageText = "";
+        }, 3500);
 
         // 清空輸入表單，像沙子被拿走一樣[cite: 18]
         document.getElementById('nickname').value = "";
@@ -207,7 +212,6 @@ async function fetchWallMessages() {
 
         // 🎯 配對渲染完畢後，重置標記，防止下次刷新資料庫時卡片又重複播一次登場動畫
         if (myLatestMessageText) {
-            myLatestMessageText = ""; // 歸零
             const container = document.getElementById('slider-container');
             if (container) {
                 container.scrollLeft = 0; // 強制拉回最左邊
