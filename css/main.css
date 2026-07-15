@@ -431,3 +431,26 @@ input[type="text"]:focus, textarea:focus {
     color: var(--text-muted);
     text-align: right;
 }
+
+/* 🎯 全螢幕重逢 Modal 的右上角極簡關閉按鈕 */
+.close-modal-btn {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    background: none;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    color: #c5a880;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-family: var(--font-sans);
+    letter-spacing: 1px;
+    cursor: pointer;
+    z-index: 110;
+    transition: all 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    background-color: #c5a880;
+    color: #1a1a1a;
+    border-color: #c5a880;
+}
