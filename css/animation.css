@@ -91,3 +91,52 @@
     color: #1a1a1a;
     border-color: #c5a880;
 }
+
+/* ==========================================
+   🎯 階段二：連結與延伸 專用動畫 (20260715)
+   ========================================== */
+
+/* 新卡片剛飛入時的「高亮金邊呼吸」效果 */
+.my-new-card {
+    animation: goldGlowPulse 3s infinite ease-in-out;
+    border-color: var(--accent-gold) !important;
+}
+
+@keyframes goldGlowPulse {
+    0%, 100% {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 
+                    0 0 15px rgba(181, 158, 116, 0.2);
+    }
+    50% {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 
+                    0 0 30px rgba(181, 158, 116, 0.7);
+        border-color: #FFFFFF !important;
+    }
+}
+
+/* 讓飛入的卡片有一個縮放登場的 CSS 動態 */
+.card-fly-in {
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardScaleUp {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 歷史思念牆上的卡片 Hover 特效：微微浮起，暗示可點擊 */
+.wall-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer;
+}
+
+.wall-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 
+                0 0 15px rgba(181, 158, 116, 0.3) !important;
+}
