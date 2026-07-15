@@ -183,7 +183,18 @@ async function fetchWallMessages() {
                     <div class="wall-card-footer">— 致 ${nickname}</div>
                 </div>
             `;
-        });
+        }); // <--- forEach 結束點
+
+        // ====================================================================
+        // 🎯 當卡片都用 forEach 畫完後，如果檢測到使用者剛生成新卡片，立刻強制把滾動軸拉回最左邊
+        // ====================================================================
+        if (myLatestMessageText) {
+            const container = document.getElementById('slider-container');
+            if (container) {
+                container.scrollLeft = 0;
+            }
+        }
+        // ====================================================================
         
     } catch (err) {
         console.error('讀取留言牆失敗:', err);
