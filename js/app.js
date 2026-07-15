@@ -267,3 +267,22 @@ window.clickWallCard = function(category, quote, nickname, isMyNewCard) {
         { scale: 1, opacity: 1, duration: 0.6, ease: "power2.out" }
     );
 };
+
+// ==========================================
+// 🎯 階段三：重逢 - 關閉全螢幕 Modal
+// ==========================================
+window.closeReunionModal = function() {
+    const outputSection = document.getElementById('output-section');
+    
+    // 使用 GSAP 進行優雅的淡出與縮小動畫
+    gsap.to("#printable-card", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.in",
+        onComplete: () => {
+            // 卡片動畫播完後，再將整個覆蓋層隱藏，帶使用者回到思念牆
+            outputSection.style.display = 'none';
+        }
+    });
+};
