@@ -95,42 +95,38 @@
 /* ==========================================
    🎯 階段二：連結與延伸 專用動畫 (20260715)
    ========================================== */
-/* 1. 讓新卡片帶有非常明顯的金色呼吸發光邊框 */
+/* 1. 金色呼吸發光邊框 (移除造成隱形延遲的 css 寫法) */
 .wall-card.my-new-card {
     border: 2px solid #c5a880 !important; 
     position: relative;
     z-index: 10;
-    /* 強制將原本的 background 蓋掉，讓它帶有更高級的微發光底色 */
     background: #FFFFFF !important;
-    animation: goldGlowPulse 2.5s infinite ease-in-out !important;
+    animation: goldGlowPulse 2s infinite ease-in-out !important;
 }
 
 @keyframes goldGlowPulse {
     0%, 100% {
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 
-                    0 0 10px rgba(197, 168, 128, 0.3) !important;
+                    0 0 12px rgba(197, 168, 128, 0.3) !important;
         border-color: #B59E74 !important;
     }
     50% {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 
-                    0 0 35px rgba(197, 168, 128, 0.95),
-                    0 0 10px rgba(255, 255, 255, 0.5) !important;
-        border-color: #ffffff !important; /* 呼吸至頂點時邊框變為亮白色 */
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 
+                    0 0 25px rgba(197, 168, 128, 0.85),
+                    0 0 10px rgba(255, 255, 255, 0.4) !important;
+        border-color: #ffffff !important;
     }
 }
 
-/* 2. 新卡片誕生時的動畫（延遲登場，防止在螢幕外播完） */
+/* 2. 新卡片誕生時的飛入登場 (💡 移除造成隱形的 0.8s 延遲，改為直接淡入) */
 .wall-card.card-fly-in {
-    opacity: 0 !important;
-    transform: scale(0.6) translateY(40px) !important;
-    /* 🎯 關鍵：加入 0.8s 的 delay（動畫延遲開始），確保頁面滾動到思念牆後，動畫才剛好開始播放！ */
-    animation: cardScaleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards !important;
+    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 @keyframes cardScaleUp {
     from {
         opacity: 0;
-        transform: scale(0.6) translateY(40px);
+        transform: scale(0.7) translateY(30px);
     }
     to {
         opacity: 1;
@@ -139,16 +135,14 @@
 }
 
 /* 3. 歷史思念牆卡片 Hover 的「浮動離地感」 */
+/* 💡 將 transition 基礎樣式與 hover 強制在同個檔案裡綁定，防止被覆蓋 */
 .slider-container .wall-card {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                border-color 0.4s ease !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     cursor: pointer !important;
 }
 
 .slider-container .wall-card:hover {
     transform: translateY(-12px) scale(1.03) !important;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55), 
-                0 0 15px rgba(181, 158, 116, 0.25) !important;
-    border-color: #B59E74 !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+    border-color: var(--accent-gold) !important;
 }
