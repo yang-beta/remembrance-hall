@@ -97,22 +97,26 @@
    ========================================== */
 /* 1. 讓新卡片帶有非常明顯的金色呼吸發光邊框 */
 .my-new-card {
-    animation: goldGlowPulse 2.5s infinite ease-in-out !important;
-    border: 2px solid var(--accent-gold) !important;
+    /* 🎯 縮短時間至 2 秒，並將邊框強制設為洸限冷金 */
+    animation: goldGlowPulse 2s infinite ease-in-out !important;
+    border: 2px solid #c5a880 !important; 
     position: relative;
     z-index: 10;
 }
 
 @keyframes goldGlowPulse {
     0%, 100% {
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 
-                    0 0 10px rgba(181, 158, 116, 0.3);
-        border-color: var(--accent-gold);
+        /* 💡 基礎狀態：深色卡片投影 + 淡淡的金色光暈 */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 
+                    0 0 15px rgba(197, 168, 128, 0.4) !important;
+        border-color: #B59E74 !important;
     }
     50% {
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 
-                    0 0 25px rgba(181, 158, 116, 0.8);
-        border-color: #ffffff; 
+        /* 💡 呼吸頂點：大幅向外擴散、調亮金色發光 (1.0 飽和度) */
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 
+                    0 0 35px rgba(197, 168, 128, 0.95),
+                    0 0 10px rgba(255, 255, 255, 0.5) !important;
+        border-color: #ffffff !important; /* 邊框變亮 */
     }
 }
 
