@@ -58,7 +58,7 @@ window.generateRemembrance = async function() {
 
         // 🎯 核心改變點：此處不再直接開啟 output-section！
         // 而是儲存這筆內容特徵，供思念牆識別
-        myLatestMessageText = `[${targetChinese}] ${finalQuote} (${nickname})`;
+        myLatestMessageText = finalQuote; // 🎯 儲存這筆內容，以便滾動時進行高亮配對
         
         // 重置狀態鎖，新卡片被建立，允許再次放手
         hasExperiencedRelease = false;
