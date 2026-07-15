@@ -137,7 +137,7 @@ async function saveToSupabase(category, quote, nickname) {
     }
 }
 
-// 資料庫抓取最新 12 筆卡片（優化：加入飛入動態與點擊綁定）
+// 資料庫抓取最新 12 筆卡片（加入飛入動態與點擊綁定）
 async function fetchWallMessages() {
     if (!supabaseClient) return;
     try {
@@ -171,10 +171,12 @@ async function fetchWallMessages() {
             const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
 
             // 🎯 穩定判斷：如果目前抓到的是最新的一筆 (index === 0) 且使用者剛生成過卡片
-            const isMyNewCard = (index === 0 && myLatestMessageText !== "" && item.text.includes(myLatestMessageText.substring(0, 15)));
+            const isMyNewCard = (index === 0 && myLatestMessageText !== "" && item.text.includes(myLatestMessageText.substring(0, 10)));
+            
+            // 💡 解決關鍵：飛入動畫只在使用者剛生成的第一瞬間執行 (card-fly-in)；呼吸效果則一直存在 (my-new-card)
             const extraClasses = isMyNewCard ? 'my-new-card card-fly-in' : '';
 
-            // 💡 解決關鍵：我們不直接在 onclick 塞入 quote！而是用 base64 編碼，徹底避開引號衝突！
+            // 使用 base64 編碼，徹底避開引號衝突
             const safeQuoteBase64 = btoa(unescape(encodeURIComponent(quote)));
 
             wallGrid.innerHTML += `
@@ -197,20 +199,18 @@ async function fetchWallMessages() {
         document.querySelectorAll('.wall-card').forEach(card => {
             card.addEventListener('click', function() {
                 const category = this.getAttribute('data-category');
-                // 將 Base64 轉回正常中文字串
                 const safeQuote = decodeURIComponent(escape(atob(this.getAttribute('data-quote'))));
                 const nickname = this.getAttribute('data-nickname');
-                
-                // 呼叫彈出視窗
                 window.clickWallCard(category, safeQuote, nickname);
             });
         });
 
-        // 🎯 自動滾動到最左邊
+        // 🎯 配對渲染完畢後，重置標記，防止下次刷新資料庫時卡片又重複播一次登場動畫
         if (myLatestMessageText) {
+            myLatestMessageText = ""; // 歸零
             const container = document.getElementById('slider-container');
             if (container) {
-                container.scrollLeft = 0;
+                container.scrollLeft = 0; // 強制拉回最左邊
             }
         }
         
