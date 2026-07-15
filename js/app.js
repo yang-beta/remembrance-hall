@@ -135,7 +135,7 @@ async function saveToSupabase(category, quote, nickname) {
     }
 }
 
-// 資料庫抓取最新 12 筆卡片
+// 資料庫抓取最新 12 筆卡片（優化：加入飛入動態與點擊綁定）
 async function fetchWallMessages() {
     if (!supabaseClient) return;
     try {
@@ -160,12 +160,21 @@ async function fetchWallMessages() {
             let quote = item.text;
             let nickname = '思念者';
 
-            if (match) { category = match[1]; quote = match[2]; nickname = match[3]; }
+            if (match) { 
+                category = match[1]; 
+                quote = match[2]; 
+                nickname = match[3]; 
+            }
 
             const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
 
+            // 🎯 核心判斷：這張卡片是不是使用者剛剛自己寫的？
+            const isMyNewCard = (item.text === myLatestMessageText);
+            const extraClasses = isMyNewCard ? 'my-new-card card-fly-in' : '';
+
+            // 將卡片渲染出來，並綁定 clickWallCard 點擊事件，傳入內容以供階段三 Modal 顯示
             wallGrid.innerHTML += `
-                <div class="wall-card">
+                <div class="wall-card ${extraClasses}" onclick="clickWallCard('${category}', '${quote.replace(/'/g, "\\'")}', '${nickname.replace(/'/g, "\\'")}', ${isMyNewCard})">
                     <div class="wall-card-header">
                         <span>思念致意錄 / ${category}</span>
                         <span style="color: var(--text-muted);">${dateStr}</span>
@@ -175,6 +184,7 @@ async function fetchWallMessages() {
                 </div>
             `;
         });
+        
     } catch (err) {
         console.error('讀取留言牆失敗:', err);
     }
