@@ -95,7 +95,9 @@ function render() {
 
 render();
 
-// GSAP 時序控制 (進場動畫)
+// ==========================================
+// GSAP 時序控制 (進場動畫 - 支援快轉與略過)
+// ==========================================
 const tl = gsap.timeline();
 
 tl.to(animationParams, { coreGlow: 0.5, duration: 2, ease: "power1.inOut" });
@@ -103,13 +105,24 @@ tl.to(animationParams, { particleConvergence: 1, coreGlow: 0.8, duration: 1.5, e
 tl.to(".brand-title", { opacity: 1, letterSpacing: "1.2rem", duration: 1.5, ease: "power1.out" }, "-=0.2");
 tl.to(animationParams, { mandalaProgress: 1, duration: 2, ease: "power2.out" }, "-=0.5");
 tl.to(".main-question", { opacity: 1, y: -10, duration: 1.5, ease: "power1.out" }, "-=0.5");
-// ❌ 刪除強制等待的設定：
-// tl.to(".scroll-hint", { opacity: 1, duration: 1, onComplete: () => { document.body.style.overflow = "auto"; } });
+tl.to(".scroll-hint", { opacity: 1, duration: 1 });
 
-// 🎯 改為更平滑的純淡入顯示即可：
-tl.to(".scroll-hint", {
-    opacity: 1,
-    duration: 1
+// 永續狀態：曼陀羅保持極緩慢地旋轉
+const rotationTween = gsap.to(animationParams, { 
+    mandalaRotation: Math.PI * 2, 
+    duration: 120, 
+    repeat: -1, 
+    ease: "none" 
 });
 
-gsap.to(animationParams, { mandalaRotation: Math.PI * 2, duration: 120, repeat: -1, ease: "none" });
+// 🎯 核心新增：定義略過動畫的全域函式
+window.scrollToContent = function() {
+    // 1. 瞬間將 GSAP 主時間軸快轉到 100%（完成狀態）
+    tl.progress(1);
+    
+    // 2. 平滑滾動到下方的情緒留言板區塊
+    document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
+    
+    // 3. 滾動完成後，順手將「Skip 略過按鈕」淡出隱藏，維持畫面乾淨
+    gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
+};
