@@ -154,7 +154,7 @@ async function fetchWallMessages() {
         }
 
         wallGrid.innerHTML = '';
-        list.forEach(item => {
+        list.forEach((item, index) => {
             const match = item.text.match(/^\[(.*?)\] (.*?) \((.*?)\)$/);
             let category = '留白處';
             let quote = item.text;
@@ -168,13 +168,19 @@ async function fetchWallMessages() {
 
             const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
 
-            // 🎯 核心判斷：這張卡片是不是使用者剛剛自己寫的？
-            const isMyNewCard = (item.text === myLatestMessageText);
+            // 🎯 穩定判斷：如果目前抓到的是最新的一筆 (index === 0) 且使用者剛生成過卡片
+            const isMyNewCard = (index === 0 && myLatestMessageText !== "" && item.text.includes(myLatestMessageText.substring(0, 15)));
             const extraClasses = isMyNewCard ? 'my-new-card card-fly-in' : '';
 
-            // 將卡片渲染出來，並綁定 clickWallCard 點擊事件，傳入內容以供階段三 Modal 顯示
+            // 💡 解決關鍵：我們不直接在 onclick 塞入 quote！而是用 base64 編碼，徹底避開引號衝突！
+            const safeQuoteBase64 = btoa(unescape(encodeURIComponent(quote)));
+
             wallGrid.innerHTML += `
-                <div class="wall-card ${extraClasses}" onclick="clickWallCard('${category}', '${quote.replace(/'/g, "\\'")}', '${nickname.replace(/'/g, "\\'")}', ${isMyNewCard})">
+                <div class="wall-card ${extraClasses}" 
+                     data-category="${category}" 
+                     data-quote="${safeQuoteBase64}" 
+                     data-nickname="${nickname}" 
+                     style="cursor: pointer;">
                     <div class="wall-card-header">
                         <span>思念致意錄 / ${category}</span>
                         <span style="color: var(--text-muted);">${dateStr}</span>
@@ -183,76 +189,39 @@ async function fetchWallMessages() {
                     <div class="wall-card-footer">— 致 ${nickname}</div>
                 </div>
             `;
-        }); // <--- forEach 結束點
+        }); 
 
-        // ====================================================================
-        // 🎯 當卡片都用 forEach 畫完後，如果檢測到使用者剛生成新卡片，立刻強制把滾動軸拉回最左邊
-        // ====================================================================
+        // 🎯 綁定安全點擊事件
+        document.querySelectorAll('.wall-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                // 將 Base64 轉回正常中文字串
+                const safeQuote = decodeURIComponent(escape(atob(this.getAttribute('data-quote'))));
+                const nickname = this.getAttribute('data-nickname');
+                
+                // 呼叫彈出視窗
+                window.clickWallCard(category, safeQuote, nickname);
+            });
+        });
+
+        // 🎯 自動滾動到最左邊
         if (myLatestMessageText) {
             const container = document.getElementById('slider-container');
             if (container) {
                 container.scrollLeft = 0;
             }
         }
-        // ====================================================================
         
     } catch (err) {
         console.error('讀取留言牆失敗:', err);
     }
 }
 
-// 橫向箭頭滑動
-window.slideWall = function(direction) {
-    const container = document.getElementById('slider-container');
-    const scrollAmount = 304; 
-    if (direction === 'left') {
-        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-};
-
-// 滑鼠拖曳滑動
-function initDragScroll() {
-    const slider = document.getElementById('slider-container');
-    let isDown = false; let startX; let scrollLeft;
-    slider.addEventListener('mousedown', (e) => {
-        isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
-    });
-    slider.addEventListener('mouseleave', () => { isDown = false; });
-    slider.addEventListener('mouseup', () => { isDown = false; });
-    slider.addEventListener('mousemove', (e) => {
-        if(!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 1.5; 
-        slider.scrollLeft = scrollLeft - walk;
-    });
-}
-
-// 卡片導出下載
-window.downloadCard = function() {
-    const cardNode = document.getElementById('printable-card');
-    html2canvas(cardNode, {
-        scale: 3, 
-        backgroundColor: null,
-        useCORS: true
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `思念致意卡-${document.getElementById('nickname').value}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }).catch(err => {
-        console.error('卡片生成失敗:', err);
-        alert('卡片導出失敗，請再試一次。');
-    });
-};
-
 // ==========================================
-// 🎯 階段三：重逢（點擊牆上卡片，開啟全螢幕 Modal）
+// 🎯 階段三：重逢 - 開啟全螢幕 Modal (完美防錯版)
 // ==========================================
-window.clickWallCard = function(category, quote, nickname, isMyNewCard) {
-    // 1. 將卡片內容塞入 Modal 
+window.clickWallCard = function(category, quote, nickname) {
+    // 1. 將解析後的乾淨內容塞入 Modal
     document.getElementById('card-tag-display').innerText = `思念致意錄 / ${category}`;
     document.getElementById('card-text-display').innerText = quote;
     document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
@@ -261,7 +230,7 @@ window.clickWallCard = function(category, quote, nickname, isMyNewCard) {
     const outputSection = document.getElementById('output-section');
     outputSection.style.display = 'flex';
     
-    // 使用 GSAP 製作全螢幕卡片微微放大的細緻登場動畫
+    // 使用 GSAP 製作全螢幕卡片微微放大的登場動畫
     gsap.fromTo("#printable-card", 
         { scale: 0.8, opacity: 0 },
         { scale: 1, opacity: 1, duration: 0.6, ease: "power2.out" }
@@ -274,14 +243,12 @@ window.clickWallCard = function(category, quote, nickname, isMyNewCard) {
 window.closeReunionModal = function() {
     const outputSection = document.getElementById('output-section');
     
-    // 使用 GSAP 進行優雅的淡出與縮小動畫
     gsap.to("#printable-card", {
         scale: 0.8,
         opacity: 0,
         duration: 0.4,
         ease: "power2.in",
         onComplete: () => {
-            // 卡片動畫播完後，再將整個覆蓋層隱藏，帶使用者回到思念牆
             outputSection.style.display = 'none';
         }
     });
