@@ -95,30 +95,34 @@
 /* ==========================================
    🎯 階段二：連結與延伸 專用動畫 (20260715)
    ========================================== */
-/* 1. 金色呼吸發光邊框 (移除造成隱形延遲的 css 寫法) */
+/* 1. 金色呼吸發光邊框 (確保 animation 本身帶有 !important) */
 .wall-card.my-new-card {
     border: 2px solid #c5a880 !important; 
     position: relative;
     z-index: 10;
     background: #FFFFFF !important;
-    animation: goldGlowPulse 2s infinite ease-in-out !important;
+    /* ➔ 啟動動畫 */
+    animation: goldGlowPulse 2.5s infinite ease-in-out !important;
 }
 
+/* 🎯 核心修正：拔除 keyframes 內部的所有 !important，改用標準 CSS 動畫語法 */
 @keyframes goldGlowPulse {
     0%, 100% {
+        /* 💡 基礎狀態：深色卡片陰影 + 淡淡的金色光暈 */
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 
-                    0 0 12px rgba(197, 168, 128, 0.3) !important;
-        border-color: #B59E74 !important;
+                    0 0 12px rgba(197, 168, 128, 0.4);
+        border-color: #B59E74;
     }
     50% {
+        /* 💡 呼吸頂點：大幅向外擴散、調亮金黃色發光 (加強在暗底上的視覺對比) */
         box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 
-                    0 0 25px rgba(197, 168, 128, 0.85),
-                    0 0 10px rgba(255, 255, 255, 0.4) !important;
-        border-color: #ffffff !important;
+                    0 0 35px rgba(197, 168, 128, 0.95),
+                    0 0 12px rgba(255, 255, 255, 0.5);
+        border-color: #ffffff; /* 邊框呼吸時微微發白 */
     }
 }
 
-/* 2. 新卡片誕生時的飛入登場 (💡 移除造成隱形的 0.8s 延遲，改為直接淡入) */
+/* 2. 新卡片誕生時的飛入登場 */
 .wall-card.card-fly-in {
     animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
@@ -135,7 +139,6 @@
 }
 
 /* 3. 歷史思念牆卡片 Hover 的「浮動離地感」 */
-/* 💡 將 transition 基礎樣式與 hover 強制在同個檔案裡綁定，防止被覆蓋 */
 .slider-container .wall-card {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     cursor: pointer !important;
