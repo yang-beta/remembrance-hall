@@ -707,6 +707,8 @@ input[type="text"]:focus, textarea:focus {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* 🎯 將整個文字內容往上拉高 60px */
+    transform: translateY(-60px);
 }
 
 .outro-text {
