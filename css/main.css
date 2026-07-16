@@ -562,3 +562,74 @@ input[type="text"]:focus, textarea:focus {
     position: relative;
     z-index: 2;
 }
+
+/* ==========================================
+   🎯 「留白處」標題置中與懸浮箭頭
+   ========================================== */
+
+/* 1. 標題層級寬度 100% 並內容置中 */
+.wall-header-wrapper {
+    display: flex;
+    justify-content: center; /* 💡 確保文字絕對置中 */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0 40px;
+}
+
+.wall-header-wrapper h2 {
+    font-size: 20px;
+    color: var(--text-main);
+    letter-spacing: 0.15em;
+    text-align: center;
+}
+
+/* 2. 外層留言牆容器設為相對定位，以供邊緣箭頭定位參考 */
+.wall-section {
+    position: relative;
+    width: 100%;
+}
+
+/* 3. 懸浮邊緣箭頭基礎設計 */
+.edge-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 80px;
+    background: rgba(26, 26, 26, 0.4); /* 暗灰色半透明，融入深色背景 */
+    border: 1px solid rgba(197, 168, 128, 0.2);
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10; /* 高於卡片，確保可被點選 */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* 💡 預設隱藏 */
+    pointer-events: none; /* 隱藏時防止擋住底下卡片的 Hover */
+}
+
+/* 定位至左右極致邊緣 */
+.edge-arrow-btn.left {
+    left: 10px;
+    border-radius: 0 4px 4px 0;
+}
+.edge-arrow-btn.right {
+    right: 10px;
+    border-radius: 4px 0 0 4px;
+}
+
+/* 4. 🎯 當滑鼠靠近 .wall-section 區塊時，顯現邊緣箭頭 */
+.wall-section:hover .edge-arrow-btn {
+    opacity: 1;
+    pointer-events: auto; /* 恢復可點擊狀態 */
+}
+
+/* 懸停於按鈕本身時調亮 */
+.edge-arrow-btn:hover {
+    background: rgba(197, 168, 128, 0.2);
+    color: #ffffff;
+    border-color: #c5a880;
+}
