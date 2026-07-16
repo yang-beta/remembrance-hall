@@ -421,7 +421,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)[cite: 10]
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -431,36 +431,40 @@ window.releaseCardAndFly = function() {
         duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
-            // 隱藏 Modal[cite: 10]
-            outputSection.style.display = 'none'; //[cite: 10]
+            // 隱藏 Modal[cite: 15]
+            outputSection.style.display = 'none'; //[cite: 15]
             
-            // 重置卡片樣式以利下次正常開啟[cite: 10]
-            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 }); //[cite: 10]
+            // 重置卡片樣式以利下次正常開啟[cite: 15]
+            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 }); //[cite: 15]
             
-            // 鎖死放手按鈕[cite: 10]
-            releaseBtn.disabled = true; //[cite: 10]
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 10]
+            // 鎖死放手按鈕[cite: 15]
+            releaseBtn.disabled = true; //[cite: 15]
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 15]
 
             // ==========================================
-            // 🎯 【優化：展開 100% 滿版獨立完結頁 & 平滑對齊】
+            // 🎯 【落幕：完美垂直正下方滑動、保留光點粒子背景、100% 置中打字機】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
             
             if (outroSection) {
-                // 1. 將完結頁 Footer 展開為全螢幕 100vh 寬高
+                // 1. 開啟全螢幕 fixed 結尾背景
                 outroSection.classList.add('active');
                 
-                // 2. 稍微延遲 300 毫秒，等展開動畫啟動後，平滑捲動到畫面的最底端（完結頁位置）
+                // 2. 核心修正：只控制 Y 軸到最底部，而 X 軸強制歸零。徹底解決「向右下滑動」的奇怪偏斜
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+                
+                // 3. 延遲 500 毫秒，待鏡頭平滑對準底部後，啟動打字機效果
                 setTimeout(() => {
-                    outroSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                    
-                    // 3. 啟動打字機效果一字一字吐出
                     startTypewriterEffect();
-                }, 300);
+                }, 500);
             }
         }
     });
-}; // 🎯 確保 app.js 語法完美閉合！
+}; // 🎯 確保 app.js 語法閉合！
 
 // ==========================================
 // 🎯 溫柔的打字機效果函式 (一字一字緩慢打入)
@@ -474,6 +478,7 @@ function startTypewriterEffect() {
     
     if (!textEl || !subEl) return;
     
+    // 確保啟動時內容 100% 是清空的
     textEl.innerHTML = "";
     subEl.innerHTML = "";
     
