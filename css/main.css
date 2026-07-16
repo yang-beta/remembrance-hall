@@ -654,56 +654,79 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🎯 階段四：落幕結尾文字
+   🎯 階段四：落幕結尾文字 ── 100% 滿版獨立完結頁
    ========================================== */
+
+/* 1. 還原主內容：確保留言牆不被隱藏，保持可自由滾動瀏覽 */
+.wrapper {
+    transition: opacity 1.5s ease-in-out;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* 2. 🎯 將結尾區塊強行拉大至 100% 視窗寬高（整頁寬度） */
 .exhibition-outro-section {
-    width: 100%;
-    height: 0; /* 預設完全收合，不佔空間 */
-    background: linear-gradient(to bottom, #1a1a1a 0%, #121212 100%);
+    width: 100vw; /* 💡 強制寬度為 100% 視窗寬 */
+    height: 0;    /* 預設完全收合，不佔空間 */
+    background: #121212; /* 沉穩優雅的極簡黑 */
+    
+    /* 💡 核心突破：利用絕對居中與視窗邊界對齊，強行突破外層容器的寬度束縛 */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: height 1.5s cubic-bezier(0.16, 1, 0.3, 1); /* 平滑展開 */
+    
+    /* 平滑拉高展開，讓文字與品牌緩慢顯現 */
+    transition: height 2s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s ease;
     opacity: 0;
+    z-index: 99;
 }
 
+/* 當落幕啟動時，展開為完整 100% 視窗高度 (一個整頁寬高的神聖空間) */
+.exhibition-outro-section.active {
+    height: 100vh; 
+    opacity: 1;
+    margin-top: 80px; /* 與上方留言牆拉出美學距離 */
+}
+
+/* 3. 調整文字排版，配合打字機效果 */
 .outro-content {
     text-align: center;
     padding: 0 20px;
+    width: 100%;
+    max-width: 800px;
 }
 
 .outro-text {
-    font-family: var(--font-serif);
-    font-size: 22px;
+    font-family: var(--font-serif); /*[cite: 3] */
+    font-size: 24px;
     color: #ffffff;
-    letter-spacing: 0.15em;
-    line-height: 2;
-    margin-bottom: 24px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 1.8s ease 1s; /* 慢 1 秒等展開後才優雅浮現 */
+    letter-spacing: 0.18em;
+    line-height: 2.2;
+    margin-bottom: 35px;
+    min-height: 110px; /* 給予兩行打字足夠的預留高度，防止內容跳動 */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 .outro-brand {
-    font-family: var(--font-sans);
+    font-family: var(--font-sans); /*[cite: 3] */
     font-size: 13px;
-    color: var(--text-muted);
+    color: var(--text-muted); /*[cite: 3] */
     letter-spacing: 0.3em;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(15px);
-    transition: all 1.8s ease 1.8s; /* 更慢一點浮現 */
+    min-height: 20px;
 }
 
-/* 啟動狀態下的樣式 */
-.exhibition-outro-section.active {
-    height: 40vh; /* 展現 40% 視窗高度的留白落幕空間 */
-    opacity: 1;
+/* 4. Canvas 滾動後依舊優雅淡出，回歸純黑背景 */
+#mandalaCanvas {
+    transition: opacity 1.2s ease-in-out;
 }
-
-.exhibition-outro-section.active .outro-text,
-.exhibition-outro-section.active .outro-brand {
-    opacity: 1;
-    transform: translateY(0);
+.canvas-fade-out {
+    opacity: 0 !important;
 }
