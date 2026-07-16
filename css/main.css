@@ -654,79 +654,71 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🎯 階段四：落幕結尾文字 ── 100% 滿版獨立完結頁
+   🎯 階段四：落幕結尾文字 ── 全螢幕 fixed 絕對垂直置中美學
    ========================================== */
 
-/* 1. 還原主內容：確保留言牆不被隱藏，保持可自由滾動瀏覽 */
-.wrapper {
-    transition: opacity 1.5s ease-in-out;
-    opacity: 1 !important;
-    height: auto !important;
-    overflow: visible !important;
+/* 1. 確保 Canvas 背景永遠存在、100% 顯現 */
+#mandalaCanvas {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 0 !important; /* 背景最底層 */
+    pointer-events: none;
+    opacity: 1 !important; /* 💡 100% 保留背後光點與軌跡 */
 }
 
-/* 2. 🎯 將結尾區塊強行拉大至 100% 視窗寬高（整頁寬度） */
+/* 2. 結尾區塊：當啟動時直接提升為 fixed 全螢幕固定 */
 .exhibition-outro-section {
-    width: 100vw; /* 💡 強制寬度為 100% 視窗寬 */
-    height: 0;    /* 預設完全收合，不佔空間 */
-    background: #121212; /* 沉穩優雅的極簡黑 */
-    
-    /* 💡 核心突破：利用絕對居中與視窗邊界對齊，強行突破外層容器的寬度束縛 */
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    
+    position: fixed; /* 💡 設為 fixed 鎖定全螢幕，徹底解決上方留言板擠壓問題 */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(18, 18, 18, 0.95); /* 半透明極簡黑，可隱約透出後方的金色光點與粒子 */
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    
-    /* 平滑拉高展開，讓文字與品牌緩慢顯現 */
-    transition: height 2s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s ease;
+    z-index: 999; /* 💡 確保完全浮在所有內容與留言板的最前方 */
     opacity: 0;
-    z-index: 99;
+    pointer-events: none;
+    transition: opacity 2s ease; /* 優雅地整體淡入 */
 }
 
-/* 當落幕啟動時，展開為完整 100% 視窗高度 (一個整頁寬高的神聖空間) */
+/* 啟動狀態 */
 .exhibition-outro-section.active {
-    height: 100vh; 
     opacity: 1;
-    margin-top: 80px; /* 與上方留言牆拉出美學距離 */
+    pointer-events: auto; /* 允許滑動與互動 */
 }
 
-/* 3. 調整文字排版，配合打字機效果 */
+/* 3. 結尾文字排版與絕對垂直置中補正 */
 .outro-content {
     text-align: center;
-    padding: 0 20px;
+    padding: 0 40px;
     width: 100%;
     max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .outro-text {
-    font-family: var(--font-serif); /*[cite: 3] */
+    font-family: var(--font-serif); /*[cite: 14] */
     font-size: 24px;
     color: #ffffff;
     letter-spacing: 0.18em;
     line-height: 2.2;
     margin-bottom: 35px;
     min-height: 110px; /* 給予兩行打字足夠的預留高度，防止內容跳動 */
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
 }
 
 .outro-brand {
-    font-family: var(--font-sans); /*[cite: 3] */
+    font-family: var(--font-sans); /*[cite: 14] */
     font-size: 13px;
-    color: var(--text-muted); /*[cite: 3] */
+    color: var(--text-muted); /*[cite: 14] */
     letter-spacing: 0.3em;
     min-height: 20px;
-}
-
-/* 4. Canvas 滾動後依舊優雅淡出，回歸純黑背景 */
-#mandalaCanvas {
-    transition: opacity 1.2s ease-in-out;
-}
-.canvas-fade-out {
-    opacity: 0 !important;
 }
