@@ -421,7 +421,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)[cite: 20]
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -431,7 +431,7 @@ window.releaseCardAndFly = function() {
         duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
-            // 隱藏 Modal[cite: 20]
+            // 隱藏 Modal
             outputSection.style.display = 'none'; //[cite: 20]
             
             // 重置卡片樣式以利下次正常開啟[cite: 20]
@@ -442,37 +442,38 @@ window.releaseCardAndFly = function() {
             releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 20]
 
             // ==========================================
-            // 🎯 【優化：實體頁尾展開 ➔ 物理置中滾動 ➔ 啟動單行打字】
+            // 🎯 【優化：實體頁尾展開 ➔ 物理對齊錨點滾動 ➔ 啟動打字】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
+            const anchor = document.getElementById('outro-align-anchor');
             
-            if (outroSection) {
-                // 1. 先將完結頁面展開（寬度 100vw，高度 100vh 出現）
+            if (outroSection && anchor) {
+                // 1. 將完結頁面展開
                 outroSection.classList.add('active');
                 
-                // 2. 💡 延遲 350 毫秒（等待高度展開完畢），執行 100% 精準的「物理垂直置中滾動」
+                // 2. 💡 延遲 400 毫秒（等待 100vh 實體高度完全撐開完畢）
                 setTimeout(() => {
-                    // 強制將橫向捲動軸歸零，避免任何偏斜
+                    // 強制將留言牆橫向捲動軸歸零
                     const container = document.getElementById('slider-container');
                     if (container) {
                         container.scrollLeft = 0;
                     }
 
-                    // 💡 使用 scrollIntoView 且指定 block: 'center'，強制瀏覽器將這個 100vh 的區塊精準對齊到螢幕正中央
-                    outroSection.scrollIntoView({ 
+                    // 💡 核心：將鏡頭精準對齊到完結頁最底部的隱形錨點，強制瀏覽器拉足垂直滑動距離
+                    anchor.scrollIntoView({ 
                         behavior: 'smooth', 
-                        block: 'center' 
+                        block: 'end' 
                     });
                     
-                    // 3. 延遲 1.2 秒（待鏡頭完全滑動至正中心定位後），啟動打字機
+                    // 3. 延遲 1.5 秒（待鏡頭平滑對齊至最底端、文字完美處於畫面中央時），啟動打字機
                     setTimeout(() => {
                         startTypewriterEffect();
-                    }, 1200);
-                }, 350);
+                    }, 1500);
+                }, 400);
             }
         }
     });
-}; // 🎯 確保 app.js 語法閉合！
+}; // 🎯 確保 app.js 語法完美閉合！
 
 // ==========================================
 // 🎯 溫柔的打字機效果 (從 HTML 的空元素中一字一字打入)
@@ -491,7 +492,6 @@ function startTypewriterEffect() {
     subEl.innerHTML = "";
     
     let mainIndex = 0;
-    // 每 120 毫秒吐出一個字，節奏感極佳
     const mainTimer = setInterval(() => {
         if (mainIndex < mainText.length) {
             textEl.innerHTML += mainText.charAt(mainIndex);
@@ -509,7 +509,7 @@ function startTypewriterEffect() {
                     } else {
                         clearInterval(subTimer);
                     }
-                }, 100); // 副標題速度稍微快一點
+                }, 100); 
             }, 800);
         }
     }, 120);
