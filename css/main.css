@@ -702,7 +702,7 @@ input[type="text"]:focus, textarea:focus {
     text-align: center;
     padding: 0 40px;
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px; /* 💡 放大最大寬度，給予單行文字足夠空間 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -710,14 +710,17 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .outro-text {
-    font-family: var(--font-serif); /* */
-    font-size: 24px;
+    font-family: var(--font-serif); /*[cite: 19] */
+    font-size: 22px; /* 💡 稍微微調字型，確保在各種螢幕上完美呈現 */
     color: #ffffff;
     letter-spacing: 0.18em;
     line-height: 2.2;
     margin-bottom: 35px;
-    min-height: 110px; /* 給予打字預留高度，防止頁面跳動 */
+    min-height: 50px; /* 因為強制單行，縮減預留高度 */
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+    
+    /* 💡 核心修正：強制文字絕對不換行，確保打字機效果維持在同一行 */
+    white-space: nowrap; 
 }
 
 .outro-brand {
