@@ -143,7 +143,7 @@ window.generateRemembrance = async function() {
         console.error('AI 生成或儲存失敗:', err);
         alert('通道暫時擁擠，請再試一次。');
     } finally {
-        submitBtn.innerText = "⚡ 生成思念儀式卡片";
+        submitBtn.innerText = "⚡ 生成專屬思念卡片";
         submitBtn.disabled = false;
     }
 };
@@ -228,13 +228,13 @@ async function fetchWallMessages() {
             `;
         }); 
 
-        // 綁定點擊事件
+        // 綁定點擊事件（傳入 false，代表這是已加載的歷史舊卡片）
         document.querySelectorAll('.wall-card').forEach(card => {
             card.addEventListener('click', function() {
                 const category = this.getAttribute('data-category');
                 const safeQuote = decodeURIComponent(escape(atob(this.getAttribute('data-quote'))));
                 const nickname = this.getAttribute('data-nickname');
-                window.clickWallCard(category, safeQuote, nickname);
+                window.clickWallCard(category, safeQuote, nickname, false);
             });
         });
         
@@ -424,7 +424,7 @@ window.releaseCardAndFly = function() {
             
             // 🎯 優化：鎖死放手按鈕，文字改為「已送出祝福」
             releaseBtn.disabled = true;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 🍃 已化為祝福之光✨`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光✨`;
 
             const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
             if (myNewCardOnWall) {
