@@ -96,8 +96,24 @@ window.generateRemembrance = async function() {
             window.clickWallCard(targetChinese, finalQuote, nickname);
         });
 
-        // ➔ 將新卡片精準插入到思念牆的第一個位置
+       // ➔ 將新卡片精準插入到思念牆的第一個位置
         wallGrid.insertBefore(newCard, wallGrid.firstChild);
+
+        // ====================================================================
+        // 🎯 核心修正：精準控制前端牆上最多只保留 36 張卡片 (3排 × 12個)
+        // ====================================================================
+        const currentCards = wallGrid.querySelectorAll('.wall-card');
+        if (currentCards.length > 36) {
+            currentCards[currentCards.length - 1].remove(); // 刪除最舊的
+        }
+        // ====================================================================
+
+        // 🎯 核心修正：重置放手按鈕 (使用星沙 Icon)
+        const releaseBtn = document.getElementById('release-btn');
+        if (releaseBtn) {
+            releaseBtn.disabled = false;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
+        }
 
         // ➔ 自動平滑滾動到思念牆
         document.querySelector('.wall-section').scrollIntoView({ behavior: 'smooth' });
@@ -170,7 +186,7 @@ async function fetchWallMessages() {
             .from('remembrance-db')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(12);
+            .limit(36);
 
         if (error) throw error;
 
