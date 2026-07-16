@@ -53,7 +53,9 @@ function drawMandalaLayer(centerX, centerY, radius, progress, color) {
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
-    ctx.stroke();
+    // 🎯 核心修正：將 ctx.stroke() 註解掉。
+    // 隱藏曼陀羅花，未來以主視覺為主
+    // ctx.stroke();
 }
 
 function render() {
