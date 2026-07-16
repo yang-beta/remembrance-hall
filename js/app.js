@@ -421,7 +421,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)[cite: 20]
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -431,7 +431,7 @@ window.releaseCardAndFly = function() {
         duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
-            // 隱藏 Modal
+            // 隱藏 Modal[cite: 20]
             outputSection.style.display = 'none'; //[cite: 20]
             
             // 重置卡片樣式以利下次正常開啟[cite: 20]
@@ -442,28 +442,33 @@ window.releaseCardAndFly = function() {
             releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 20]
 
             // ==========================================
-            // 🎯 【優化：展開 100% 實體高度完結頁 & 正下方滾動】
+            // 🎯 【優化：實體頁尾展開 ➔ 物理置中滾動 ➔ 啟動單行打字】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
             
             if (outroSection) {
-                // 1. 將完結區塊展開（有了實體 100vh 高度，網頁長度真正延伸）
+                // 1. 先將完結頁面展開（寬度 100vw，高度 100vh 出現）
                 outroSection.classList.add('active');
                 
-                // 2. 延遲 100 毫秒，等展開動畫啟動、高度出現後，平滑垂直正下方滾動
+                // 2. 💡 延遲 350 毫秒（等待高度展開完畢），執行 100% 精準的「物理垂直置中滾動」
                 setTimeout(() => {
-                    // 💡 只垂直滾動 Y 軸至整個 document 的最底部，橫向 X 軸（滾動軸）強行歸零。100% 解決斜偏！
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        left: 0,
-                        behavior: 'smooth'
+                    // 強制將橫向捲動軸歸零，避免任何偏斜
+                    const container = document.getElementById('slider-container');
+                    if (container) {
+                        container.scrollLeft = 0;
+                    }
+
+                    // 💡 使用 scrollIntoView 且指定 block: 'center'，強制瀏覽器將這個 100vh 的區塊精準對齊到螢幕正中央
+                    outroSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
                     });
                     
-                    // 3. 延遲 1 秒（等鏡頭滾動定位完成後），溫柔地啟動打字機效果
+                    // 3. 延遲 1.2 秒（待鏡頭完全滑動至正中心定位後），啟動打字機
                     setTimeout(() => {
                         startTypewriterEffect();
-                    }, 1000);
-                }, 100);
+                    }, 1200);
+                }, 350);
             }
         }
     });
