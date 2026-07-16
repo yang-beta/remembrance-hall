@@ -362,8 +362,8 @@ window.releaseCardAndFly = function() {
             scale: 0,
             opacity: 0,
             rotation: Math.random() * 720,
-            // 🎯 優化：將粒子飄散壽命放慢 1-2 秒（延長至 2.5 ~ 4 秒）
-            duration: Math.random() * 2.0 + 2.0, 
+            // 🎯 優化：將粒子飄散壽命放慢 1-2 秒（延長至 2.5 ~ 5 秒）
+            duration: Math.random() * 2.0 + 3.0, 
             ease: "power2.out",
             onComplete: () => {
                 particle.remove(); 
@@ -378,8 +378,8 @@ window.releaseCardAndFly = function() {
         rotationX: 30,
         filter: "blur(15px)",
         opacity: 0,
-        // 🎯 優化：將卡片化為煙霧淡出時間放慢（從 2.2 秒延長至 3.5 秒）
-        duration: 3.5, 
+        // 🎯 優化：將卡片化為煙霧淡出時間放慢（從 2.2 秒延長至 3.0 秒）
+        duration: 3.0, 
         ease: "power2.inOut",
         onComplete: () => {
             // 隱藏 Modal
@@ -390,7 +390,7 @@ window.releaseCardAndFly = function() {
             
             // 🎯 優化：鎖死放手按鈕，文字改為「已送出祝福」
             releaseBtn.disabled = true;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已送出祝福`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 🍃 已化為祝福之光✨`;
 
             const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
             if (myNewCardOnWall) {
