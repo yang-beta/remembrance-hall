@@ -512,3 +512,12 @@ input[type="text"]:focus, textarea:focus {
     border-radius: 50%;
     z-index: 105; /* 浮在卡片之上 */
 }
+
+/* 🎯 階段四：按鈕停用（disabled）時的極簡灰 */
+.btn-action.release:disabled {
+    border: 1px solid rgba(127, 127, 127, 0.2) !important;
+    color: var(--text-muted) !important;
+    background: transparent !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
