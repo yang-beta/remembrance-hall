@@ -1,13 +1,13 @@
 /* css/animation.css --- Canvas 畫布與全螢幕進場動畫佈局 ─── */
 
 #mandalaCanvas {
-    position: fixed;
+    position: fixed; /* 💡 設為 fixed 釘死在螢幕上，不隨滾動條與 wrapper 偏移 */
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-    pointer-events: none; 
+    width: 100vw !important;  /* 💡 鎖定寬度為 100% 視窗寬 */
+    height: 100vh !important; /* 💡 鎖定高度為 100% 視窗高 */
+    z-index: 0 !important;    /* 💡 置於最底層背景 */
+    pointer-events: none;     /* 💡 確保滑鼠點擊可以穿透它 */
 }
 
 .hero-container {
