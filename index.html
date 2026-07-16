@@ -46,12 +46,13 @@
         </div>
     </div>
 
-    <div class="wrapper" id="main-content">
+        <div class="wrapper" id="main-content">
         <header>
             <h1>洸限</h1>
-            <p>XUAN XIAN • Resonance of Absence / 2026</p>
+            <p>Absence Resonance / 2026</p>
         </header>
 
+        <!-- 🎯 1. 讓 Grid 佈局裡面只乾淨地放輸入框，確保高寬與事件不被 display: none 影響 -->
         <div class="grid-layout">
             <div class="input-card">
                 <div class="form-group">
@@ -82,34 +83,38 @@
                     <textarea id="memory" rows="3" placeholder="例如：廚房裡的飯菜香、一同看海的下午、在腳邊呼嚕嚕的溫度"></textarea>
                 </div>
 
+                <!-- 💡 這裡我們將 onclick 內的函式名稱修正為與 app.js 100% 一致 -->
                 <button class="btn-submit" onclick="generateRemembrance()">⚡ 生成思念儀式卡片</button>
             </div>
-
+        </div> <!-- grid-layout 結束 -->
+            
             <div class="output-section" id="output-section">
                 <!-- 🎯 新增全螢幕 Modal 關閉按鈕 -->
                 <button class="close-modal-btn" onclick="closeReunionModal()">✕ 關閉</button>
-                <div class="card-container" id="printable-card">
-                    <div class="card-header">
-                        <span class="card-tag" id="card-tag-display">思念回憶錄 / 親人</span>
-                        <span class="card-icon" id="card-icon-display"><i class="fa-solid fa-hands-holding-child"></i></span>
+            <div class="card-container" id="printable-card">
+                <div class="card-header">
+                    <span class="card-tag" id="card-tag-display">思念回憶錄 / 親人</span>
+                    <span class="card-icon" id="card-icon-display"><i class="fa-solid fa-hands-holding-child"></i></span>
+                </div>
+                <div class="card-body">
+                    <div class="card-quote" id="card-text-display">
+                        記憶中的細節，如同不滅的光亮，溫柔地照亮往後的路。
                     </div>
-                    <div class="card-body">
-                        <div class="card-quote" id="card-text-display">
-                            記憶中的細節，如同不滅的光亮，溫柔地照亮往後的路。
-                        </div>
-                        <div class="card-sign" id="card-sign-display">
-                            — 致 外婆
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="card-date" id="card-date-display">2026.07.13</span>
-                        <span class="card-brand">洸限</span>
+                    <div class="card-sign" id="card-sign-display">
+                        — 致 外婆
                     </div>
                 </div>
-                <div class="card-actions">
-                    <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存回憶卡片</button>
-                    <button class="btn-action release" id="release-btn" onclick="releaseCardAndFly()"><i class="fa-solid fa-wind"></i> 放手釋懷，讓記憶回到洸限</button>
+                <div class="card-footer">
+                    <span class="card-date" id="card-date-display">2026.07.13</span>
+                    <span class="card-brand">洸限</span>
                 </div>
+            </div>
+            
+            <div class="card-actions">
+                <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存回憶卡片</button>
+                <button class="btn-action release" id="release-btn" onclick="releaseCardAndFly()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意
+                </button>
             </div>
         </div>
 
