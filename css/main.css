@@ -360,6 +360,7 @@ input[type="text"]:focus, textarea:focus {
     color: var(--accent-gold);
 }
 
+/* 🎯 為三排卡片加上上下 100px 的 Padding，確保高階方形光暈不被上下邊界裁切 */
 .slider-container {
     width: 100%;
     overflow-x: auto;
@@ -367,6 +368,7 @@ input[type="text"]:focus, textarea:focus {
     scrollbar-width: none; 
     -ms-overflow-style: none; 
     cursor: grab;
+    /* 💡 上下Padding撐開到 100px，高度適應 3 排卡片(約660px) + Gap 與 Padding */
     padding: 100px 40px 100px 40px; 
 }
 
@@ -378,8 +380,12 @@ input[type="text"]:focus, textarea:focus {
     display: none; 
 }
 
+/* 🎯 重新設計：三排橫向延伸的網格佈局 */
 .wall-grid-row {
-    display: flex;
+    display: grid;
+    /* 💡 強制設定為固定 3 排 */
+    grid-template-rows: repeat(3, 220px); 
+    grid-auto-flow: column; /* 💡 關鍵：讓卡片超出 3 個時自動往右邊（橫向）新增欄位 */
     gap: 24px;
     width: max-content;
 }
