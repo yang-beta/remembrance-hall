@@ -342,7 +342,7 @@ window.downloadCard = function() {
 };
 
 // ==========================================
-// 🎯 階段四：重逢之後 - 放手、吹散、重生成為粒子
+// 🎯 階段四：重逢之後 - 放手、吹散、重生成為粒子 (防重複點擊、瞬間淨化卡片版)
 // ==========================================
 window.releaseCardAndFly = function() {
     const card = document.getElementById('printable-card');
@@ -351,21 +351,43 @@ window.releaseCardAndFly = function() {
     
     if (!card || hasExperiencedRelease) return;
     
-    // 鎖定狀態，防止重複點擊
+    // 1. 鎖定狀態，防止在同一次 Modal 中重複點擊
     hasExperiencedRelease = true;
     localStorage.setItem('hasExperiencedRelease', 'true');
     releaseBtn.disabled = true;
     releaseBtn.innerText = "🍃 正在化為祝福之光...";
 
+    // 🎯 2. 核心修正：按下放手的瞬間，立刻把牆上卡片的「新卡片」身分與光暈拔除！
+    // 這樣一來，即使動畫還在播，這張卡片也已經被系統判定為「已放手的舊卡片」，絕對無法重複觸發。
+    const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
+    if (myNewCardOnWall) {
+        // 立刻拔除呼吸光暈與新卡片類別
+        myNewCardOnWall.classList.remove('my-new-card', 'card-fly-in');
+        
+        // 重新為它綁定「舊卡片」的點擊事件 (isNewCard 傳入 false)
+        // 確保下一次再點開它時，放手按鈕 100% 呈現鎖死狀態
+        const category = myNewCardOnWall.getAttribute('data-category');
+        const safeQuoteBase64 = myNewCardOnWall.getAttribute('data-quote');
+        const safeQuote = decodeURIComponent(escape(atob(safeQuoteBase64)));
+        const nickname = myNewCardOnWall.getAttribute('data-nickname');
+        
+        // 清除舊監聽器並重新綁定為 false
+        const clonedCard = myNewCardOnWall.cloneNode(true);
+        myNewCardOnWall.parentNode.replaceChild(clonedCard, myNewCardOnWall);
+        clonedCard.addEventListener('click', function() {
+            window.clickWallCard(category, safeQuote, nickname, false);
+        });
+    }
+
     // 取得卡片在螢幕上的精確座標以產生粒子
     const rect = card.getBoundingClientRect();
 
-    // 1. 卡片顫抖動態 (稍微放慢一點點)
+    // 3. 卡片顫抖動態 (放慢優雅版)
     const shakeTl = gsap.timeline();
     shakeTl.to(card, { x: "+=6", y: "-=3", rotation: 1, duration: 0.12, repeat: 10, yoyo: true })
            .to(card, { x: 0, y: 0, rotation: 0, duration: 0.15 });
 
-    // 2. 建立金色與白色的碎屑粒子飄散
+    // 4. 建立金色與白色的碎屑粒子飄散
     const particleCount = 120; 
     const colors = ['#c5a880', '#B59E74', '#FAF8F5', '#ffffff'];
 
@@ -396,8 +418,7 @@ window.releaseCardAndFly = function() {
             scale: 0,
             opacity: 0,
             rotation: Math.random() * 720,
-            // 🎯 優化：將粒子飄散壽命放慢 1-2 秒（延長至 2.5 ~ 5 秒）
-            duration: Math.random() * 2.0 + 3.0, 
+            duration: Math.random() * 2.0 + 2.0, 
             ease: "power2.out",
             onComplete: () => {
                 particle.remove(); 
@@ -405,37 +426,25 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 3. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
         rotationX: 30,
         filter: "blur(15px)",
         opacity: 0,
-        // 🎯 優化：將卡片化為煙霧淡出時間放慢（從 2.2 秒延長至 3.0 秒）
-        duration: 3.0, 
+        duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
             // 隱藏 Modal
             outputSection.style.display = 'none';
             
-            // 重置卡片樣式以利下次正常開啟 (但不要重置 releaseBtn，讓它保持在 disabled 狀態)
+            // 重置卡片樣式以利下次正常開啟
             gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 });
             
-            // 🎯 優化：鎖死放手按鈕，文字改為「已送出祝福」
+            // 鎖死放手按鈕，文字改為「已送出祝福」
             releaseBtn.disabled = true;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光✨`;
-
-            const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
-            if (myNewCardOnWall) {
-                gsap.to(myNewCardOnWall, {
-                    borderColor: "var(--border-color)",
-                    duration: 3.0,
-                    onComplete: () => {
-                        myNewCardOnWall.classList.remove('my-new-card', 'card-fly-in');
-                    }
-                });
-            }
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`;
         }
     });
 };
