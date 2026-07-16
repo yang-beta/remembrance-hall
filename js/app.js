@@ -244,12 +244,30 @@ async function fetchWallMessages() {
 }
 
 // ==========================================
-// 🎯 階段三：重逢 - 開啟全螢幕 Modal
+// 🎯 階段三：重逢 - 開啟全螢幕 Modal (識別新舊卡片)
 // ==========================================
-window.clickWallCard = function(category, quote, nickname) {
+window.clickWallCard = function(category, quote, nickname, isNewCard) {
     document.getElementById('card-tag-display').innerText = `思念致意錄 / ${category}`;
     document.getElementById('card-text-display').innerText = quote;
     document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
+    
+    // 取得放手按鈕
+    const releaseBtn = document.getElementById('release-btn');
+    
+    // 🎯 核心 Bug 修復：根據卡片身份，動態設定按鈕狀態
+    if (releaseBtn) {
+        if (isNewCard) {
+            // 如果是剛剛新生成的發光卡片：允許放手
+            releaseBtn.disabled = false;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
+            // 同步將放手狀態鎖重置為尚未體驗
+            hasExperiencedRelease = false;
+        } else {
+            // 如果是舊卡片：直接鎖死，顯示已送出祝福
+            releaseBtn.disabled = true;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`;
+        }
+    }
     
     const outputSection = document.getElementById('output-section');
     outputSection.style.display = 'flex';
