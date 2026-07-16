@@ -711,6 +711,7 @@ input[type="text"]:focus, textarea:focus {
 
 .outro-text {
     font-family: var(--font-serif); /*[cite: 19] */
+    font-weight: 300; /* 極致內斂的細宋體 */
     font-size: 22px; /* 💡 稍微微調字型，確保在各種螢幕上完美呈現 */
     color: #ffffff;
     letter-spacing: 0.18em;
