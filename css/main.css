@@ -654,45 +654,50 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🎯 階段四：落幕結尾文字 ── 全螢幕 fixed 絕對垂直置中美學
+   🎯 階段四：落幕結尾文字 ── 100% 實體高度滿版頁尾 (不遮擋、不重疊)
    ========================================== */
 
-/* 1. 確保 Canvas 背景永遠存在、100% 顯現 */
+/* 1. 保證 Canvas 在最底層 100% 顯現 */
 #mandalaCanvas {
     position: fixed !important;
     top: 0;
     left: 0;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: 0 !important; /* 背景最底層 */
+    z-index: 0 !important;
     pointer-events: none;
-    opacity: 1 !important; /* 💡 100% 保留背後光點與軌跡 */
+    opacity: 1 !important; /* 確保背後光點與軌跡線 100% 存在 */
 }
 
-/* 2. 結尾區塊：當啟動時直接提升為 fixed 全螢幕固定 */
+/* 2. 結尾頁尾：不使用 fixed 定位，作為網頁最底部的實體滿版區塊 */
 .exhibition-outro-section {
-    position: fixed; /* 💡 設為 fixed 鎖定全螢幕，徹底解決上方留言板擠壓問題 */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(18, 18, 18, 0.95); /* 半透明極簡黑，可隱約透出後方的金色光點與粒子 */
+    position: relative; /* 💡 設為相對定位，讓它在留言牆正下方依序排列，不產生重疊遮擋 */
+    width: 100vw;       /* 強制寬度為視窗寬度 */
+    height: 0;          /* 預設完全收合，不佔垂直空間 */
+    background: rgba(18, 18, 18, 0.96); /* 深黑霧面背景，隱約透出後方 Canvas 金光 */
+    
+    /* 💡 核心：突破 wrapper 的最大寬度限制，在下方完美橫向鋪滿 100% 螢幕 */
+    left: 50%;
+    transform: translateX(-50%);
+    
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999; /* 💡 確保完全浮在所有內容與留言板的最前方 */
+    overflow: hidden;
+    
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 2s ease; /* 優雅地整體淡入 */
+    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;
+    z-index: 10; /* 高於留言牆，但低於全螢幕 Modal */
 }
 
-/* 啟動狀態 */
+/* 當落幕啟動時，展開為完整 100% 視窗高度 (一個實體、獨立的滿版頁尾空間) */
 .exhibition-outro-section.active {
+    height: 100vh; 
     opacity: 1;
-    pointer-events: auto; /* 允許滑動與互動 */
+    margin-top: 80px; /* 與上方留言牆產生適當的美學留白 */
 }
 
-/* 3. 結尾文字排版與絕對垂直置中補正 */
+/* 3. 結尾內容垂直正中心排版 */
 .outro-content {
     text-align: center;
     padding: 0 40px;
@@ -705,20 +710,20 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .outro-text {
-    font-family: var(--font-serif); /*[cite: 14] */
+    font-family: var(--font-serif); /* */
     font-size: 24px;
     color: #ffffff;
     letter-spacing: 0.18em;
     line-height: 2.2;
     margin-bottom: 35px;
-    min-height: 110px; /* 給予兩行打字足夠的預留高度，防止內容跳動 */
+    min-height: 110px; /* 給予打字預留高度，防止頁面跳動 */
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
 }
 
 .outro-brand {
-    font-family: var(--font-sans); /*[cite: 14] */
+    font-family: var(--font-sans); /*[cite: 19] */
     font-size: 13px;
-    color: var(--text-muted); /*[cite: 14] */
+    color: var(--text-muted); /*[cite: 19] */
     letter-spacing: 0.3em;
     min-height: 20px;
 }
