@@ -421,7 +421,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)[cite: 10]
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -431,26 +431,73 @@ window.releaseCardAndFly = function() {
         duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
-            // 隱藏 Modal
-            outputSection.style.display = 'none';
+            // 隱藏 Modal[cite: 10]
+            outputSection.style.display = 'none'; //[cite: 10]
             
-            // 重置卡片樣式以利下次正常開啟
-            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 });
+            // 重置卡片樣式以利下次正常開啟[cite: 10]
+            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 }); //[cite: 10]
             
-            // 鎖死放手按鈕，文字改為「已送出祝福」
-            releaseBtn.disabled = true;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`;
+            // 鎖死放手按鈕[cite: 10]
+            releaseBtn.disabled = true; //[cite: 10]
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 10]
 
             // ==========================================
-            // 🎯 【落幕：結尾祝福與平滑滾動】
+            // 🎯 【優化：展開 100% 滿版獨立完結頁 & 平滑對齊】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
+            
             if (outroSection) {
+                // 1. 將完結頁 Footer 展開為全螢幕 100vh 寬高
                 outroSection.classList.add('active');
+                
+                // 2. 稍微延遲 300 毫秒，等展開動畫啟動後，平滑捲動到畫面的最底端（完結頁位置）
                 setTimeout(() => {
                     outroSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }, 500);
+                    
+                    // 3. 啟動打字機效果一字一字吐出
+                    startTypewriterEffect();
+                }, 300);
             }
         }
     });
-}; 
+}; // 🎯 確保 app.js 語法完美閉合！
+
+// ==========================================
+// 🎯 溫柔的打字機效果函式 (一字一字緩慢打入)
+// ==========================================
+function startTypewriterEffect() {
+    const textEl = document.getElementById('typewriter-text');
+    const subEl = document.getElementById('typewriter-sub');
+    
+    const mainText = "「 那些不曾被遺忘的，都將在看不見的地方，溫柔地共振。」";
+    const subText = "洸限 — 願你帶著光，溫暖前行";
+    
+    if (!textEl || !subEl) return;
+    
+    textEl.innerHTML = "";
+    subEl.innerHTML = "";
+    
+    let mainIndex = 0;
+    // 設定打字速度：每 120 毫秒吐出一個字，溫暖且極具節奏感
+    const mainTimer = setInterval(() => {
+        if (mainIndex < mainText.length) {
+            textEl.innerHTML += mainText.charAt(mainIndex);
+            mainIndex++;
+        } else {
+            clearInterval(mainTimer);
+            
+            // 主文字打完後，延遲 800 毫秒再開始打副標題
+            setTimeout(() => {
+                let subIndex = 0;
+                const subTimer = setInterval(() => {
+                    if (subIndex < subText.length) {
+                        subEl.innerHTML += subText.charAt(subIndex);
+                        subIndex++;
+                    } else {
+                        clearInterval(subTimer);
+                    }
+                }, 100); // 副標題速度稍微快一點點
+            }, 800);
+        }
+    }, 120);
+}
