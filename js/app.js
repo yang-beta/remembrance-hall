@@ -306,3 +306,107 @@ window.downloadCard = function() {
         alert('卡片導出失敗，請再試一次。');
     });
 };
+
+// ==========================================
+// 🎯 階段四：重逢之後 - 放手、吹散、重生成為粒子
+// ==========================================
+window.releaseCardAndFly = function() {
+    const card = document.getElementById('printable-card');
+    const releaseBtn = document.getElementById('release-btn');
+    const outputSection = document.getElementById('output-section');
+    
+    if (!card || hasExperiencedRelease) return;
+    
+    // 鎖定狀態，防止重複點擊
+    hasExperiencedRelease = true;
+    localStorage.setItem('hasExperiencedRelease', 'true');
+    releaseBtn.disabled = true;
+    releaseBtn.innerText = "🍃 正在化為祝福之光...";
+
+    // 取得卡片在螢幕上的精確座標以產生粒子
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // 1. 卡片顫抖動態 (風吹起的效果)
+    const shakeTl = gsap.timeline();
+    shakeTl.to(card, { x: "+=6", y: "-=3", rotation: 1, duration: 0.08, repeat: 10, yoyo: true })
+           .to(card, { x: 0, y: 0, rotation: 0, duration: 0.1 });
+
+    // 2. 建立金色與白色的碎屑粒子飄散
+    const particleCount = 120; // 產生 120 顆高階粒子
+    const colors = ['#c5a880', '#B59E74', '#FAF8F5', '#ffffff'];
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle-debris';
+        
+        // 隨機尺寸 (大粒子到細沙)
+        const size = Math.random() * 8 + 3;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // 隨機色彩
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        // 初始位置設定在卡片範圍內
+        const startX = rect.left + Math.random() * rect.width;
+        const startY = rect.top + Math.random() * rect.height;
+        particle.style.left = `${startX}px`;
+        particle.style.top = `${startY}px`;
+        
+        document.body.appendChild(particle);
+
+        // 使用 GSAP 模擬風力，向右上方瘋狂飄散
+        const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.6; // 偏向右上方 45 度擴散
+        const velocity = Math.random() * 350 + 150; // 擴散速度
+        const targetX = startX + Math.cos(angle) * velocity;
+        const targetY = startY + Math.sin(angle) * velocity - 100; // 重力上飄補正
+
+        gsap.to(particle, {
+            x: targetX - startX,
+            y: targetY - startY,
+            scale: 0,
+            opacity: 0,
+            rotation: Math.random() * 720,
+            duration: Math.random() * 1.8 + 1.2,
+            ease: "power2.out",
+            onComplete: () => {
+                particle.remove(); // 播完後立刻移除 DOM 防止卡頓
+            }
+        });
+    }
+
+    // 3. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
+    gsap.to(card, {
+        scale: 0.4,
+        rotationY: 90, // 3D 側轉
+        rotationX: 30,
+        filter: "blur(12px)",
+        opacity: 0,
+        duration: 2.2,
+        ease: "power3.inOut",
+        onComplete: () => {
+            // 粒子播完後，隱藏 Modal
+            outputSection.style.display = 'none';
+            
+            // 重置卡片樣式以利下次正常開啟
+            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 });
+            releaseBtn.disabled = false;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wind"></i> 釋懷，放手致意`;
+
+            // 🎯 感動落幕：當放手完成回到思念牆後，優雅地將牆上新卡片的「呼吸金色發光」收回，象徵思念已送出
+            const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
+            if (myNewCardOnWall) {
+                gsap.to(myNewCardOnWall, {
+                    borderColor: "var(--border-color)",
+                    duration: 2.5,
+                    onComplete: () => {
+                        // 移除新卡片標記，讓它完美融入普通留言牆中
+                        myNewCardOnWall.classList.remove('my-new-card', 'card-fly-in');
+                    }
+                });
+            }
+        }
+    });
+};
