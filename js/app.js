@@ -254,7 +254,7 @@ window.clickWallCard = function(category, quote, nickname, isNewCard) {
     // 取得放手按鈕
     const releaseBtn = document.getElementById('release-btn');
     
-    // 🎯 核心 Bug 修復：根據卡片身份，動態設定按鈕狀態
+    // 🎯 根據卡片身份，動態設定按鈕狀態
     if (releaseBtn) {
         if (isNewCard) {
             // 如果是剛剛新生成的發光卡片：允許放手
@@ -357,21 +357,16 @@ window.releaseCardAndFly = function() {
     releaseBtn.disabled = true;
     releaseBtn.innerText = "🍃 正在化為祝福之光...";
 
-    // 🎯 2. 核心修正：按下放手的瞬間，立刻把牆上卡片的「新卡片」身分與光暈拔除！
-    // 這樣一來，即使動畫還在播，這張卡片也已經被系統判定為「已放手的舊卡片」，絕對無法重複觸發。
+    // 🎯 核心修正：按下放手的瞬間，立刻把牆上卡片的「新卡片」身分與光暈拔除！
     const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
     if (myNewCardOnWall) {
-        // 立刻拔除呼吸光暈與新卡片類別
         myNewCardOnWall.classList.remove('my-new-card', 'card-fly-in');
         
-        // 重新為它綁定「舊卡片」的點擊事件 (isNewCard 傳入 false)
-        // 確保下一次再點開它時，放手按鈕 100% 呈現鎖死狀態
         const category = myNewCardOnWall.getAttribute('data-category');
         const safeQuoteBase64 = myNewCardOnWall.getAttribute('data-quote');
         const safeQuote = decodeURIComponent(escape(atob(safeQuoteBase64)));
         const nickname = myNewCardOnWall.getAttribute('data-nickname');
         
-        // 清除舊監聽器並重新綁定為 false
         const clonedCard = myNewCardOnWall.cloneNode(true);
         myNewCardOnWall.parentNode.replaceChild(clonedCard, myNewCardOnWall);
         clonedCard.addEventListener('click', function() {
@@ -451,13 +446,11 @@ window.releaseCardAndFly = function() {
             // ==========================================
             const outroSection = document.getElementById('outro-section');
             if (outroSection) {
-                // 1. 展開結尾區塊並啟動淡入 CSS 動畫
                 outroSection.classList.add('active');
-                
-                // 2. 稍微延遲 500 毫秒，等 Modal 關閉後的視覺穩定，開始平滑滾動到頁尾最底部
                 setTimeout(() => {
                     outroSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
                 }, 500);
             }
         }
     });
+}; 
