@@ -454,3 +454,61 @@ input[type="text"]:focus, textarea:focus {
     color: #1a1a1a;
     border-color: #c5a880;
 }
+
+/* ==========================================
+   🎯 階段四：放手致意 雙按鈕美學
+   ========================================== */
+.card-actions {
+    margin-top: 25px;
+    display: flex;
+    gap: 15px; /* 讓兩個按鈕之間有 15px 的美學間距 */
+    width: 100%;
+    max-width: 380px;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: none;
+    color: var(--text-muted); 
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* 儲存卡片按鈕樣式 */
+.btn-action.download {
+    background-color: var(--concrete-gray);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+.btn-action.download:hover {
+    background-color: #e2ddd5;
+}
+
+/* 放手釋懷按鈕樣式 */
+.btn-action.release {
+    border: 1px solid rgba(197, 168, 128, 0.5);
+    color: #c5a880;
+    background: transparent;
+}
+.btn-action.release:hover {
+    background-color: rgba(197, 168, 128, 0.1);
+    border-color: #c5a880;
+    color: #ffffff;
+}
+
+/* 粒子飄散時，卡片本身的核心粒子化定位 */
+.particle-debris {
+    position: fixed;
+    pointer-events: none;
+    background: radial-gradient(circle, #c5a880 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    z-index: 105; /* 浮在卡片之上 */
+}
