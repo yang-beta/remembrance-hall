@@ -3,13 +3,17 @@
 const canvas = document.getElementById('mandalaCanvas');
 const ctx = canvas.getContext('2d');
 
+// 🎯 將中心點定義為全域變數，防止 ReferenceError
+let cx = window.innerWidth / 2;
+let cy = window.innerHeight / 2;
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // 🎯 每次視窗大小改變（或滾動條擠入）時，強行將 cx, cy 重新定位在當前畫布的正中心
-    if (typeof cx !== 'undefined') cx = canvas.width / 2;
-    if (typeof cy !== 'undefined') cy = canvas.height / 2;
+    // 🎯 精確更新中心點位置
+    cx = canvas.width / 2;
+    cy = canvas.height / 2;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -66,9 +70,6 @@ function render() {
     ctx.fillStyle = 'rgba(26, 26, 26, 0.08)'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-
     if (animationParams.coreGlow > 0) {
         let gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
         gradient.addColorStop(0, `rgba(255, 255, 255, ${animationParams.coreGlow})`);
@@ -123,12 +124,7 @@ const rotationTween = gsap.to(animationParams, {
 
 // 🎯 核心新增：定義略過動畫的全域函式
 window.scrollToContent = function() {
-    // 1. 瞬間將 GSAP 主時間軸快轉到 100%（完成狀態）
     tl.progress(1);
-    
-    // 2. 平滑滾動到下方的情緒留言板區塊
     document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
-    
-    // 3. 滾動完成後，順手將「Skip 略過按鈕」淡出隱藏，維持畫面乾淨
     gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
 };
