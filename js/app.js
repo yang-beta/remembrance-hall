@@ -91,9 +91,9 @@ window.generateRemembrance = async function() {
             <div class="wall-card-footer">— 致 ${nickname}</div>
         `;
 
-        // 為新卡片綁定專屬的 click 事件（不需要 onclick 傳字串）
+        // 為新卡片綁定專屬的 click 事件（傳入 true，代表這是新生成的卡片）
         newCard.addEventListener('click', function() {
-            window.clickWallCard(targetChinese, finalQuote, nickname);
+            window.clickWallCard(targetChinese, finalQuote, nickname, true);
         });
 
        // ➔ 將新卡片精準插入到思念牆的第一個位置
