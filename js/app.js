@@ -426,7 +426,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出 (放慢版)
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -445,6 +445,19 @@ window.releaseCardAndFly = function() {
             // 鎖死放手按鈕，文字改為「已送出祝福」
             releaseBtn.disabled = true;
             releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`;
+
+            // ==========================================
+            // 🎯 【落幕：結尾祝福與平滑滾動】
+            // ==========================================
+            const outroSection = document.getElementById('outro-section');
+            if (outroSection) {
+                // 1. 展開結尾區塊並啟動淡入 CSS 動畫
+                outroSection.classList.add('active');
+                
+                // 2. 稍微延遲 500 毫秒，等 Modal 關閉後的視覺穩定，開始平滑滾動到頁尾最底部
+                setTimeout(() => {
+                    outroSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 500);
+            }
         }
     });
-};
