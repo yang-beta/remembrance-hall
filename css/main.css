@@ -527,3 +527,38 @@ input[type="text"]:focus, textarea:focus {
     cursor: not-allowed !important;
     opacity: 0.6;
 }
+
+/* ==========================================
+   🖼️ 首頁主視覺海報 (Banner) 專用語法
+   ========================================== */
+.hero-container {
+    position: relative; /* 確保子元素絕對定位生效 */
+}
+
+/* 海報定位：確保絕對置中、疊加在 Canvas 背景之上、文字內容之下 */
+.main-banner-poster {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 1200px; /* 💡 可依據海報黃金尺寸調整，如 1000px 或 100vw */
+    height: auto;
+    z-index: 1; /* 疊在 Canvas 上，但低於文字 (文字預設或可用 z-index 提升) */
+    pointer-events: none; /* 💡 關鍵：允許滑鼠點擊和拖拽穿透圖片，不影響 Skip 點擊 */
+    opacity: 0.92; /* 💡 微微透光，讓後方粒子與中央核心光源隱約穿透，融合感極佳 */
+    transition: opacity 0.5s ease;
+}
+
+.main-banner-poster img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* 確保標題與提問文字蓋在海報最前方 */
+.brand-title, .main-question, .scroll-hint {
+    position: relative;
+    z-index: 2;
+}
