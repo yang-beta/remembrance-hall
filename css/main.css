@@ -674,7 +674,7 @@ input[type="text"]:focus, textarea:focus {
     position: relative; /* 💡 設為相對定位，讓它在留言牆正下方依序排列，不產生重疊遮擋 */
     width: 100vw;       /* 強制寬度為視窗寬度 */
     height: 0;          /* 預設完全收合，不佔垂直空間 */
-    background: rgba(18, 18, 18, 0.96); /* 深黑霧面背景，隱約透出後方 Canvas 金光 */
+    background: rgba(18, 18, 18, 0.2); /* 深黑霧面背景，隱約透出後方 Canvas 金光 */
     
     /* 💡 核心：突破 wrapper 的最大寬度限制，在下方完美橫向鋪滿 100% 螢幕 */
     left: 50%;
