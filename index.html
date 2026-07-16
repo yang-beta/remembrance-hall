@@ -112,14 +112,21 @@
         </div>
 
         <div class="wall-section">
+            <!-- 🎯 標題獨立，讓文字置中 -->
             <div class="wall-header-wrapper">
                 <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
-                <div class="slider-arrows">
-                    <button class="arrow-btn" onclick="slideWall('left')"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="arrow-btn" onclick="slideWall('right')"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
             </div>
+            
+            <!-- 🎯 重新設計的懸浮邊緣控制箭頭 -->
+            <button class="edge-arrow-btn left" onclick="slideWall('left')">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="edge-arrow-btn right" onclick="slideWall('right')">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
             <div class="slider-container" id="slider-container">
+               ...
                 <div class="wall-grid-row" id="wall-grid">
                     <div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">
                         正在開啟思念終點館通道...
