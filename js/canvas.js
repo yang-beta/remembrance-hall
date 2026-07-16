@@ -6,6 +6,10 @@ const ctx = canvas.getContext('2d');
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    // 🎯 每次視窗大小改變（或滾動條擠入）時，強行將 cx, cy 重新定位在當前畫布的正中心
+    if (typeof cx !== 'undefined') cx = canvas.width / 2;
+    if (typeof cy !== 'undefined') cy = canvas.height / 2;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
