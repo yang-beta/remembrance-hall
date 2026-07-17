@@ -1,81 +1,114 @@
 /* css/animation.css --- Canvas 畫布與全螢幕進場動畫佈局 ─── */
 
+/**
+ * ============================================================================
+ * 🕊️ 洸限 (Absence Resonance) - 核心動態與視覺特效控制中心
+ * ────────────────────────────────────────────────────────────────────────────
+ * 【動畫設計宗旨】
+ *  本樣式表專注於實踐整場展覽的「時間流逝感」與「物理消逝意境」。
+ *  透過 CSS3 關鍵影格（Keyframes）動畫與貝茲曲線（Bezier Curve）的微調，
+ *  精準控制首頁文字淡入、略過按鈕、新卡片金色呼吸脈衝、方形環境光暈外擴，
+ *  以及卡片懸停時的浮空感，讓靜態的網頁元素擁有如同生命般的微弱共振。
+ * 
+ * 【物理與動態控制流向】
+ *  1. 畫布固定定位 (Canvas): 使曼陀羅背景置於最底，且不阻擋上層任何點擊操作。
+ *  2. 第一階段 進場引導: 提供柔和的向上位移淡入與跳動箭頭提示[cite: 31]。
+ *  3. 第二階段 新生成卡片:
+ *     - 主體邊框 (my-new-card): 冷金至白光的呼吸脈衝，暗示新生命力誕生[cite: 31]。
+ *     - 擴散光暈 (::after): 利用多重模糊陰影，100% 貼合直角卡片且絕不切邊[cite: 31]。
+ *     - 登場飛入 (card-fly-in): 模擬卡片從遠處由小放大並向上安穩降落的質感[cite: 31]。
+ *  4. 歷史卡片 Hover: 優雅浮起 12px 並展開深邃陰影，塑造觸手可碰的真實卡片重量[cite: 31]。
+ * ============================================================================
+ */
+
+/* ==========================================================
+   🌌 1. Canvas 畫布最底層物理定位
+   ========================================================== */
 #mandalaCanvas {
-    position: fixed; /* 💡 釘死在螢幕上 */
+    position: fixed; /* 💡 釘死在螢幕最頂層固定不動，不隨頁面捲動而位移[cite: 31] */
     top: 0;
     left: 0;
-    width: 100% !important;  /* 💡 拋棄 100vw，改用 100% 貼緊 client 寬度 */
-    height: 100% !important; /* 💡 拋棄 100vh，改用 100% 貼緊 client 高度 */
-    z-index: 0 !important;
-    pointer-events: none;
+    width: 100vw; /* 鋪滿視窗寬度[cite: 31] */
+    height: 100vh; /* 鋪滿視窗高度[cite: 31] */
+    z-index: 1; /* 置於 body 與 wrapper 之下，但高於最底層 html 畫布 */
+    pointer-events: none; /* 💡 關鍵：穿透滑鼠事件！允許觀展者點擊 Canvas 上方的所有按鈕與表單[cite: 31] */
 }
 
+/* ==========================================================
+   🖼️ 2. 第一階段：首頁 Banner 進場文字與引導元素
+   ========================================================== */
 .hero-container {
     position: relative;
     width: 100vw;
     height: 100vh;
-    flex-shrink: 0; 
+    flex-shrink: 0; /* 防止在彈性排版中被壓縮寬高[cite: 31] */
     z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* 垂直居中[cite: 31] */
+    align-items: center; /* 水平居中[cite: 31] */
     text-align: center;
     padding: 20px;
 }
 
+/* 展覽大標題：預設不透明度為 0，由 JS (GSAP) 主導優雅淡入[cite: 31] */
 .brand-title {
     font-size: 3.5rem;
     font-weight: 300;
     letter-spacing: 0.8rem;
     color: #e5e5e5;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15); /* 輕微微光陰影，營造空靈質感[cite: 31] */
     opacity: 0; 
     margin-bottom: 2rem;
 }
 
+/* 核心提問文字[cite: 31] */
 .main-question {
     font-size: 1.2rem;
     font-weight: 300;
     letter-spacing: 0.4rem;
     color: #c5a880; 
-    opacity: 0; 
+    opacity: 0; /* 預設隱藏，由 JS 動態控制淡入 */
     line-height: 2;
 }
 
+/* 底部向下捲動指引區塊[cite: 31] */
 .scroll-hint {
     position: absolute;
-    bottom: 8%;
-    opacity: 0;
+    bottom: 8%; /* 固定於底部安全高度[cite: 31] */
+    opacity: 0; 
     cursor: pointer;
     transition: transform 0.3s;
     z-index: 5;
 }
 
+/* 滑鼠懸停時放大指引箭頭[cite: 31] */
 .scroll-hint:hover {
     transform: scale(1.2);
 }
 
+/* 箭頭實體：綁定無窮循環的 bounce (輕微跳動) 物理動畫[cite: 31] */
 .scroll-hint .arrow {
     font-size: 1.5rem;
     color: #c5a880;
     display: inline-block;
-    animation: bounce 2s infinite;
+    animation: bounce 2s infinite; /* 2秒一個循環，永不停止[cite: 31] */
 }
 
+/* 💡 模擬地心引力的彈跳物理 Keyframes */
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); } /* 靜止點[cite: 31] */
+    40% { transform: translateY(-10px); } /* 躍升至最高點[cite: 31] */
+    60% { transform: translateY(-5px); } /* 次高點緩衝[cite: 31] */
 }
 
-/* 🎯 略過動畫按鈕美學樣式 */
+/* 🎯 略過動畫按鈕美學樣式[cite: 31] */
 .skip-anim-btn {
     position: absolute;
     top: 30px;
     right: 40px;
     background: none;
-    border: 1px solid rgba(197, 168, 128, 0.4);
+    border: 1px solid rgba(197, 168, 128, 0.4); /* 冷金薄霧半透明邊框[cite: 31] */
     color: #c5a880;
     padding: 8px 16px;
     font-size: 12px;
@@ -88,24 +121,26 @@
 
 .skip-anim-btn:hover {
     background-color: #c5a880;
-    color: #1a1a1a;
+    color: #1a1a1a; /* 懸停時反黑，增強點選觸感[cite: 31] */
     border-color: #c5a880;
 }
 
-/* ==========================================
-   🎯 階段二：連結與延伸 專用動畫 （方形金光暈）
-   ========================================== */
+/* ==========================================================
+   🎯 3. 第二階段：新生成清水模卡片 ── 黃金發光與擴散呼吸特效
+   ========================================================== */
 
-/* 1. 金色發光新卡片主體 (外框保留 3px 冷金) */
+/* 1. 金色發光新卡片主體 (外框保留 3px 冷金)[cite: 31] */
 .wall-card.my-new-card {
-    border: 3px solid #c5a880 !important; 
+    border: 3px solid #c5a880 !important; /* 💡 使用 !important 確保強制蓋過舊有 1px 的灰色預設邊框[cite: 31] */
     position: relative !important;
-    z-index: 5 !important; 
+    z-index: 5 !important; /* 確保發光卡片堆疊階層高於鄰近卡片[cite: 31] */
     background: #FFFFFF !important;
-    /* 邊框本體的呼吸動畫 (從冷金過渡到亮白色) */
+    
+    /* 邊框本體的呼吸動畫：控制邊框由展覽冷金過渡至高亮白色，模擬生命的搏動[cite: 31] */
     animation: goldBorderPulse 2.5s infinite ease-in-out !important;
 }
 
+/* 邊框冷金到亮白的呼吸影格[cite: 31] */
 @keyframes goldBorderPulse {
     0%, 100% {
         border-color: #B59E74 !important;
@@ -115,67 +150,81 @@
     }
 }
 
-/* 2. 🎯 方形外框光暈 (利用 ::after 的多重模糊陰影，100% 貼合卡片方形，且絕無邊界切割) */
+/* 2. 🎯 方形外框環境光暈 (100% 貼合直角邊緣，防裁切核心)
+   【防跑版設計】
+   - 捨棄 background 的徑向漸變，避免生成圓形光暈時，邊角出現明顯的硬邊切口。
+   - 利用 ::after 虛擬元素，將尺寸設定與卡片本體 `100%` 絕對貼合[cite: 31]。
+   - `box-shadow` 在虛擬元素上向外渲染多層不同模糊半徑 (blur) 的投影，堆疊出極具立體感且完全無邊界的方形柔和金光[cite: 31]。
+*/
 .wall-card.my-new-card::after {
     content: '';
     position: absolute;
-    /* 💡 尺寸與卡片本體 100% 精準對齊，防止被任何外部邊界切割 */
+    /* 💡 尺寸與卡片本體 100% 精準對齊，防止外擴光暈被任何外部 slider-container 邊界切割[cite: 31] */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     
-    background: transparent !important; /* ➔ 清空原本的圓形漸變背景，不使用 background */
-    border-radius: 0; /* ➔ 保持與清水模卡片相同的直角 */
-    z-index: -1; 
+    background: transparent !important; /* ➔ 清空原本的圓形漸變背景，不使用 background[cite: 31] */
+    border-radius: 0; /* ➔ 保持與清水模卡片相同的直角[cite: 31] */
+    z-index: -1; /* 位於卡片主體下方，避免阻擋卡片內部文字的複製[cite: 31] */
     pointer-events: none;
     
-    /* 啟動方形金光的透明度與外擴雙重呼吸 */
+    /* 啟動方形金光的透明度與外擴雙重呼吸[cite: 31] */
     animation: squareGoldGlow 2.5s infinite ease-in-out;
 }
 
-/* 🎯 方形金光專用動畫：利用多層不同模糊半徑 (blur) 的方形投影，堆疊出無邊界的柔和光暈 */
+/* 🎯 方形環境金光動畫：多重模糊陰影堆疊[cite: 31] */
 @keyframes squareGoldGlow {
     0%, 100% {
         opacity: 0.4;
         box-shadow: 
-            0 0 15px rgba(197, 168, 128, 0.4),  /* 第一層：近距離貼邊亮光 */
-            0 0 30px rgba(197, 168, 128, 0.2),  /* 第二層：中距離過渡光暈 */
-            0 0 50px rgba(197, 168, 128, 0.1);  /* 第三層：遠距離柔和環境光 */
+            0 0 15px rgba(197, 168, 128, 0.4),  /* 第一層：近距離貼邊亮光[cite: 31] */
+            0 0 30px rgba(197, 168, 128, 0.2),  /* 第二層：中距離過渡光暈[cite: 31] */
+            0 0 50px rgba(197, 168, 128, 0.1);  /* 第三層：遠距離柔和環境光[cite: 31] */
     }
     50% {
-        opacity: 1; /* 呼吸至頂點時，光暈最為濃厚 */
+        opacity: 1; /* 呼吸至頂點時，光暈最為濃厚[cite: 31] */
         box-shadow: 
-            0 0 25px rgba(255, 255, 255, 0.6),  /* 頂點白金光 */
-            0 0 45px rgba(197, 168, 128, 0.8),  /* 方形外擴擴散 */
-            0 0 60px rgba(197, 168, 128, 0.4);  /* 超大範圍環境暖光 */
+            0 0 25px rgba(255, 255, 255, 0.6),  /* 頂點白金光[cite: 31] */
+            0 0 45px rgba(197, 168, 128, 0.8),  /* 方形外擴擴散[cite: 31] */
+            0 0 85px rgba(197, 168, 128, 0.4);  /* 超大範圍環境暖光[cite: 31] */
     }
 }
 
-/* 3. 新卡片誕生時的飛入登場 */
+/* 3. 新卡片誕生時的飛入登場[cite: 31]
+   【動畫心理學】
+   - 使用 CSS3 cubic-bezier 彈性貝茲曲線：`cubic-bezier(0.16, 1, 0.3, 1)`[cite: 31]。
+   - 前 15% 速度極快（如流星落下），後 85% 緩慢減速安穩降落（如羽毛落定），
+     創造極致、平穩、高質感且不暈眩的物理飛入感。
+*/
 .wall-card.card-fly-in {
-    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; /* forwards 保持結束狀態[cite: 31] */
 }
 
 @keyframes cardScaleUp {
     from {
         opacity: 0;
-        transform: scale(0.7) translateY(30px);
+        transform: scale(0.7) translateY(30px); /* 從 0.7 倍大小、下方 30px 處飛入[cite: 31] */
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: scale(1) translateY(0); /* 回歸正常尺寸與坐標原點[cite: 31] */
     }
 }
 
-/* 4. 歷史思念牆卡片 Hover 的「浮動離地感」 */
+/* ==========================================================
+   🕊️ 4. 歷史思念牆卡片：滑鼠懸停（Hover）「浮空離地感」動畫
+   ========================================================== */
 .slider-container .wall-card {
+    /* 💡 同步採用優雅的減速貝茲曲線，使滑鼠移開、移入時，卡片升降動態絲滑順暢[cite: 31] */
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     cursor: pointer !important;
 }
 
+/* 滑鼠移入卡片時：優雅浮起 12px，並外擴深層投影[cite: 31] */
 .slider-container .wall-card:hover {
-    transform: translateY(-12px) scale(1.03) !important;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
-    border-color: #B59E74 !important;
+    transform: translateY(-12px) scale(1.03) !important; /* 向上浮起 12px，並微幅放大 1.03 倍營造近視視覺[cite: 31] */
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important; /* 投影半徑大幅擴展，模擬卡片離地越遠、下方投影越模糊淡出的物理光學現象[cite: 31] */
+    border-color: #B59E74 !important; /* 邊框調為主題冷金[cite: 31] */
 }
