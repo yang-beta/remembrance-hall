@@ -380,14 +380,20 @@ input[type="text"]:focus, textarea:focus {
     display: none; 
 }
 
-/* 🎯 重新設計：三排橫向延伸的網格佈局 */
+/* 🎯 重新設計：三排橫向延伸的網格佈局（修正為左至右排列） */
 .wall-grid-row {
     display: grid;
-    /* 💡 強制設定為固定 3 排 */
+    /* 💡 1. 設定固定 3 排，每排高度 220px */
     grid-template-rows: repeat(3, 220px); 
-    grid-auto-flow: column; /* 💡 關鍵：讓卡片超出 3 個時自動往右邊（橫向）新增欄位 */
-    gap: 24px;
-    width: max-content;
+    
+    /* 💡 2. 改為 row（橫向優先）！讓卡片依序由左至右、再由上而下完美平鋪 */
+    grid-auto-flow: row; 
+    
+    /* 💡 3. 每一直欄寬度固定 290px，由瀏覽器自動計算往右新增欄位 */
+    grid-template-columns: repeat(auto-fill, 290px); 
+    
+    gap: 24px; /*[cite: 17] */
+    width: max-content; /*[cite: 17] */
 }
 
 .wall-card {
