@@ -1,4 +1,4 @@
-// js/app.js --- 洸限 前端核心互動邏輯 (精準插頁與點擊解衝突版) ---
+// js/app.js --- 洸限 前端核心互動邏輯 ---
 
 const SUPABASE_URL = "https://cwlxcsdqoigkutbeemvf.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_L52BGOl7tE2hBgLnqxnGoA_u6RQ3yrd";
@@ -61,7 +61,7 @@ window.generateRemembrance = async function() {
         localStorage.setItem('hasExperiencedRelease', 'false');
 
         // ====================================================================
-        // 🎯 核心解決：精準本地插頁，不用 setTimeout 猜時間！
+        // 🎯 核心解決：精準本地插頁
         // ====================================================================
         const wallGrid = document.getElementById('wall-grid');
         
@@ -91,32 +91,29 @@ window.generateRemembrance = async function() {
             <div class="wall-card-footer">— 致 ${nickname}</div>
         `;
 
-        // 為新卡片綁定專屬的 click 事件（傳入 true，代表這是新生成的卡片）
+        // 為新卡片綁定專屬的 click 事件
         newCard.addEventListener('click', function() {
             window.clickWallCard(targetChinese, finalQuote, nickname, true);
         });
 
-       // ➔ 將新卡片精準插入到思念牆的第一個位置
+        // ➔ 將新卡片精準插入到思念牆的第一個位置
         wallGrid.insertBefore(newCard, wallGrid.firstChild);
 
-        // ====================================================================
-        // 🎯 核心修正：精準控制前端牆上最多只保留 36 張卡片 (3排 × 12個)
-        // ====================================================================
+        // 精準控制前端牆上最多只保留 36 張卡片
         const currentCards = wallGrid.querySelectorAll('.wall-card');
         if (currentCards.length > 36) {
-            currentCards[currentCards.length - 1].remove(); // 刪除最舊的
+            currentCards[currentCards.length - 1].remove(); 
         }
-        // ====================================================================
 
-        // 🎯 核心修正：重置放手按鈕 (使用星沙 Icon)
+        // 重置放手按鈕
         const releaseBtn = document.getElementById('release-btn');
         if (releaseBtn) {
             releaseBtn.disabled = false;
             releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
         }
 
-        // ➔ 自動平滑滾動到思念牆
-        document.querySelector('.wall-section').scrollIntoView({ behavior: 'smooth' });
+        // ➔ 核心修正：將滾動目標改為對齊獨立出來的 wall-section-container，且靠頂對齊（start）
+        document.getElementById('wall-section-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         // ➔ 滾動軸拉回最左邊，確保一眼看見剛落下的新卡片
         const container = document.getElementById('slider-container');
@@ -124,7 +121,7 @@ window.generateRemembrance = async function() {
             container.scrollLeft = 0;
         }
 
-        // 3. 背景悄悄上傳到 Supabase (使用者不需要在前端等待重新刷新！)
+        // 3. 背景悄悄上傳到 Supabase
         if (supabaseClient) {
             const fullText = `[${targetChinese}] ${finalQuote} (${nickname})`;
             supabaseClient
@@ -157,7 +154,7 @@ async function generateAIQuote(targetType, name, userMemory) {
         他留下的思念細節與記憶畫面是：『${userMemory}』。
         請為他撰寫一段 1 到 2 句、字數在 50~80 字內、極具文學美感的思念語錄。
         【核心美學限制與情緒轉折指令】：
-        1. 語句必須完美、流暢地將參展者輸入的記憶細節融合進去，不得顯得突兀或語法不通。
+        1. 語句必須完美、流暢地將參展者輸入的記憶細節融合進去，不得顯得突兀或語法不通.
         2. 重要：請敏銳分析使用者的字句。如果偵測到沉重、後悔、悲傷、寫到「過往時間無法挽回」、「遺憾」、「痛」等走不出的負面情緒，請在文案後半段巧妙地進行溫柔的意境轉折，改以溫暖、療癒、陪伴、或是賦予前行力量、釋懷的鼓勵方式結尾。
         3. 必須以第一人稱或致敬的宏觀視角書寫（例如：以「「致 ${name}：...」」或「「親愛的 ${name}：...」」為開頭，文字頭尾請加上引號「」）。
         4. 請直接輸出這段文案本身，絕對不要包含任何多餘的引言、解釋或「好的，這是為您生成的文案」等字眼。
@@ -228,7 +225,6 @@ async function fetchWallMessages() {
             `;
         }); 
 
-        // 綁定點擊事件（傳入 false，代表這是已加載的歷史舊卡片）
         document.querySelectorAll('.wall-card').forEach(card => {
             card.addEventListener('click', function() {
                 const category = this.getAttribute('data-category');
@@ -243,27 +239,20 @@ async function fetchWallMessages() {
     }
 }
 
-// ==========================================
-// 🎯 階段三：重逢 - 開啟全螢幕 Modal (識別新舊卡片)
-// ==========================================
+// 🎯 階段三：重逢 - 開啟全螢幕 Modal
 window.clickWallCard = function(category, quote, nickname, isNewCard) {
     document.getElementById('card-tag-display').innerText = `思念致意錄 / ${category}`;
     document.getElementById('card-text-display').innerText = quote;
     document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
     
-    // 取得放手按鈕
     const releaseBtn = document.getElementById('release-btn');
     
-    // 🎯 根據卡片身份，動態設定按鈕狀態
     if (releaseBtn) {
         if (isNewCard) {
-            // 如果是剛剛新生成的發光卡片：允許放手
             releaseBtn.disabled = false;
             releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
-            // 同步將放手狀態鎖重置為尚未體驗
             hasExperiencedRelease = false;
         } else {
-            // 如果是舊卡片：直接鎖死，顯示已送出祝福
             releaseBtn.disabled = true;
             releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`;
         }
@@ -278,9 +267,7 @@ window.clickWallCard = function(category, quote, nickname, isNewCard) {
     );
 };
 
-// ==========================================
 // 🎯 階段三：重逢 - 關閉全螢幕 Modal
-// ==========================================
 window.closeReunionModal = function() {
     const outputSection = document.getElementById('output-section');
     
@@ -342,7 +329,7 @@ window.downloadCard = function() {
 };
 
 // ==========================================
-// 🎯 階段四：重逢之後 - 放手、吹散、重生成為粒子 (防重複點擊、瞬間淨化卡片版)
+// 🎯 階段四：重逢之後 - 放手、吹散、重生成為粒子
 // ==========================================
 window.releaseCardAndFly = function() {
     const card = document.getElementById('printable-card');
@@ -351,13 +338,11 @@ window.releaseCardAndFly = function() {
     
     if (!card || hasExperiencedRelease) return;
     
-    // 1. 鎖定狀態，防止在同一次 Modal 中重複點擊
     hasExperiencedRelease = true;
     localStorage.setItem('hasExperiencedRelease', 'true');
     releaseBtn.disabled = true;
     releaseBtn.innerText = "🍃 正在化為祝福之光...";
 
-    // 🎯 核心修正：按下放手的瞬間，立刻把牆上卡片的「新卡片」身分與光暈拔除！
     const myNewCardOnWall = document.querySelector('.wall-card.my-new-card');
     if (myNewCardOnWall) {
         myNewCardOnWall.classList.remove('my-new-card', 'card-fly-in');
@@ -374,15 +359,12 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 取得卡片在螢幕上的精確座標以產生粒子
     const rect = card.getBoundingClientRect();
 
-    // 3. 卡片顫抖動態 (放慢優雅版)
     const shakeTl = gsap.timeline();
     shakeTl.to(card, { x: "+=6", y: "-=3", rotation: 1, duration: 0.12, repeat: 10, yoyo: true })
            .to(card, { x: 0, y: 0, rotation: 0, duration: 0.15 });
 
-    // 4. 建立金色與白色的碎屑粒子飄散
     const particleCount = 120; 
     const colors = ['#c5a880', '#B59E74', '#FAF8F5', '#ffffff'];
 
@@ -421,7 +403,6 @@ window.releaseCardAndFly = function() {
         });
     }
 
-    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -431,41 +412,35 @@ window.releaseCardAndFly = function() {
         duration: 3.5, 
         ease: "power2.inOut",
         onComplete: () => {
-            // 隱藏 Modal
-            outputSection.style.display = 'none'; //[cite: 20]
+            outputSection.style.display = 'none'; 
+            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 }); 
             
-            // 重置卡片樣式以利下次正常開啟[cite: 20]
-            gsap.set(card, { scale: 1, rotationY: 0, rotationX: 0, filter: "none", opacity: 1 }); //[cite: 20]
-            
-            // 鎖死放手按鈕[cite: 20]
-            releaseBtn.disabled = true; //[cite: 20]
-            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; //[cite: 20]
+            releaseBtn.disabled = true; 
+            releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; 
 
             // ==========================================
-            // 🎯 【優化：實體頁尾展開 ➔ 物理對齊錨點滾動 ➔ 啟動打字】
+            // 🎯 【實體頁尾展開 ➔ 物理對齊錨點滾動 ➔ 啟動打字】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
             const anchor = document.getElementById('outro-align-anchor');
             
             if (outroSection && anchor) {
-                // 1. 將完結頁面展開
                 outroSection.classList.add('active');
                 
-                // 2. 💡 延遲 400 毫秒（等待 100vh 實體高度完全撐開完畢）
+                // 延遲 400 毫秒（等待 100vh 實體高度完全撐開完畢）
                 setTimeout(() => {
-                    // 強制將留言牆橫向捲動軸歸零
                     const container = document.getElementById('slider-container');
                     if (container) {
                         container.scrollLeft = 0;
                     }
 
-                    // 💡 核心：將鏡頭精準對齊到完結頁最底部的隱形錨點，強制瀏覽器拉足垂直滑動距離
+                    // 將鏡頭精準對齊到完結頁最底部的隱形錨點，將上方的留言牆完全推出視窗
                     anchor.scrollIntoView({ 
                         behavior: 'smooth', 
                         block: 'end' 
                     });
                     
-                    // 3. 延遲 1.5 秒（待鏡頭平滑對齊至最底端、文字完美處於畫面中央時），啟動打字機
+                    // 延遲 1.5 秒等待對齊定位後，啟動單行打字機
                     setTimeout(() => {
                         startTypewriterEffect();
                     }, 1500);
@@ -473,11 +448,9 @@ window.releaseCardAndFly = function() {
             }
         }
     });
-}; // 🎯 確保 app.js 語法完美閉合！
+};
 
-// ==========================================
-// 🎯 溫柔的打字機效果 (從 HTML 的空元素中一字一字打入)
-// ==========================================
+// 溫柔的打字機效果 (從 HTML 的空元素中一字一字打入)
 function startTypewriterEffect() {
     const textEl = document.getElementById('typewriter-text');
     const subEl = document.getElementById('typewriter-sub');
@@ -487,7 +460,6 @@ function startTypewriterEffect() {
     
     if (!textEl || !subEl) return;
     
-    // 啟動時強制清空內容，確保 100% 重新開始打字
     textEl.innerHTML = "";
     subEl.innerHTML = "";
     
@@ -499,7 +471,6 @@ function startTypewriterEffect() {
         } else {
             clearInterval(mainTimer);
             
-            // 主文字打完後，延遲 800 毫秒再開始打副標題
             setTimeout(() => {
                 let subIndex = 0;
                 const subTimer = setInterval(() => {
@@ -514,3 +485,10 @@ function startTypewriterEffect() {
         }
     }, 120);
 }
+
+// 🎯 核心修正：首頁進場略過按鈕的全域對齊邏輯
+window.scrollToContent = function() {
+    if (window.tl) window.tl.progress(1);
+    document.getElementById('main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    gsap.to(".skip-anim-btn", { opacity: 0, pointerEvents: "none", duration: 0.5 });
+};
