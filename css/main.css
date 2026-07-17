@@ -385,15 +385,11 @@ input[type="text"]:focus, textarea:focus {
     display: grid;
     /* 💡 1. 設定固定 3 排，每排高度 220px */
     grid-template-rows: repeat(3, 220px); 
-    
-    /* 💡 2. 改為 row（橫向優先）！讓卡片依序由左至右、再由上而下完美平鋪 */
-    grid-auto-flow: row; 
-    
-    /* 💡 3. 每一直欄寬度固定 290px，由瀏覽器自動計算往右新增欄位 */
+    grid-auto-flow: column; /* 💡 保持橫向無限延伸 */
+    /* 💡 2. 每一直欄寬度固定 290px，由瀏覽器自動計算往右新增欄位 */
     grid-template-columns: repeat(auto-fill, 290px); 
-    
-    gap: 24px; /*[cite: 17] */
-    width: max-content; /*[cite: 17] */
+    gap: 24px;
+    width: max-content;
 }
 
 .wall-card {
