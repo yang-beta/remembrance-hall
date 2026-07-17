@@ -93,7 +93,7 @@ window.generateRemembrance = async function() {
             </div>
             <div class="wall-card-body">${finalQuote}</div>
             <div class="wall-card-footer">— 致 ${nickname}</div>
-        `;[cite: 21]
+        `;
 
         // 為新卡片綁定獨立的 click 事件[cite: 21]
         newCard.addEventListener('click', function() {
@@ -256,7 +256,7 @@ async function fetchWallMessages() {
                 </div>
                 <div class="wall-card-body">${quote}</div>
                 <div class="wall-card-footer">— 致 ${nickname}</div>
-            `;[cite: 21]
+            `;
 
             cardEl.addEventListener('click', function() {
                 window.clickWallCard(category, quote, nickname, false);[cite: 21]
@@ -380,7 +380,7 @@ function initDragScroll() {
 /**
  * @function downloadCard
  * @description 使用 html2canvas 將精緻的清水模卡片進行高解析度渲染導出，
- *              並自動轉換為 PNG 圖片，觸發瀏覽器下載儲存。[cite: 21]
+ *              並自動轉換為 PNG 圖片，觸發瀏覽器下載儲育。[cite: 21]
  */
 window.downloadCard = function() {
     const cardNode = document.getElementById('printable-card');[cite: 21]
