@@ -195,17 +195,23 @@ async function fetchWallMessages() {
         }
 
         // ====================================================================
-        // 🎯 核心演算法：將 1D 陣列重新排序為適合 grid-auto-flow: column 呈現「橫向優先」的順序
+        // 🎯 完美橫向對齊演算法：
+        // 將由新到舊的 1D 資料，重新分配到 3 列（rows）的表格中。
+        // 當 grid-auto-flow: column 時，它會按照我們先橫向（r=0）、再橫向（r=1）分派，
+        // 最終渲染時，卡片就會呈現由左至右，No.1 緊鄰 No.2、No.3 橫向排開！
         // ====================================================================
-        const sortedList = [];
-        const rows = 3; // 固定 3 排
-        const cols = Math.ceil(list.length / rows); // 計算一共需要幾欄
+        const rows = 3;
+        const cols = Math.ceil(list.length / rows);
+        const sortedList = new Array(list.length);
 
+        let itemIndex = 0;
+        // 💡 橫向優先分派：先排第一排的所有欄位，再排第二排、第三排
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                const originalIndex = c * rows + r; // 核心數學對齊公式
-                if (originalIndex < list.length) {
-                    sortedList[originalIndex] = list[originalIndex];
+                const targetIndex = c * rows + r; // CSS 網格 column 排列的物理索引對應
+                if (itemIndex < list.length && targetIndex < list.length) {
+                    sortedList[targetIndex] = list[itemIndex];
+                    itemIndex++;
                 }
             }
         }
@@ -213,10 +219,9 @@ async function fetchWallMessages() {
 
         wallGrid.innerHTML = '';
         
-        // 使用經過橫向排序重組後的 list 進行渲染
-        list.forEach((item, index) => {
-            // 💡 取得我們經過 3 階橫向重組對位後的卡片資料，若無資料則用空元素補齊以維持對齊
-            const targetItem = sortedList[index];
+        // 💡 🎯 關鍵修正：迴圈必須改為遍歷我們重新數學對齊後的 sortedList 陣列！
+        sortedList.forEach((targetItem) => {
+            // 如果遇到不足 3 的倍數的空元素，直接跳過
             if (!targetItem) return;
 
             const match = targetItem.text.match(/^\[(.*?)\] (.*?) \((.*?)\)$/);
@@ -243,7 +248,7 @@ async function fetchWallMessages() {
             
             cardEl.innerHTML = `
                 <div class="wall-card-header">
-                    <span>思念致意錄 / ${category}</span>
+                    <span>思念回憶錄 / ${category}</span>
                     <span style="color: var(--text-muted);">${dateStr}</span>
                 </div>
                 <div class="wall-card-body">${quote}</div>
