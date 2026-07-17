@@ -4,45 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>洸限</title>
+    
+    <!-- ==========================================================
+         📦 外部資源載入區
+         ========================================================== -->
+    <!-- 1. Google Fonts 中文字型：Noto Serif TC (宋體/明體，用於標題、卡片等感性文字) & Noto Sans TC (無襯線/黑體，用於一般內文與按鈕) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- 2. Font Awesome 6.5.1：載入圖標庫，提供愛心、爪子、信件、按鈕箭頭等精緻視覺icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- 3. 防止瀏覽器發送預設的 favicon 請求，避免空白圖示產生 404 報錯 -->
     <link rel="icon" href="data:,">
     
+    <!-- 4. 展覽客製化樣式表：main.css 控制清水模佈局與 Snap 滑動；animation.css 控制動態脈衝、飛入與星砂粒子 -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animation.css">
     
+    <!-- 5. 外部核心 JavaScript 庫：
+         - GSAP: 控制極致平滑的補間動畫 (包含 Modal 彈窗與星砂粒子物理散開)
+         - html2canvas: 將卡片 DOM 元素在高倍率下精準繪製並轉譯導出為 PNG 圖檔
+         - Supabase SDK: 透過 CDN 引入，用於與雲端資料庫進行非同步連線以存取歷史留言板數據 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+    <!-- 🌌 最底層渲染 Canvas 畫布：由 canvas.js 動態繪製曼陀羅宇宙粒子與緩慢旋轉背景 -->
     <canvas id="mandalaCanvas"></canvas>
 
-    <!--  前台全螢幕 Banner 圖層 -->
+    <!-- ==========================================================
+         🖼️ 第一階段：全螢幕進場 Banner (獨立 100vh)
+         ──────────────────────────────────────────────────────────
+         【用途】展示展覽主標題，營造沉沉宇宙、心電共振的沉浸式進場氛圍。
+         【運作流程】
+         1. 網頁開啟時，canvas.js 的 GSAP 補間動畫會讓此處的標題與提示字慢慢浮現。
+         2. 使用者可向下滾動，或是點擊 "Skip 略過動畫" ✕ 按鈕與底部箭頭。
+         3. 點擊會觸發 scrollToContent()，平滑滑動至 main-content 輸入區。
+         ========================================================== -->
     <div class="hero-container">
+        <!-- 略過按鈕：點擊立刻讓首頁進場動畫衝到 100% 進度並滾動 -->
         <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
 
-        <!-- ==========================================================
-             🖼️ 【未來展覽主視覺橫幅海報 ── 放置與替換位置】
-             ========================================================== -->
+        <!-- 未來展覽主視覺海報預留位置 (可隨時將註解打開並替換 img 的 src 來源) -->
         <!--
         <div class="main-banner-poster">
             <img src="images/your-exhibition-banner.png" alt="洸限 展覽主視覺海報" />
         </div>
         -->
-        <!-- ========================================================== -->
         
         <h1 class="brand-title">洸限</h1>
         <p class="main-question">如果還有一次機會，你最想做什麼？</p>
         
+        <!-- 底部提示滾動箭頭 -->
         <div class="scroll-hint" onclick="scrollToContent()">
             <span class="arrow">↓</span>
         </div>
     </div>
-    <!-- 第二階段：留言板卡片 (獨立 100vh 全畫面) -->
+
+    <!-- ==========================================================
+         ✍️ 第二階段：思念輸入與卡片生成表單 (獨立 100vh Wrapper 容器)
+         ──────────────────────────────────────────────────────────
+         【用途】提供觀展者親自填寫思念、選擇對象的清水模質感互動面板。
+         【運作流程】
+         1. 使用者切換 target-btn 按鈕（親人/朋友/寵物），觸發 app.js 中的 setTarget() 切換全域狀態。
+         2. 輸入暱稱與第一個浮現的畫面細節後，點擊 "⚡ 生成思念儀式卡片" 執行 generateRemembrance()。
+         3. JS 發送請求至 Vercel Edge API，由大語言模型溫柔淬鍊出專屬卡片內文。
+         4. 生成成功後，前端會將新卡片精準插至留言牆首位，同時自動平滑下滾至下一屏（第三階段）。
+         ========================================================== -->
     <div class="wrapper" id="main-content">
         <header>
             <h1>洸限</h1>
@@ -51,6 +83,7 @@
 
         <div class="grid-layout">
             <div class="input-card">
+                <!-- 1. 思念對象類型選擇器 -->
                 <div class="form-group">
                     <label>思念的對象</label>
                     <div class="target-selector">
@@ -69,6 +102,7 @@
                     </div>
                 </div>
 
+                <!-- 2. 稱呼與記憶細節輸入區 -->
                 <div class="form-group">
                     <label for="nickname">如何稱呼他/她/牠？</label>
                     <input type="text" id="nickname" placeholder="例如：外婆、老友小宇、橘貓咪咪">
@@ -79,13 +113,29 @@
                     <textarea id="memory" rows="3" placeholder="例如：廚房裡的飯菜香、一同看海的下午、在腳邊呼嚕嚕的溫度"></textarea>
                 </div>
 
+                <!-- 3. 生成按鈕 -->
                 <button class="btn-submit" onclick="generateRemembrance()">⚡ 生成思念儀式卡片</button>
             </div>
         </div>
             
-        <!-- 🎯 全螢幕重逢 Modal 保持原位 -->
+        <!-- ==========================================================
+             🎯 階段三與四核心彈窗：全螢幕重逢儀式 Overlay
+             ──────────────────────────────────────────────────────────
+             【用途】當使用者點選思念留言牆上的任何卡片時，由此 Overlay 蓋上，
+                    在靜謐的深黑磨砂毛玻璃背景中，單獨呈現該回憶卡片。
+             【按鈕配置】
+             - 儲存回憶卡片 (downloadCard): 調用 html2canvas 將 printable-card 保存成精美圖檔。
+             - 釋懷，放手執著 (releaseCardAndFly): 【核心放手儀式】
+               1. 鎖定按鈕防止重複點選。
+               2. 啟動卡片 3D 震顫與漸淡模糊效果。
+               3. 物理取得 DOM 座標，生成 120 顆朝右上方飄移擴散的金色星砂粒子。
+               4. 卡片徹底化為微光後，解除全網 Snap 磁鐵滾動干擾，平滑滑動到第四階段完結落幕。
+             ========================================================== -->
         <div class="output-section" id="output-section">
+            <!-- 右上角極簡關閉按鈕 -->
             <button class="close-modal-btn" onclick="closeReunionModal()">✕ 關閉</button>
+            
+            <!-- 被下載與保存的實體清水模卡片區域 -->
             <div class="card-container" id="printable-card">
                 <div class="card-header">
                     <span class="card-tag" id="card-tag-display">思念回憶錄 / 親人</span>
@@ -105,6 +155,7 @@
                 </div>
             </div>
             
+            <!-- 下方互動功能區 -->
             <div class="card-actions">
                 <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存回憶卡片</button>
                 <button class="btn-action release" id="release-btn" onclick="releaseCardAndFly()">
@@ -112,14 +163,25 @@
                 </button>
             </div>
         </div>
-    </div> <!-- 🎯 讓 wrapper 在這裡精準結束 -->
+    </div> <!-- 🎯 wrapper 容器在這裡精準閉合，確保輸入卡片與 Modal 正確包裹於此 -->
 
-    <!-- 第三階段：思念留言牆 (獨立 100vh 全畫面，移到外層排列) -->
+
+    <!-- ==========================================================
+         🌌 第三階段：留白處思念留言牆 (獨立 100vh)
+         ──────────────────────────────────────────────────────────
+         【用途】將 Supabase 中保存的大眾思念卡片，以行先導、由左至右橫向無限延伸展示。
+         【運作流程】
+         1. 網頁加載時，app.js 中的 fetchWallMessages() 從 Supabase 拉取最新數據，
+            並透過「完美橫向列優先排序演算法」，數學性重分配至具有三列 (grid-template-rows) 網格的 .wall-grid-row 中。
+         2. 懸浮邊緣左右大箭頭：按住或懸停，可觸發 slideWall() 將留言牆往左、往右推移。
+         3. 具有 Drag-to-Scroll (initDragScroll) 動態，滑鼠按住即可像手機滑動一樣橫向拖曳思念卡片。
+         ========================================================== -->
     <div class="wall-section" id="wall-section-container">
         <div class="wall-header-wrapper">
             <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
         </div>
         
+        <!-- 左右定位懸浮箭頭 -->
         <button class="edge-arrow-btn left" onclick="slideWall('left')">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
@@ -127,8 +189,10 @@
             <i class="fa-solid fa-chevron-right"></i>
         </button>
 
+        <!-- 橫向拖曳軌道滑槽 -->
         <div class="slider-container" id="slider-container">
             <div class="wall-grid-row" id="wall-grid">
+                <!-- 預設讀取狀態，在 Supabase 訊息拉取成功後會自動被新 DOM 卡片節點完全替代 -->
                 <div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">
                     正在開啟思念終點館通道...
                 </div>
@@ -136,27 +200,54 @@
         </div>
     </div>
 
-    <!-- 第四階段：落幕結尾文字 (獨立 100vh 全畫面) -->
+
+    <!-- ==========================================================
+         🍂 第四階段：展覽落幕完結詩篇 (獨立 100vh)
+         ──────────────────────────────────────────────────────────
+         【用途】當使用者進行完「放手儀式（卡片吹散）」後，承接最後視覺震撼與溫柔收尾的滿版實體頁尾。
+         【運作流程】
+         1. 放手儀式結束後，app.js 將此區塊啟動 active，高度由 0 緩緩撐開至實體 100vh，使觀展者無法自由回滾。
+         2. 平滑滾動置底，靜待 1.5 秒後，啟動 startTypewriterEffect() 打字機。
+         3. 主標與副標以感性、舒緩的頻率一字一字浮現，完成整趟洸限之夜的藝術靈魂洗禮。
+         ========================================================== -->
     <div class="exhibition-outro-section" id="outro-section">
         <div class="outro-content">
+            <!-- 感性主標打字機顯示容器 -->
             <p class="outro-text" id="typewriter-text"></p>
+            <!-- 品牌副標打字機顯示容器 -->
             <p class="outro-brand" id="typewriter-sub"></p>
         </div>
+        <!-- 🎯 底端隱形錨點定位標記：用來引導 scrollIntoView 精準一次性對齊底部，解決頓挫問題 -->
         <div id="outro-align-anchor" style="position: absolute; bottom: 0; left: 0; width: 1px; height: 1px; pointer-events: none;"></div>
     </div>
     
     
-    <!-- 🎯 載入腳本路徑 -->
+    <!-- ==========================================================
+         🎯 載入主控制腳本
+         ========================================================== -->
+    <!-- 1. 背景曼陀羅與 GSAP 首頁時間線 -->
     <script src="js/canvas.js"></script>
+    <!-- 2. 前端核心互動與儀式控制 (作為 ES6 模組載入) -->
     <script src="js/app.js" type="module"></script>
     
+    <!-- ==========================================================
+         🎯 頁面內建全域導航控制：scrollToContent()
+         ──────────────────────────────────────────────────────────
+         【運作邏輯】
+         - 當使用者點擊「略過動畫」或「向下滾動箭頭」時觸發。
+         - 優雅判斷：
+           - 若 canvas.js 中定義的全域 window.scrollToContent 還在控制時間線，
+             則交由它強制將 GSAP 快轉至最後一影格並滑動，避免衝突。
+           - 若進場時間線已結束，則使用標準 JS 原生 scrollIntoView，
+             以 smooth 補間、靠頂對齊 (start) 的方式平滑滑動至 wrapper (留言板輸入區) 的起點。
+         ========================================================== -->
     <script>
-        // 確保留過動畫時能精準滑動到獨立滿版的主表單正起點
         function scrollToContent() {
-            // 如果進場動畫還在跑，直接叫全域的完結函式處理
             if (window.scrollToContent) {
+                // 快轉 GSAP 進場並平滑滾動
                 window.scrollToContent();
             } else {
+                // 如果動畫完結，直接原生捲動
                 document.getElementById('main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
