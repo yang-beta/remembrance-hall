@@ -18,34 +18,91 @@
     padding: 0;
 }
 
+/* ==========================================
+   🎯 跨平台全畫面控制與 Scroll Snap (磁鐵捲動)[cite: 23]
+   ========================================== */
+
 html {
-    scroll-behavior: smooth; 
-    background-color: var(--bg-banner);
+    scroll-behavior: smooth;[cite: 23]
+    scroll-snap-type: y mandatory; /* 強制垂直方向每次捲動都像磁鐵般精準對齊區塊[cite: 23] */
+    background-color: var(--bg-banner);[cite: 23]
 }
 
 body {
-    width: 100%;
-    min-height: 100vh;
-    background-color: var(--bg-banner); 
-    color: #e5e5e5; 
-    font-family: var(--font-sans);
-    line-height: 1.6;
-    overflow-x: hidden; /* 🎯 關鍵：徹底隱藏整頁最底部的左右橫向滾動條 */
-    overflow-y: auto;   /* 🎯 關鍵：不需等待動畫，進場直接允許滾動 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 100%;[cite: 23]
+    min-height: 100vh;[cite: 23]
+    background-color: var(--bg-banner);[cite: 23]
+    color: #e5e5e5;[cite: 23]
+    font-family: var(--font-sans);[cite: 23]
+    line-height: 1.6;[cite: 23]
+    overflow-x: hidden; /* 徹底隱藏最底部的左右橫向滾動條[cite: 23] */
+    overflow-y: auto;   /* 允許捲動[cite: 23] */
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
 }
 
-.wrapper {
+/* ==========================================
+   🖼️ 第一階段：Banner 主視覺滿版[cite: 23]
+   ========================================== */
+.hero-container {
+    scroll-snap-align: start; /* 對齊起點[cite: 23] */
+    scroll-snap-stop: always; /* 強迫停頓，無法一次滑過頭[cite: 23] */
+    position: relative;[cite: 23]
+    width: 100%;[cite: 23]
+    height: 100vh;[cite: 23]
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center; /* Flex 幾何絕對置中[cite: 23] */
+    text-align: center;[cite: 23]
+}
+
+/* 🎯 補正 letter-spacing 造成的字體往左偏置 */
+.brand-title {
+    font-size: 5.5rem;
+    font-weight: 300;
+    color: #ffffff;
+    letter-spacing: 1.2rem;
+    padding-left: 1.2rem; /* 精確對等補償字距，強行將字體拉回絕對中心[cite: 23] */
+    margin-bottom: 24px;
+}
+
+/* 防止破圖圖片在沒上傳前干擾置中 */
+.main-banner-poster {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
-    background-color: transparent; 
-    padding: 80px 0;
-    position: relative;
-    z-index: 3; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 1200px;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.92;
+}
+
+.main-banner-poster img:not([src]), 
+.main-banner-poster img[src="images/your-exhibition-banner.png"] {
+    display: none !important;
+}
+
+/* ==========================================
+   ✍️ 第二階段：留言板卡片區塊滿版[cite: 23]
+   ========================================== */
+.wrapper {
+    scroll-snap-align: start;[cite: 23]
+    scroll-snap-stop: always;[cite: 23]
+    width: 100%;[cite: 23]
+    height: 100vh; /* 嚴格滿版[cite: 23] */
+    background-color: transparent;[cite: 23]
+    position: relative;[cite: 23]
+    z-index: 3;[cite: 23]
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center;[cite: 23]
+    padding: 0;[cite: 23]
 }
 
 header, .grid-layout {
@@ -55,7 +112,7 @@ header, .grid-layout {
 }
 
 header {
-    margin-bottom: 50px;
+    margin-bottom: 30px;[cite: 23]
     text-align: left;
     position: relative;
     border-left: 5px solid var(--accent-gold);
@@ -66,7 +123,7 @@ header h1 {
     font-size: 32px;
     font-weight: 700;
     letter-spacing: 2px;
-    color: #e5e5e5; 
+    color: #e5e5e5;[cite: 23]
     margin-bottom: 8px;
 }
 
@@ -79,7 +136,7 @@ header p {
 .grid-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 0;[cite: 23]
 }
 
 .input-card {
@@ -170,24 +227,189 @@ input[type="text"]:focus, textarea:focus {
     background-color: #9C855C;
 }
 
-/* 🎯 階段三與四專用的全螢幕重逢儀式覆蓋層 */
+/* ==========================================
+   🌌 第三階段：下方思念留言牆滿版[cite: 23]
+   ========================================== */
+.wall-section {
+    scroll-snap-align: start;[cite: 23]
+    scroll-snap-stop: always;[cite: 23]
+    position: relative;[cite: 23]
+    width: 100%;[cite: 23]
+    height: 100vh; /* 獨立滿版[cite: 23] */
+    margin-top: 0;[cite: 23]
+    border-top: none;[cite: 23]
+    padding-top: 60px; /* 增加頂部內距，讓「留白處」不貼頂[cite: 23] */
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center; /* 留言橫牆垂直居中[cite: 23] */
+}
+
+/* 標題居中排版 */
+.wall-header-wrapper {
+    display: flex;
+    justify-content: center; /* 確保標題絕對置中[cite: 23] */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;[cite: 23]
+    padding: 0 40px;
+}
+
+.wall-header-wrapper h2 {
+    font-family: var(--font-serif);
+    font-size: 20px;[cite: 23]
+    color: #e5e5e5;[cite: 23]
+    letter-spacing: 0.15em;[cite: 23]
+    text-align: center;[cite: 23]
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wall-header-wrapper h2 i {
+    font-size: 18px;
+    color: var(--accent-gold);
+}
+
+/* 🎯 邊緣懸浮滑動大箭頭 */
+.edge-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 80px;
+    background: rgba(26, 26, 26, 0.4); 
+    border: 1px solid rgba(197, 168, 128, 0.2);
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10; 
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* 預設隱藏[cite: 23] */
+    pointer-events: none; 
+}
+
+.edge-arrow-btn.left {
+    left: 10px;
+    border-radius: 0 4px 4px 0;
+}
+.edge-arrow-btn.right {
+    right: 10px;
+    border-radius: 4px 0 0 4px;
+}
+
+.wall-section:hover .edge-arrow-btn {
+    opacity: 1; /* 滑鼠靠近留言區時浮現[cite: 23] */
+    pointer-events: auto; 
+}
+
+.edge-arrow-btn:hover {
+    background: rgba(197, 168, 128, 0.2);
+    color: #ffffff;
+    border-color: #c5a880;
+}
+
+/* 🎯 橫向捲動滑槽 */
+.slider-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    cursor: grab;
+    /* 採用非對稱 Padding，頂部縮短靠近標題，底部加寬容納卡片向上漂移[cite: 23] */
+    padding: 45px 40px 85px 40px;[cite: 23]
+}
+
+.slider-container:active {
+    cursor: grabbing;
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; 
+}
+
+/* 三排橫向滾動網格 */
+.wall-grid-row {
+    display: grid;
+    grid-template-rows: repeat(3, 220px);[cite: 23]
+    grid-auto-flow: column; /* 橫向無限延伸[cite: 23] */
+    grid-template-columns: repeat(auto-fill, 290px);[cite: 23]
+    gap: 24px;[cite: 23]
+    width: max-content;[cite: 23]
+}
+
+/* 卡片清水模設計 */
+.wall-card {
+    background: var(--concrete-gray); 
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 290px;
+    min-height: 220px;
+    flex-shrink: 0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); 
+}
+
+.wall-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 3px;
+    background-color: var(--accent-gold);
+}
+
+.wall-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-family: var(--font-serif);
+    margin-bottom: 15px;
+}
+
+.wall-card-body {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-main); 
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.wall-card-footer {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* ==========================================
+   🎯 全螢幕重逢儀式 Overlay & 卡片[cite: 23]
+   ========================================== */
 .output-section {
-    display: none; /* 預設隱藏，點擊思念牆自己的卡片才開啟 */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(26, 26, 26, 0.95); /* 深炭灰遮罩，黑化背景 */
-    z-index: 100; /* 確保蓋在最上層 */
+    background-color: rgba(26, 26, 26, 0.95); 
+    z-index: 100; 
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    backdrop-filter: blur(8px); /* 輕微模糊背景 */
+    backdrop-filter: blur(8px); 
 }
 
-/* 讓儀式卡片在全螢幕中完美居中 */
 .card-container {
     width: 380px;
     height: 520px;
@@ -198,9 +420,9 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); /* 加強全螢幕下的懸浮陰影 */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); 
     overflow: hidden;
-    transform: scale(0.9); /* 配合 GSAP 進場動畫縮放 */
+    transform: scale(0.9); 
     opacity: 0;
 }
 
@@ -278,169 +500,6 @@ input[type="text"]:focus, textarea:focus {
     font-weight: 500;
 }
 
-.card-actions {
-    margin-top: 25px;
-    display: flex;
-    width: 100%;
-    max-width: 380px;
-}
-
-.btn-action {
-    flex: 1;
-    padding: 12px;
-    font-family: var(--font-sans);
-    font-size: 14px;
-    cursor: pointer;
-    border: 1px solid var(--concrete-gray);
-    background: none;
-    color: var(--concrete-gray); 
-    transition: all 0.3s;
-}
-
-.btn-action.download {
-    background-color: var(--concrete-gray);
-    color: var(--text-main);
-}
-
-.btn-action.download:hover {
-    background-color: #e2ddd5;
-}
-
-.wall-section {
-    margin-top: 80px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1); 
-    padding-top: 50px;
-    position: relative;
-    width: 100%; 
-}
-
-.wall-header-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    max-width: 800px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 20px;
-}
-
-.wall-section h2 {
-    font-family: var(--font-serif);
-    font-size: 22px;
-    letter-spacing: 1.5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #e5e5e5; 
-}
-
-.wall-section h2 i {
-    font-size: 18px;
-    color: var(--accent-gold);
-}
-
-.slider-arrows {
-    display: flex;
-    gap: 15px;
-}
-
-.arrow-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: color 0.3s;
-    padding: 5px;
-}
-
-.arrow-btn:hover {
-    color: var(--accent-gold);
-}
-
-/* 🎯 為三排卡片加上上下 100px 的 Padding，確保高階方形光暈不被上下邊界裁切 */
-.slider-container {
-    width: 100%;
-    overflow-x: auto;
-    position: relative;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
-    cursor: grab;
-    /* 💡 上下Padding撐開到 100px，高度適應 3 排卡片(約660px) + Gap 與 Padding */
-    padding: 45px 40px 85px 40px; 
-}
-
-.slider-container:active {
-    cursor: grabbing;
-}
-
-.slider-container::-webkit-scrollbar {
-    display: none; 
-}
-
-/* 🎯 重新設計：三排橫向延伸的網格佈局（修正為左至右排列） */
-.wall-grid-row {
-    display: grid;
-    /* 💡 1. 設定固定 3 排，每排高度 220px */
-    grid-template-rows: repeat(3, 220px); 
-    grid-auto-flow: column; /* 💡 保持橫向無限延伸 */
-    /* 💡 2. 每一直欄寬度固定 290px，由瀏覽器自動計算往右新增欄位 */
-    grid-template-columns: repeat(auto-fill, 290px); 
-    gap: 24px;
-    width: max-content;
-}
-
-.wall-card {
-    background: var(--concrete-gray); 
-    border: 1px solid var(--border-color);
-    padding: 24px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 290px;
-    min-height: 220px;
-    flex-shrink: 0;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); 
-}
-
-.wall-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 15%;
-    bottom: 15%;
-    width: 3px;
-    background-color: var(--accent-gold);
-}
-
-.wall-card-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--accent-gold);
-    font-family: var(--font-serif);
-    margin-bottom: 15px;
-}
-
-.wall-card-body {
-    font-family: var(--font-serif);
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--text-main); 
-    margin-bottom: 15px;
-    text-align: justify;
-}
-
-.wall-card-footer {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-align: right;
-}
-
-/* 🎯 全螢幕重逢 Modal 的右上角極簡關閉按鈕 */
 .close-modal-btn {
     position: absolute;
     top: 40px;
@@ -464,12 +523,12 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🎯 階段四：放手致意 雙按鈕美學
+   🎯 雙按鈕美學與放手動畫 
    ========================================== */
 .card-actions {
     margin-top: 25px;
     display: flex;
-    gap: 15px; /* 讓兩個按鈕之間有 15px 的美學間距 */
+    gap: 15px; 
     width: 100%;
     max-width: 380px;
 }
@@ -490,7 +549,6 @@ input[type="text"]:focus, textarea:focus {
     gap: 8px;
 }
 
-/* 儲存卡片按鈕樣式 */
 .btn-action.download {
     background-color: var(--concrete-gray);
     color: var(--text-main);
@@ -500,7 +558,6 @@ input[type="text"]:focus, textarea:focus {
     background-color: #e2ddd5;
 }
 
-/* 放手釋懷按鈕樣式 */
 .btn-action.release {
     border: 1px solid rgba(197, 168, 128, 0.5);
     color: #c5a880;
@@ -512,16 +569,6 @@ input[type="text"]:focus, textarea:focus {
     color: #ffffff;
 }
 
-/* 粒子飄散時，卡片本身的核心粒子化定位 */
-.particle-debris {
-    position: fixed;
-    pointer-events: none;
-    background: radial-gradient(circle, #c5a880 0%, rgba(255, 255, 255, 0) 70%);
-    border-radius: 50%;
-    z-index: 105; /* 浮在卡片之上 */
-}
-
-/* 🎯 階段四：按鈕停用（disabled）時的極簡灰 */
 .btn-action.release:disabled {
     border: 1px solid rgba(127, 127, 127, 0.2) !important;
     color: var(--text-muted) !important;
@@ -531,321 +578,77 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🖼️ 首頁主視覺海報 (Banner) 專用語法
+   🍂 階段四：落幕結尾文字滿版實體頁尾[cite: 23]
    ========================================== */
-/* ==========================================
-   🎯 首頁物理置中補正 (解決字距偏左與破圖干擾)
-   ========================================== */
-
-/* 1. 確保首頁容器為絕對強固的 flex 幾何置中 */
-.hero-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* 💡 確保所有子元素在數學軸線上 100% 置中 */
-    text-align: center;
-}
-
-/* 2. 🎯 補正 letter-spacing 造成的字體往左偏置 */
-.brand-title {
-    opacity: 0; /* 配合 GSAP 動態 */
-    font-size: 5.5rem;
-    font-weight: 300;
-    color: #ffffff;
-    
-    /* 💡 核心修正：字距大會使最後一個字偏右多出空白。
-       我們利用 padding-left 來精確對等補償字距，強行將字體拉回絕對正中心！ */
-    letter-spacing: 1.2rem;
-    padding-left: 1.2rem; 
-    
-    margin-bottom: 24px;
-}
-
-/* 3. 防止破圖圖片在沒上傳前干擾置中 */
-.main-banner-poster {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    max-width: 1200px;
-    height: auto;
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.92;
-}
-
-/* 💡 如果海報圖片沒上傳、或是破圖時，將它完全隱藏，不干擾標題定位 */
-.main-banner-poster img:not([src]), 
-.main-banner-poster img[src="images/your-exhibition-banner.png"] {
-    display: none !important;
-}
-
-/* ==========================================
-   🎯 「留白處」標題置中與懸浮箭頭
-   ========================================== */
-
-/* 1. 標題層級寬度 100% 並內容置中 */
-.wall-header-wrapper {
-    display: flex;
-    justify-content: center; /* 💡 確保文字絕對置中 */
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-    padding: 0 40px;
-}
-
-.wall-header-wrapper h2 {
-    font-size: 20px;
-    color: #e5e5e5;
-    letter-spacing: 0.15em;
-    text-align: center;
-}
-
-/* 2. 外層留言牆容器設為相對定位，以供邊緣箭頭定位參考 */
-.wall-section {
-    position: relative;
-    width: 100%;
-}
-
-/* 3. 懸浮邊緣箭頭基礎設計 */
-.edge-arrow-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 48px;
-    height: 80px;
-    background: rgba(26, 26, 26, 0.4); /* 暗灰色半透明，融入深色背景 */
-    border: 1px solid rgba(197, 168, 128, 0.2);
-    color: var(--text-muted);
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 10; /* 高於卡片，確保可被點選 */
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0; /* 💡 預設隱藏 */
-    pointer-events: none; /* 隱藏時防止擋住底下卡片的 Hover */
-}
-
-/* 定位至左右極致邊緣 */
-.edge-arrow-btn.left {
-    left: 10px;
-    border-radius: 0 4px 4px 0;
-}
-.edge-arrow-btn.right {
-    right: 10px;
-    border-radius: 4px 0 0 4px;
-}
-
-/* 4. 🎯 當滑鼠靠近 .wall-section 區塊時，顯現邊緣箭頭 */
-.wall-section:hover .edge-arrow-btn {
-    opacity: 1;
-    pointer-events: auto; /* 恢復可點擊狀態 */
-}
-
-/* 懸停於按鈕本身時調亮 */
-.edge-arrow-btn:hover {
-    background: rgba(197, 168, 128, 0.2);
-    color: #ffffff;
-    border-color: #c5a880;
-}
-
-/* ==========================================
-   🎯 階段四：落幕結尾文字 ── 100% 實體高度滿版頁尾 (不遮擋、不重疊)
-   ========================================== */
-
-/* 1. 保證 Canvas 在最底層 100% 顯現 */
-#mandalaCanvas {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 0 !important;
-    pointer-events: none;
-    opacity: 1 !important; /* 確保背後光點與軌跡線 100% 存在 */
-}
-
-/* 2. 結尾頁尾：不使用 fixed 定位，作為網頁最底部的實體滿版區塊 */
 .exhibition-outro-section {
-    position: relative; /* 💡 設為相對定位，讓它在留言牆正下方依序排列，不產生重疊遮擋 */
-    width: 100vw;       /* 強制寬度為視窗寬度 */
-    height: 0;          /* 預設完全收合，不佔垂直空間 */
-    background: rgba(18, 18, 18, 0.1); /* 深黑霧面背景，隱約透出後方 Canvas 金光 */
-    
-    /* 💡 核心：突破 wrapper 的最大寬度限制，在下方完美橫向鋪滿 100% 螢幕 */
-    left: 50%;
-    transform: translateX(-50%);
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    
-    opacity: 0;
-    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;
-    z-index: 10; /* 高於留言牆，但低於全螢幕 Modal */
+    position: relative; 
+    width: 100vw;       
+    height: 0;          /* 預設完全收折，不搶鏡頭[cite: 23] */
+    background: rgba(18, 18, 18, 0.75); /*[cite: 23] */
+    backdrop-filter: blur(5px);[cite: 23]
+    left: 50%;[cite: 23]
+    transform: translateX(-50%);[cite: 23]
+    display: flex;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center;[cite: 23]
+    overflow: hidden;[cite: 23]
+    opacity: 0;[cite: 23]
+    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;[cite: 23]
+    z-index: 10; 
 }
 
-/* 當落幕啟動時，展開為完整 100% 視窗高度 (一個實體、獨立的滿版頁尾空間) */
 .exhibition-outro-section.active {
-    height: 100vh; 
-    opacity: 1;
-    margin-top: 80px; /* 與上方留言牆產生適當的美學留白 */
+    height: 100vh; /* 被喚醒時，優雅拉伸至一整頁[cite: 23] */
+    opacity: 1;[cite: 23]
+    margin-top: 0;[cite: 23]
 }
 
-/* 3. 結尾內容垂直正中心排版 */
 .outro-content {
     text-align: center;
-    padding: 0 20px; /* 稍微縮小兩側內距，給予手機更多橫向空間 */
+    padding: 0 20px; 
     width: 100%;
-    max-width: 1000px; /* */
+    max-width: 1000px; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: translateY(-60px); /* 往上偏移 60px[cite: 19] */
+    transform: translateY(-60px); 
 }
 
-/* 🎯 電腦/平板版：預設強制單行，呈現大器美感 */
+/* 🎯 RWD 文字響應式 */
 .outro-text {
-    font-family: var(--font-serif); /*[cite: 19] */
-    font-weight: 300; /*[cite: 19] */
-    font-size: 24px; /*[cite: 19] */
-    color: #ffffff; /*[cite: 19] */
-    letter-spacing: 0.18em; /*[cite: 19] */
-    line-height: 2.2; /*[cite: 19] */
-    margin-bottom: 35px; /*[cite: 19] */
-    min-height: 50px; /*[cite: 19] */
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.15); /*[cite: 19] */
-    white-space: nowrap; /* 強制不換行[cite: 19] */
+    font-family: var(--font-serif); 
+    font-weight: 300; 
+    font-size: 24px; 
+    color: #ffffff; 
+    letter-spacing: 0.18em; 
+    line-height: 2.2; 
+    margin-bottom: 35px; 
+    min-height: 50px; 
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.15); 
+    white-space: nowrap; /* 電腦版強制不折行 */
     word-break: break-all;
 }
 
-/* 🎯 手機版專用 RWD 補正：當螢幕寬度小於 768px 時自動換行、縮小字體 */
+.outro-brand {
+    font-family: var(--font-sans); 
+    font-size: 13px; 
+    color: var(--text-muted); 
+    letter-spacing: 0.3em; 
+    min-height: 20px; 
+}
+
+/* 手機版專用語法補正 */
 @media (max-width: 767px) {
     .outro-text {
-        white-space: normal; /* 💡 手機端允許自動折行 */
-        font-size: 18px;     /* 💡 稍微縮小手機端字體，避免行高過高 */
-        letter-spacing: 0.12em; /* 稍微緊湊字距，適合閱讀 */
+        white-space: normal; /* 折行 */
+        font-size: 18px;     
+        letter-spacing: 0.12em; 
         line-height: 1.8;
         padding: 0 10px;
-        min-height: 80px;    /* 預留折行後的兩行高度，防止內容跳動 */
+        min-height: 80px;    
     }
-    
     .outro-content {
-        transform: translateY(-40px); /* 手機端上移幅度稍微減小，視覺更平衡 */
+        transform: translateY(-40px); 
     }
-}
-
-.outro-brand {
-    font-family: var(--font-sans); /*[cite: 19] */
-    font-size: 13px; /*[cite: 19] */
-    color: var(--text-muted); /*[cite: 19] */
-    letter-spacing: 0.3em; /*[cite: 19] */
-    min-height: 20px; /*[cite: 19] */
-}
-
-/* ==========================================
-   🎯 跨平台全畫面控制與 Scroll Snap (磁鐵捲動)
-   ========================================== */
-
-/* 1. 啟用網頁層級的磁鐵捲動對齊 */
-html {
-    scroll-behavior: smooth; /* */
-    scroll-snap-type: y mandatory; /* 💡 強制垂直方向每次捲動都像磁鐵般精準對齊區塊 */
-    background-color: var(--bg-banner); /*[cite: 14] */
-}
-
-body {
-    width: 100%; /*[cite: 14] */
-    min-height: 100vh; /*[cite: 14] */
-    background-color: var(--bg-banner); /*[cite: 14] */
-    overflow-x: hidden; /*[cite: 14] */
-    overflow-y: auto; /*[cite: 14] */
-}
-
-/* 2. 第一階段：Banner 主視覺滿版 */
-.hero-container {
-    scroll-snap-align: start; /* 💡 對齊起點 */
-    scroll-snap-stop: always; /* 💡 強迫停頓，無法一次滑過頭 */
-    width: 100%; /*[cite: 14] */
-    height: 100vh; /*[cite: 14] */
-    display: flex; /*[cite: 14] */
-    flex-direction: column; /*[cite: 14] */
-    align-items: center; /*[cite: 14] */
-    justify-content: center; /*[cite: 14] */
-}
-
-/* 3. 第二階段：整個留言板卡片區塊滿版 */
-.wrapper {
-    scroll-snap-align: start; /* 💡 對齊起點 */
-    scroll-snap-stop: always; /* 💡 強迫停頓 */
-    width: 100%; /*[cite: 14] */
-    height: 100vh; /* 🎯 核心控制：將原本的自適應改為嚴格的 100vh 滿版高度 */
-    background-color: transparent; /*[cite: 14] */
-    position: relative; /*[cite: 14] */
-    z-index: 3; /*[cite: 14] */
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* 💡 讓表單與 Header 在這個全畫面的正中央完美置中 */
-    padding: 0; /* 清空 Padding，交由 flex 置中 */
-}
-
-/* 微調內部表單與標題，確保在 100vh 內不溢出 */
-header {
-    margin-bottom: 30px; /*[cite: 14] */
-}
-.grid-layout {
-    gap: 0; /*[cite: 14] */
-}
-
-/* 4. 第三階段：下方思念留言牆滿版 */
-.wall-section {
-    scroll-snap-align: start; /* 💡 對齊起點 */
-    scroll-snap-stop: always;
-    width: 100%; /*[cite: 14] */
-    height: 100vh; /* 🎯 核心控制：讓留言牆獨立佔據一整頁全畫面 */
-    margin-top: 0; 
-    border-top: none; 
-    padding-top: 0;
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* 讓橫向留言卡片牆在全畫面中垂直居中 */
-    /* 🎯 增加頂部內邊距，將標題往下壓，與頂部螢幕邊界拉出空隙 */
-    padding-top: 60px;
-}
-
-/* 5. 階段四：滿版頁尾完結頁 */
-.exhibition-outro-section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    width: 100vw; /*[cite: 19] */
-    height: 0; /*[cite: 19] */
-    background: rgba(18, 18, 18, 0.75); /*[cite: 19] */
-    backdrop-filter: blur(5px); /*[cite: 19] */
-    left: 50%; /*[cite: 19] */
-    transform: translateX(-50%); /*[cite: 19] */
-    display: flex; /*[cite: 19] */
-    align-items: center; /*[cite: 19] */
-    justify-content: center; /*[cite: 19] */
-    overflow: hidden; /*[cite: 19] */
-    opacity: 0; /*[cite: 19] */
-    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease; /*[cite: 19] */
-    z-index: 10; /*[cite: 19] */
-}
-
-.exhibition-outro-section.active {
-    height: 100vh; /*[cite: 19] */
-    opacity: 1; /*[cite: 19] */
-    margin-top: 0; /* 移除外邊距，交由 snap 對齊 */
 }
