@@ -1,115 +1,160 @@
-/* css/animation.css --- 純粹動畫特效與 Keyframes 樣式庫 ─── */
+/* css/animation.css --- Canvas 畫布與全螢幕進場動畫佈局 ─── */
 
-/* ==========================================
-   Canvas 最底層背景配置[cite: 18]
-   ========================================== */
 #mandalaCanvas {
-    position: fixed;[cite: 18]
-    top: 0;[cite: 18]
-    left: 0;[cite: 18]
-    width: 100% !important;[cite: 18]
-    height: 100% !important;[cite: 18]
-    z-index: 0 !important;[cite: 18]
-    pointer-events: none;[cite: 18]
+    position: fixed; /* 💡 釘死在螢幕上 */
+    top: 0;
+    left: 0;
+    width: 100% !important;  /* 💡 拋棄 100vw，改用 100% 貼緊 client 寬度 */
+    height: 100% !important; /* 💡 拋棄 100vh，改用 100% 貼緊 client 高度 */
+    z-index: 0 !important;
+    pointer-events: none;
 }
 
-/* ==========================================
-   首頁進場文字、海報與向下箭頭[cite: 18]
-   ========================================== */
+.hero-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    flex-shrink: 0; 
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
 .brand-title {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);[cite: 18]
+    font-size: 3.5rem;
+    font-weight: 300;
+    letter-spacing: 0.8rem;
+    color: #e5e5e5;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     opacity: 0; 
-    margin-bottom: 2rem;[cite: 18]
+    margin-bottom: 2rem;
 }
 
 .main-question {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.4rem;
+    color: #c5a880; 
     opacity: 0; 
+    line-height: 2;
 }
 
 .scroll-hint {
-    position: absolute;[cite: 18]
-    bottom: 8%;[cite: 18]
-    opacity: 0;[cite: 18]
-    cursor: pointer;[cite: 18]
-    transition: transform 0.3s;[cite: 18]
-    z-index: 5;[cite: 18]
+    position: absolute;
+    bottom: 8%;
+    opacity: 0;
+    cursor: pointer;
+    transition: transform 0.3s;
+    z-index: 5;
 }
 
 .scroll-hint:hover {
-    transform: scale(1.2);[cite: 18]
+    transform: scale(1.2);
 }
 
 .scroll-hint .arrow {
-    font-size: 1.5rem;[cite: 18]
-    color: #c5a880;[cite: 18]
-    display: inline-block;[cite: 18]
-    animation: bounce 2s infinite;[cite: 18]
+    font-size: 1.5rem;
+    color: #c5a880;
+    display: inline-block;
+    animation: bounce 2s infinite;
 }
 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }[cite: 18]
-    40% { transform: translateY(-10px); }[cite: 18]
-    60% { transform: translateY(-5px); }[cite: 18]
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
 }
 
+/* 🎯 略過動畫按鈕美學樣式 */
 .skip-anim-btn {
-    transition: all 0.3s ease;[cite: 18]
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: none;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    color: #c5a880;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 1px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.skip-anim-btn:hover {
+    background-color: #c5a880;
+    color: #1a1a1a;
+    border-color: #c5a880;
 }
 
 /* ==========================================
-   🎯 新生成的清水模卡片 ── 黃金發光與飛入特效[cite: 18]
+   🎯 階段二：連結與延伸 專用動畫 （方形金光暈）
    ========================================== */
 
-/* 1. 金光卡片主體 (外框 3px 冷金呼吸) */
+/* 1. 金色發光新卡片主體 (外框保留 3px 冷金) */
 .wall-card.my-new-card {
-    border: 3px solid #c5a880 !important;[cite: 18]
-    position: relative !important;[cite: 18]
-    z-index: 5 !important;[cite: 18]
-    background: #FFFFFF !important;[cite: 18]
-    animation: goldBorderPulse 2.5s infinite ease-in-out !important;[cite: 18]
+    border: 3px solid #c5a880 !important; 
+    position: relative !important;
+    z-index: 5 !important; 
+    background: #FFFFFF !important;
+    /* 邊框本體的呼吸動畫 (從冷金過渡到亮白色) */
+    animation: goldBorderPulse 2.5s infinite ease-in-out !important;
 }
 
 @keyframes goldBorderPulse {
-    0%, 100% { border-color: #B59E74 !important; }[cite: 18]
-    50% { border-color: #FFFFFF !important; }[cite: 18]
-}
-
-/* 2. 方形金光微粒擴散陰影 (安全不切邊版) */
-.wall-card.my-new-card::after {
-    content: '';[cite: 18]
-    position: absolute;[cite: 18]
-    top: 0;[cite: 18]
-    left: 0;[cite: 18]
-    right: 0;[cite: 18]
-    bottom: 0;[cite: 18]
-    background: transparent !important;[cite: 18]
-    border-radius: 0;[cite: 18]
-    z-index: -1; [cite: 18]
-    pointer-events: none;[cite: 18]
-    animation: squareGoldGlow 2.5s infinite ease-in-out;[cite: 18]
-}
-
-/* 收斂半徑確保大螢幕及手機端 100% 不溢出切邊 */
-@keyframes squareGoldGlow {
     0%, 100% {
-        opacity: 0.45;
-        box-shadow: 
-            0 0 10px rgba(197, 168, 128, 0.4),  
-            0 0 20px rgba(197, 168, 128, 0.2),  
-            0 0 35px rgba(197, 168, 128, 0.1);  
+        border-color: #B59E74 !important;
     }
     50% {
-        opacity: 0.9; 
-        box-shadow: 
-            0 0 15px rgba(255, 255, 255, 0.5),  
-            0 0 30px rgba(197, 168, 128, 0.6),  
-            0 0 50px rgba(197, 168, 128, 0.3);  
+        border-color: #FFFFFF !important; 
     }
 }
 
-/* 3. 新生成卡片飛入登場動畫[cite: 18] */
+/* 2. 🎯 方形外框光暈 (利用 ::after 的多重模糊陰影，100% 貼合卡片方形，且絕無邊界切割) */
+.wall-card.my-new-card::after {
+    content: '';
+    position: absolute;
+    /* 💡 尺寸與卡片本體 100% 精準對齊，防止被任何外部邊界切割 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    background: transparent !important; /* ➔ 清空原本的圓形漸變背景，不使用 background */
+    border-radius: 0; /* ➔ 保持與清水模卡片相同的直角 */
+    z-index: -1; 
+    pointer-events: none;
+    
+    /* 啟動方形金光的透明度與外擴雙重呼吸 */
+    animation: squareGoldGlow 2.5s infinite ease-in-out;
+}
+
+/* 🎯 方形金光專用動畫：利用多層不同模糊半徑 (blur) 的方形投影，堆疊出無邊界的柔和光暈 */
+@keyframes squareGoldGlow {
+    0%, 100% {
+        opacity: 0.4;
+        box-shadow: 
+            0 0 15px rgba(197, 168, 128, 0.4),  /* 第一層：近距離貼邊亮光 */
+            0 0 30px rgba(197, 168, 128, 0.2),  /* 第二層：中距離過渡光暈 */
+            0 0 50px rgba(197, 168, 128, 0.1);  /* 第三層：遠距離柔和環境光 */
+    }
+    50% {
+        opacity: 1; /* 呼吸至頂點時，光暈最為濃厚 */
+        box-shadow: 
+            0 0 25px rgba(255, 255, 255, 0.6),  /* 頂點白金光 */
+            0 0 45px rgba(197, 168, 128, 0.8),  /* 方形外擴擴散 */
+            0 0 60px rgba(197, 168, 128, 0.4);  /* 超大範圍環境暖光 */
+    }
+}
+
+/* 3. 新卡片誕生時的飛入登場 */
 .wall-card.card-fly-in {
-    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;[cite: 18]
+    animation: cardScaleUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 @keyframes cardScaleUp {
@@ -123,25 +168,14 @@
     }
 }
 
-/* ==========================================
-   🕊️ 歷史卡片 Hover 浮空離地感[cite: 18]
-   ========================================== */
+/* 4. 歷史思念牆卡片 Hover 的「浮動離地感」 */
 .slider-container .wall-card {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;[cite: 18]
-    cursor: pointer !important;[cite: 18]
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer !important;
 }
 
 .slider-container .wall-card:hover {
-    transform: translateY(-12px) scale(1.03) !important; /* 優雅浮起 12px[cite: 18] */
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;[cite: 18]
-    border-color: #B59E74 !important;[cite: 18]
-}
-
-/* 🎯 星砂粒子基礎物理外觀 */
-.particle-debris {
-    position: fixed;
-    pointer-events: none;
-    background: radial-gradient(circle, #c5a880 0%, rgba(255, 255, 255, 0) 70%);
-    border-radius: 50%;
-    z-index: 105; 
+    transform: translateY(-12px) scale(1.03) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+    border-color: #B59E74 !important;
 }
