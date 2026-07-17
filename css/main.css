@@ -369,7 +369,7 @@ input[type="text"]:focus, textarea:focus {
     -ms-overflow-style: none; 
     cursor: grab;
     /* 💡 上下Padding撐開到 100px，高度適應 3 排卡片(約660px) + Gap 與 Padding */
-    padding: 100px 40px 100px 40px; 
+    padding: 45px 40px 85px 40px; 
 }
 
 .slider-container:active {
