@@ -403,6 +403,7 @@ window.releaseCardAndFly = function() {
         });
     }
 
+    // 5. 卡片主體 3D 翻轉、縮小、高斯模糊淡出
     gsap.to(card, {
         scale: 0.3,
         rotationY: 90, 
@@ -419,32 +420,40 @@ window.releaseCardAndFly = function() {
             releaseBtn.innerHTML = `<i class="fa-solid fa-check"></i> 已化為祝福之光`; 
 
             // ==========================================
-            // 🎯 【實體頁尾展開 ➔ 物理對齊錨點滾動 ➔ 啟動打字】
+            // 🎯 【優化：暫時解除 Snap 鎖 ➔ 絲滑一次滑動 ➔ 啟動打字】
             // ==========================================
             const outroSection = document.getElementById('outro-section');
             const anchor = document.getElementById('outro-align-anchor');
             
             if (outroSection && anchor) {
+                // 1. 暫時將全網頁的 CSS 磁鐵捲動（Scroll Snap）功能關閉，徹底解決兩段式滑動衝突
+                document.documentElement.style.scrollSnapType = 'none';
+                
+                // 2. 將完結頁面展開
                 outroSection.classList.add('active');
                 
-                // 延遲 400 毫秒（等待 100vh 實體高度完全撐開完畢）
+                // 3. 延遲 400 毫秒（等待高度展開完畢）[cite: 24]
                 setTimeout(() => {
                     const container = document.getElementById('slider-container');
                     if (container) {
-                        container.scrollLeft = 0;
+                        container.scrollLeft = 0; // 強制將橫向捲動軸歸零[cite: 24]
                     }
 
-                    // 將鏡頭精準對齊到完結頁最底部的隱形錨點，將上方的留言牆完全推出視窗
+                    // 4. 將鏡頭 100% 順滑、無阻礙地滑動到最底部
                     anchor.scrollIntoView({ 
                         behavior: 'smooth', 
                         block: 'end' 
                     });
                     
-                    // 延遲 1.5 秒等待對齊定位後，啟動單行打字機
+                    // 5. 延遲 1.6 秒（待平滑滾動安全停止、文字就定位後）
                     setTimeout(() => {
+                        // 啟動單行/手機折行打字機
                         startTypewriterEffect();
-                    }, 1500);
-                }, 400);
+                        
+                        // 打字機啟動後，悄悄恢復網頁的 CSS 磁鐵吸附功能
+                        document.documentElement.style.scrollSnapType = 'y mandatory';
+                    }, 1600);
+                }, 400); //[cite: 24]
             }
         }
     });
