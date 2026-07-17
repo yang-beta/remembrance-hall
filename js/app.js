@@ -47,7 +47,7 @@ window.generateRemembrance = async function() {
         let iconClass = currentTarget === 'relative' ? 'fa-hands-holding-child' : currentTarget === 'friend' ? 'fa-user-group' : 'fa-paw';
 
         // 2. 設定 Modal 的內容預備
-        document.getElementById('card-tag-display').innerText = `思念致意錄 / ${targetChinese}`;
+        document.getElementById('card-tag-display').innerText = `思念回憶錄 / ${targetChinese}`;
         document.getElementById('card-icon-display').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
         document.getElementById('card-text-display').innerText = finalQuote;
         document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
@@ -84,7 +84,7 @@ window.generateRemembrance = async function() {
         // 卡片內部 HTML
         newCard.innerHTML = `
             <div class="wall-card-header">
-                <span>思念致意錄 / ${targetChinese}</span>
+                <span>思念回憶錄 / ${targetChinese}</span>
                 <span style="color: var(--text-muted);">${dateStr}</span>
             </div>
             <div class="wall-card-body">${finalQuote}</div>
@@ -109,7 +109,7 @@ window.generateRemembrance = async function() {
         const releaseBtn = document.getElementById('release-btn');
         if (releaseBtn) {
             releaseBtn.disabled = false;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手執著`;
         }
 
         // ➔ 核心修正：將滾動目標改為對齊獨立出來的 wall-section-container，且靠頂對齊（start）
@@ -216,7 +216,7 @@ async function fetchWallMessages() {
                      data-nickname="${nickname}" 
                      style="cursor: pointer;">
                     <div class="wall-card-header">
-                        <span>思念致意錄 / ${category}</span>
+                        <span>思念回憶錄 / ${category}</span>
                         <span style="color: var(--text-muted);">${dateStr}</span>
                     </div>
                     <div class="wall-card-body">${quote}</div>
@@ -241,7 +241,7 @@ async function fetchWallMessages() {
 
 // 🎯 階段三：重逢 - 開啟全螢幕 Modal
 window.clickWallCard = function(category, quote, nickname, isNewCard) {
-    document.getElementById('card-tag-display').innerText = `思念致意錄 / ${category}`;
+    document.getElementById('card-tag-display').innerText = `思念回憶錄 / ${category}`;
     document.getElementById('card-text-display').innerText = quote;
     document.getElementById('card-sign-display').innerText = `— 致 ${nickname}`;
     
@@ -250,7 +250,7 @@ window.clickWallCard = function(category, quote, nickname, isNewCard) {
     if (releaseBtn) {
         if (isNewCard) {
             releaseBtn.disabled = false;
-            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手致意`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手執著`;
             hasExperiencedRelease = false;
         } else {
             releaseBtn.disabled = true;
@@ -319,7 +319,7 @@ window.downloadCard = function() {
         useCORS: true
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `思念致意卡-${document.getElementById('nickname').value || '洸限'}.png`;
+        link.download = `思念回憶卡-${document.getElementById('nickname').value || '洸限'}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     }).catch(err => {
