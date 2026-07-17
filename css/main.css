@@ -700,38 +700,53 @@ input[type="text"]:focus, textarea:focus {
 /* 3. 結尾內容垂直正中心排版 */
 .outro-content {
     text-align: center;
-    padding: 0 40px;
+    padding: 0 20px; /* 稍微縮小兩側內距，給予手機更多橫向空間 */
     width: 100%;
-    max-width: 1000px; /* 💡 放大最大寬度，給予單行文字足夠空間 */
+    max-width: 1000px; /* */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* 🎯 將整個文字內容往上拉高 60px */
-    transform: translateY(-60px);
+    transform: translateY(-60px); /* 往上偏移 60px[cite: 19] */
 }
 
+/* 🎯 電腦/平板版：預設強制單行，呈現大器美感 */
 .outro-text {
     font-family: var(--font-serif); /*[cite: 19] */
-    font-weight: 300; /* 極致內斂的細宋體 */
-    font-size: 22px; /* 💡 稍微微調字型，確保在各種螢幕上完美呈現 */
-    color: #ffffff;
-    letter-spacing: 0.18em;
-    line-height: 2.2;
-    margin-bottom: 35px;
-    min-height: 50px; /* 因為強制單行，縮減預留高度 */
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+    font-weight: 300; /*[cite: 19] */
+    font-size: 24px; /*[cite: 19] */
+    color: #ffffff; /*[cite: 19] */
+    letter-spacing: 0.18em; /*[cite: 19] */
+    line-height: 2.2; /*[cite: 19] */
+    margin-bottom: 35px; /*[cite: 19] */
+    min-height: 50px; /*[cite: 19] */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.15); /*[cite: 19] */
+    white-space: nowrap; /* 強制不換行[cite: 19] */
+    word-break: break-all;
+}
+
+/* 🎯 手機版專用 RWD 補正：當螢幕寬度小於 768px 時自動換行、縮小字體 */
+@media (max-width: 767px) {
+    .outro-text {
+        white-space: normal; /* 💡 手機端允許自動折行 */
+        font-size: 18px;     /* 💡 稍微縮小手機端字體，避免行高過高 */
+        letter-spacing: 0.12em; /* 稍微緊湊字距，適合閱讀 */
+        line-height: 1.8;
+        padding: 0 10px;
+        min-height: 80px;    /* 預留折行後的兩行高度，防止內容跳動 */
+    }
     
-    /* 💡 核心修正：強制文字絕對不換行，確保打字機效果維持在同一行 */
-    white-space: nowrap; 
+    .outro-content {
+        transform: translateY(-40px); /* 手機端上移幅度稍微減小，視覺更平衡 */
+    }
 }
 
 .outro-brand {
     font-family: var(--font-sans); /*[cite: 19] */
-    font-size: 13px;
+    font-size: 13px; /*[cite: 19] */
     color: var(--text-muted); /*[cite: 19] */
-    letter-spacing: 0.3em;
-    min-height: 20px;
+    letter-spacing: 0.3em; /*[cite: 19] */
+    min-height: 20px; /*[cite: 19] */
 }
 
 /* ==========================================
