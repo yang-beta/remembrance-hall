@@ -476,8 +476,8 @@ function startTypewriterEffect() {
     const textEl = document.getElementById('typewriter-text');
     const subEl = document.getElementById('typewriter-sub');
     
-    const mainText = "「 那些不曾 be 遺忘的，都將在看不見的地方，溫柔地共振。」";
-    const subText = "洸限 — 願你帶著光，溫暖前行";
+    const mainText = "「 那些不曾被遺忘的，都將在看不見的地方，溫柔地共振。」";
+    const subText = "洸限 — 願你帶著光，溫暖前行 — ";
     
     if (!textEl || !subEl) return;
     
