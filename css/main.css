@@ -598,7 +598,7 @@ input[type="text"]:focus, textarea:focus {
 
 .wall-header-wrapper h2 {
     font-size: 20px;
-    color: var(--text-main);
+    color: #e5e5e5;
     letter-spacing: 0.15em;
     text-align: center;
 }
