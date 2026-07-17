@@ -733,3 +733,100 @@ input[type="text"]:focus, textarea:focus {
     letter-spacing: 0.3em;
     min-height: 20px;
 }
+
+/* ==========================================
+   🎯 跨平台全畫面控制與 Scroll Snap (磁鐵捲動)
+   ========================================== */
+
+/* 1. 啟用網頁層級的磁鐵捲動對齊 */
+html {
+    scroll-behavior: smooth; /* */
+    scroll-snap-type: y mandatory; /* 💡 強制垂直方向每次捲動都像磁鐵般精準對齊區塊 */
+    background-color: var(--bg-banner); /*[cite: 14] */
+}
+
+body {
+    width: 100%; /*[cite: 14] */
+    min-height: 100vh; /*[cite: 14] */
+    background-color: var(--bg-banner); /*[cite: 14] */
+    overflow-x: hidden; /*[cite: 14] */
+    overflow-y: auto; /*[cite: 14] */
+}
+
+/* 2. 第一階段：Banner 主視覺滿版 */
+.hero-container {
+    scroll-snap-align: start; /* 💡 對齊起點 */
+    scroll-snap-stop: always; /* 💡 強迫停頓，無法一次滑過頭 */
+    width: 100%; /*[cite: 14] */
+    height: 100vh; /*[cite: 14] */
+    display: flex; /*[cite: 14] */
+    flex-direction: column; /*[cite: 14] */
+    align-items: center; /*[cite: 14] */
+    justify-content: center; /*[cite: 14] */
+}
+
+/* 3. 第二階段：整個留言板卡片區塊滿版 */
+.wrapper {
+    scroll-snap-align: start; /* 💡 對齊起點 */
+    scroll-snap-stop: always; /* 💡 強迫停頓 */
+    width: 100%; /*[cite: 14] */
+    height: 100vh; /* 🎯 核心控制：將原本的自適應改為嚴格的 100vh 滿版高度 */
+    background-color: transparent; /*[cite: 14] */
+    position: relative; /*[cite: 14] */
+    z-index: 3; /*[cite: 14] */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* 💡 讓表單與 Header 在這個全畫面的正中央完美置中 */
+    padding: 0; /* 清空 Padding，交由 flex 置中 */
+}
+
+/* 微調內部表單與標題，確保在 100vh 內不溢出 */
+header {
+    margin-bottom: 30px; /*[cite: 14] */
+}
+.grid-layout {
+    gap: 0; /*[cite: 14] */
+}
+
+/* 4. 第三階段：下方思念留言牆滿版 */
+.wall-section {
+    scroll-snap-align: start; /* 💡 對齊起點 */
+    scroll-snap-stop: always;
+    width: 100%; /*[cite: 14] */
+    height: 100vh; /* 🎯 核心控制：讓留言牆獨立佔據一整頁全畫面 */
+    margin-top: 0; 
+    border-top: none; 
+    padding-top: 0;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* 讓橫向留言卡片牆在全畫面中垂直居中 */
+}
+
+/* 5. 階段四：滿版頁尾完結頁 */
+.exhibition-outro-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    width: 100vw; /*[cite: 19] */
+    height: 0; /*[cite: 19] */
+    background: rgba(18, 18, 18, 0.75); /*[cite: 19] */
+    backdrop-filter: blur(5px); /*[cite: 19] */
+    left: 50%; /*[cite: 19] */
+    transform: translateX(-50%); /*[cite: 19] */
+    display: flex; /*[cite: 19] */
+    align-items: center; /*[cite: 19] */
+    justify-content: center; /*[cite: 19] */
+    overflow: hidden; /*[cite: 19] */
+    opacity: 0; /*[cite: 19] */
+    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease; /*[cite: 19] */
+    z-index: 10; /*[cite: 19] */
+}
+
+.exhibition-outro-section.active {
+    height: 100vh; /*[cite: 19] */
+    opacity: 1; /*[cite: 19] */
+    margin-top: 0; /* 移除外邊距，交由 snap 對齊 */
+}
