@@ -176,7 +176,7 @@ async function generateAIQuote(targetType, name, userMemory) {
     return data.text; 
 }
 
-// 首次加載讀取資料庫
+// 首次加載讀取資料庫 (橫向閱讀排序版)
 async function fetchWallMessages() {
     if (!supabaseClient) return;
     try {
@@ -194,11 +194,34 @@ async function fetchWallMessages() {
             return;
         }
 
+        // ====================================================================
+        // 🎯 核心演算法：將 1D 陣列重新排序為適合 grid-auto-flow: column 呈現「橫向優先」的順序
+        // ====================================================================
+        const sortedList = [];
+        const rows = 3; // 固定 3 排
+        const cols = Math.ceil(list.length / rows); // 計算一共需要幾欄
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const originalIndex = c * rows + r; // 核心數學對齊公式
+                if (originalIndex < list.length) {
+                    sortedList[originalIndex] = list[originalIndex];
+                }
+            }
+        }
+        // ====================================================================
+
         wallGrid.innerHTML = '';
-        list.forEach(item => {
-            const match = item.text.match(/^\[(.*?)\] (.*?) \((.*?)\)$/);
+        
+        // 使用經過橫向排序重組後的 list 進行渲染
+        list.forEach((item, index) => {
+            // 💡 取得我們經過 3 階橫向重組對位後的卡片資料，若無資料則用空元素補齊以維持對齊
+            const targetItem = sortedList[index];
+            if (!targetItem) return;
+
+            const match = targetItem.text.match(/^\[(.*?)\] (.*?) \((.*?)\)$/);
             let category = '留白處';
-            let quote = item.text;
+            let quote = targetItem.text;
             let nickname = '思念者';
 
             if (match) { 
@@ -207,33 +230,33 @@ async function fetchWallMessages() {
                 nickname = match[3]; 
             }
 
-            const dateStr = new Date(item.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
+            const dateStr = new Date(targetItem.created_at).toLocaleDateString('zh-TW').replace(/\//g, '.');
             const safeQuoteBase64 = btoa(unescape(encodeURIComponent(quote)));
 
-            wallGrid.innerHTML += `
-                <div class="wall-card" 
-                     data-category="${category}" 
-                     data-quote="${safeQuoteBase64}" 
-                     data-nickname="${nickname}" 
-                     style="cursor: pointer;">
-                    <div class="wall-card-header">
-                        <span>思念回憶錄 / ${category}</span>
-                        <span style="color: var(--text-muted);">${dateStr}</span>
-                    </div>
-                    <div class="wall-card-body">${quote}</div>
-                    <div class="wall-card-footer">— 致 ${nickname}</div>
+            // 建立卡片 DOM 
+            const cardEl = document.createElement('div');
+            cardEl.className = 'wall-card';
+            cardEl.style.cursor = 'pointer';
+            cardEl.setAttribute('data-category', category);
+            cardEl.setAttribute('data-quote', safeQuoteBase64);
+            cardEl.setAttribute('data-nickname', nickname);
+            
+            cardEl.innerHTML = `
+                <div class="wall-card-header">
+                    <span>思念致意錄 / ${category}</span>
+                    <span style="color: var(--text-muted);">${dateStr}</span>
                 </div>
+                <div class="wall-card-body">${quote}</div>
+                <div class="wall-card-footer">— 致 ${nickname}</div>
             `;
-        }); 
 
-        document.querySelectorAll('.wall-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                const safeQuote = decodeURIComponent(escape(atob(this.getAttribute('data-quote'))));
-                const nickname = this.getAttribute('data-nickname');
-                window.clickWallCard(category, safeQuote, nickname, false);
+            // 綁定唯讀點擊事件
+            cardEl.addEventListener('click', function() {
+                window.clickWallCard(category, quote, nickname, false);
             });
-        });
+
+            wallGrid.appendChild(cardEl);
+        }); 
         
     } catch (err) {
         console.error('讀取留言牆失敗:', err);
