@@ -79,7 +79,6 @@ function drawMandalaLayer(centerX, centerY, radius, progress, color) {
         if (i === 0) ctx.moveTo(x, y);[cite: 20]
         else ctx.lineTo(x, y);[cite: 20]
     }
-    // 🎯 配合實覽美學，曼陀羅線條預留為背景層，主視覺由海報與打字機接續。[cite: 20]
 }
 
 /**
