@@ -151,8 +151,14 @@
     <script src="js/app.js" type="module"></script>
     
     <script>
+        // 確保留過動畫時能精準滑動到獨立滿版的主表單正起點
         function scrollToContent() {
-            document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
+            // 如果進場動畫還在跑，直接叫全域的完結函式處理
+            if (window.scrollToContent) {
+                window.scrollToContent();
+            } else {
+                document.getElementById('main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     </script>
 </body>
