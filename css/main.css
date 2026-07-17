@@ -804,6 +804,8 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center; /* 讓橫向留言卡片牆在全畫面中垂直居中 */
+    /* 🎯 增加頂部內邊距，將標題往下壓，與頂部螢幕邊界拉出空隙 */
+    padding-top: 60px;
 }
 
 /* 5. 階段四：滿版頁尾完結頁 */
