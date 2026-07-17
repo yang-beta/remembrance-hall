@@ -19,43 +19,43 @@
 }
 
 /* ==========================================
-   🎯 跨平台全畫面控制與 Scroll Snap (磁鐵捲動)[cite: 23, 26]
+   🎯 跨平台全畫面控制與 Scroll Snap (磁鐵捲動)[cite: 23]
    ========================================== */
 
 html {
-    scroll-behavior: smooth;[cite: 23, 26]
-    scroll-snap-type: y mandatory; /* 強制垂直方向每次捲動都像磁鐵般精準對齊區塊[cite: 23, 26] */
-    background-color: var(--bg-banner);[cite: 23, 26]
+    scroll-behavior: smooth;[cite: 23]
+    scroll-snap-type: y mandatory; /* 強制垂直方向每次捲動都像磁鐵般精準對齊區塊[cite: 23] */
+    background-color: var(--bg-banner);[cite: 23]
 }
 
 body {
-    width: 100%;[cite: 23, 26]
-    min-height: 100vh;[cite: 23, 26]
-    background-color: var(--bg-banner);[cite: 23, 26]
-    color: #e5e5e5;[cite: 23, 26]
-    font-family: var(--font-sans);[cite: 23, 26]
-    line-height: 1.6;[cite: 23, 26]
-    overflow-x: hidden; /* 徹底隱藏最底部的左右橫向滾動條[cite: 23, 26] */
-    overflow-y: auto;   /* 允許捲動[cite: 23, 26] */
-    display: flex;[cite: 23, 26]
-    flex-direction: column;[cite: 23, 26]
-    align-items: center;[cite: 23, 26]
+    width: 100% !important;[cite: 23]
+    min-height: 100vh;[cite: 23]
+    background-color: var(--bg-banner);[cite: 23]
+    color: #e5e5e5;[cite: 23]
+    font-family: var(--font-sans);[cite: 23]
+    line-height: 1.6;[cite: 23]
+    overflow-x: hidden; /* 徹底隱藏最底部的左右橫向滾動條[cite: 23] */
+    overflow-y: auto;   /* 允許捲動[cite: 23] */
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
 }
 
 /* ==========================================
-   🖼️ 第一階段：Banner 主視覺滿版[cite: 23, 26]
+   🖼️ 第一階段：Banner 主視覺滿版[cite: 23]
    ========================================== */
 .hero-container {
-    scroll-snap-align: start; /* 對齊起點[cite: 23, 26] */
-    scroll-snap-stop: always; /* 強迫停頓，無法一次滑過頭[cite: 23, 26] */
-    position: relative;[cite: 23, 26]
-    width: 100%;[cite: 23, 26]
-    height: 100vh;[cite: 23, 26]
-    display: flex;[cite: 23, 26]
-    flex-direction: column;[cite: 23, 26]
-    align-items: center;[cite: 23, 26]
-    justify-content: center; /* Flex 幾何絕對置中[cite: 23, 26] */
-    text-align: center;[cite: 23, 26]
+    scroll-snap-align: start; /* 對齊起點[cite: 23] */
+    scroll-snap-stop: always; /* 強迫停頓，無法一次滑過頭[cite: 23] */
+    position: relative;[cite: 23]
+    width: 100%;[cite: 23]
+    height: 100vh;[cite: 23]
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center; /* Flex 幾何絕對置中[cite: 23] */
+    text-align: center;[cite: 23]
 }
 
 /* 🎯 補正 letter-spacing 造成的字體往左偏置 */
@@ -64,7 +64,7 @@ body {
     font-weight: 300;
     color: #ffffff;
     letter-spacing: 1.2rem;
-    padding-left: 1.2rem; /* 精確對等補償字距，強行將字體拉回絕對中心[cite: 23, 26] */
+    padding-left: 1.2rem; /* 精確對等補償字距，強行將字體拉回絕對中心[cite: 23] */
     margin-bottom: 24px;
 }
 
@@ -88,35 +88,41 @@ body {
 }
 
 /* ==========================================
-   ✍️ 第二階段：留言板卡片區塊滿版 (決定版面寬度的關鍵核心！)[cite: 23, 26]
+   ✍️ 第二階段：留言板卡片區塊滿版 (強固物理置中保護版)[cite: 23]
    ========================================== */
 .wrapper {
-    scroll-snap-align: start;[cite: 23, 26]
-    scroll-snap-stop: always;[cite: 23, 26]
-    width: 100%;[cite: 23, 26]
-    height: 100vh; /* 嚴格滿版高度[cite: 23, 26] */
-    background-color: transparent;[cite: 23, 26]
-    position: relative;[cite: 23, 26]
-    z-index: 3;[cite: 23, 26]
-    display: flex;[cite: 23, 26]
-    flex-direction: column;[cite: 23, 26]
-    align-items: center;[cite: 23, 26]
-    justify-content: center; /* 讓表單在滿版全畫面中垂直水平完美置中[cite: 23, 26] */
-    padding: 0;[cite: 23, 26]
+    scroll-snap-align: start !important;[cite: 23]
+    scroll-snap-stop: always !important;[cite: 23]
+    width: 100% !important;[cite: 23]
+    max-width: 100vw !important; /* 確保絕不溢出橫向捲軸 */
+    height: 100vh !important; /* 嚴格滿版高度，配合磁鐵滾動[cite: 23] */
+    background-color: transparent !important;[cite: 23]
+    position: relative !important;[cite: 23]
+    z-index: 3 !important;[cite: 23]
+    
+    /* 核心強固 Flex 置中：確保容器內容絕對位於螢幕中央 */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
 }
 
-/* 決定留言卡片整體的最大寬度，防止手機與寬螢幕下橫向爆開 */
+/* 決定留言卡片整體的最大寬度，強制使其在畫面正中央 */
 header, .grid-layout {
-    max-width: 800px;
-    width: 100%;
-    padding: 0 20px;
+    max-width: 800px !important;
+    width: 100% !important;
+    padding: 0 20px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 header {
-    margin-bottom: 30px;[cite: 23, 26]
-    text-align: left;
-    position: relative;
-    border-left: 5px solid var(--accent-gold);
+    margin-bottom: 30px !important;[cite: 23]
+    text-align: left !important;
+    position: relative !important;
+    border-left: 5px solid var(--accent-gold) !important;
 }
 
 header h1 {
@@ -124,7 +130,7 @@ header h1 {
     font-size: 32px;
     font-weight: 700;
     letter-spacing: 2px;
-    color: #e5e5e5;[cite: 23, 26]
+    color: #e5e5e5;[cite: 23]
     margin-bottom: 8px;
 }
 
@@ -135,19 +141,20 @@ header p {
 }
 
 .grid-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;[cite: 23, 26]
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;[cite: 23]
 }
 
 /* 輸入表單卡片 */
 .input-card {
-    background: var(--concrete-gray); 
-    border: 1px solid var(--border-color);
-    padding: 30px;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
-    color: var(--text-main);
+    background: var(--concrete-gray) !important; 
+    border: 1px solid var(--border-color) !important;
+    padding: 30px !important;
+    position: relative !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important; 
+    color: var(--text-main) !important;
+    width: 100% !important;
 }
 
 .form-group {
@@ -163,7 +170,6 @@ header p {
     color: var(--text-main);
 }
 
-/* 對象選擇按鈕排版 */
 .target-selector {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -231,39 +237,39 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🌌 第三階段：下方思念留言牆滿版[cite: 23, 26]
+   🌌 第三階段：下方思念留言牆滿版[cite: 23]
    ========================================== */
 .wall-section {
-    scroll-snap-align: start;[cite: 23, 26]
-    scroll-snap-stop: always;[cite: 23, 26]
-    position: relative;[cite: 23, 26]
-    width: 100%;[cite: 23, 26]
-    height: 100vh; /* 獨立滿版[cite: 23, 26] */
-    margin-top: 0;[cite: 23, 26]
-    border-top: none;[cite: 23, 26]
-    padding-top: 60px; /* 增加頂部內距，讓「留白處」不貼頂[cite: 23, 26] */
-    display: flex;[cite: 23, 26]
-    flex-direction: column;[cite: 23, 26]
-    align-items: center;[cite: 23, 26]
-    justify-content: center; /* 留言橫牆垂直置中[cite: 23, 26] */
+    scroll-snap-align: start;[cite: 23]
+    scroll-snap-stop: always;[cite: 23]
+    position: relative;[cite: 23]
+    width: 100%;[cite: 23]
+    height: 100vh; /* 獨立滿版[cite: 23] */
+    margin-top: 0;[cite: 23]
+    border-top: none;[cite: 23]
+    padding-top: 60px; /* 增加頂部內距，讓「留白處」不貼頂[cite: 23] */
+    display: flex;[cite: 23]
+    flex-direction: column;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center; /* 留言橫牆垂直居中[cite: 23] */
 }
 
 /* 標題居中排版 */
 .wall-header-wrapper {
     display: flex;
-    justify-content: center; /* 確保標題絕對置中[cite: 23, 26] */
+    justify-content: center; /* 確保標題絕對置中[cite: 23] */
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;[cite: 23, 26]
+    margin-bottom: 20px;[cite: 23]
     padding: 0 40px;
 }
 
 .wall-header-wrapper h2 {
     font-family: var(--font-serif);
-    font-size: 20px;[cite: 23, 26]
-    color: #e5e5e5;[cite: 23, 26]
-    letter-spacing: 0.15em;[cite: 23, 26]
-    text-align: center;[cite: 23, 26]
+    font-size: 20px;[cite: 23]
+    color: #e5e5e5;[cite: 23]
+    letter-spacing: 0.15em;[cite: 23]
+    text-align: center;[cite: 23]
     display: flex;
     align-items: center;
     gap: 10px;
@@ -291,7 +297,7 @@ input[type="text"]:focus, textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0; /* 預設隱藏[cite: 23, 26] */
+    opacity: 0; /* 預設隱藏[cite: 23] */
     pointer-events: none; 
 }
 
@@ -305,7 +311,7 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .wall-section:hover .edge-arrow-btn {
-    opacity: 1; /* 滑鼠靠近留言區時浮現[cite: 23, 26] */
+    opacity: 1; /* 滑鼠靠近留言區時浮現[cite: 23] */
     pointer-events: auto; 
 }
 
@@ -323,8 +329,8 @@ input[type="text"]:focus, textarea:focus {
     scrollbar-width: none; 
     -ms-overflow-style: none; 
     cursor: grab;
-    /* 採用非對稱 Padding，頂部縮短靠近標題，底部加寬容納卡片向上漂移[cite: 23, 26] */
-    padding: 45px 40px 85px 40px;[cite: 23, 26]
+    /* 採用非對稱 Padding，頂部縮短靠近標題，底部加寬容納卡片向上漂移[cite: 23] */
+    padding: 45px 40px 85px 40px;[cite: 23]
 }
 
 .slider-container:active {
@@ -338,11 +344,11 @@ input[type="text"]:focus, textarea:focus {
 /* 三排橫向滾動網格 */
 .wall-grid-row {
     display: grid;
-    grid-template-rows: repeat(3, 220px);[cite: 23, 26]
-    grid-auto-flow: column; /* 橫向無限延伸[cite: 23, 26] */
-    grid-template-columns: repeat(auto-fill, 290px);[cite: 23, 26]
-    gap: 24px;[cite: 23, 26]
-    width: max-content;[cite: 23, 26]
+    grid-template-rows: repeat(3, 220px);[cite: 23]
+    grid-auto-flow: column; /* 橫向無限延伸[cite: 23] */
+    grid-template-columns: repeat(auto-fill, 290px);[cite: 23]
+    gap: 24px;[cite: 23]
+    width: max-content;[cite: 23]
 }
 
 /* 卡片清水模設計 */
@@ -395,7 +401,7 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🎯 全螢幕重逢儀式 Overlay & 卡片[cite: 23, 26]
+   🎯 全螢幕重逢儀式 Overlay & 卡片[cite: 23]
    ========================================== */
 .output-section {
     display: none; 
@@ -581,29 +587,29 @@ input[type="text"]:focus, textarea:focus {
 }
 
 /* ==========================================
-   🍂 階段四：落幕結尾文字滿版實體頁尾[cite: 23, 26]
+   🍂 階段四：落幕結尾文字滿版實體頁尾[cite: 23]
    ========================================== */
 .exhibition-outro-section {
     position: relative; 
     width: 100vw;       
-    height: 0;          /* 預設完全收折，不搶鏡頭[cite: 23, 26] */
-    background: rgba(18, 18, 18, 0.75); /*[cite: 23, 26] */
-    backdrop-filter: blur(5px);[cite: 23, 26]
-    left: 50%;[cite: 23, 26]
-    transform: translateX(-50%);[cite: 23, 26]
-    display: flex;[cite: 23, 26]
-    align-items: center;[cite: 23, 26]
-    justify-content: center;[cite: 23, 26]
-    overflow: hidden;[cite: 23, 26]
-    opacity: 0;[cite: 23, 26]
-    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;[cite: 23, 26]
+    height: 0;          /* 預設完全收折，不搶鏡頭[cite: 23] */
+    background: rgba(18, 18, 18, 0.75); /*[cite: 23] */
+    backdrop-filter: blur(5px);[cite: 23]
+    left: 50%;[cite: 23]
+    transform: translateX(-50%);[cite: 23]
+    display: flex;[cite: 23]
+    align-items: center;[cite: 23]
+    justify-content: center;[cite: 23]
+    overflow: hidden;[cite: 23]
+    opacity: 0;[cite: 23]
+    transition: height 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;[cite: 23]
     z-index: 10; 
 }
 
 .exhibition-outro-section.active {
-    height: 100vh; /* 被喚醒時，優雅拉伸至一整頁[cite: 23, 26] */
-    opacity: 1;[cite: 23, 26]
-    margin-top: 0;[cite: 23, 26]
+    height: 100vh; /* 被喚醒時，優雅拉伸至一整頁[cite: 23] */
+    opacity: 1;[cite: 23]
+    margin-top: 0;[cite: 23]
 }
 
 .outro-content {
