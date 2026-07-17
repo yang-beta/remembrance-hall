@@ -7,7 +7,7 @@
     position: fixed;[cite: 18]
     top: 0;[cite: 18]
     left: 0;[cite: 18]
-    width: 100% !important; [cite: 18]
+    width: 100% !important;[cite: 18]
     height: 100% !important;[cite: 18]
     z-index: 0 !important;[cite: 18]
     pointer-events: none;[cite: 18]
@@ -18,12 +18,12 @@
    ========================================== */
 .brand-title {
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);[cite: 18]
-    opacity: 0; [cite: 18]
+    opacity: 0; 
     margin-bottom: 2rem;[cite: 18]
 }
 
 .main-question {
-    opacity: 0; [cite: 18]
+    opacity: 0; 
 }
 
 .scroll-hint {
@@ -62,9 +62,9 @@
 
 /* 1. 金光卡片主體 (外框 3px 冷金呼吸) */
 .wall-card.my-new-card {
-    border: 3px solid #c5a880 !important; [cite: 18]
+    border: 3px solid #c5a880 !important;[cite: 18]
     position: relative !important;[cite: 18]
-    z-index: 5 !important; [cite: 18]
+    z-index: 5 !important;[cite: 18]
     background: #FFFFFF !important;[cite: 18]
     animation: goldBorderPulse 2.5s infinite ease-in-out !important;[cite: 18]
 }
@@ -83,13 +83,13 @@
     right: 0;[cite: 18]
     bottom: 0;[cite: 18]
     background: transparent !important;[cite: 18]
-    border-radius: 0; [cite: 18]
-    z-index: -1;  [cite: 18]
+    border-radius: 0;[cite: 18]
+    z-index: -1; [cite: 18]
     pointer-events: none;[cite: 18]
     animation: squareGoldGlow 2.5s infinite ease-in-out;[cite: 18]
 }
 
-/* 收斂半徑至 50px/60px，確保大螢幕及手機端 100% 不溢出切邊 */
+/* 收斂半徑確保大螢幕及手機端 100% 不溢出切邊 */
 @keyframes squareGoldGlow {
     0%, 100% {
         opacity: 0.45;
