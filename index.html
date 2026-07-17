@@ -42,7 +42,7 @@
             <span class="arrow">↓</span>
         </div>
     </div>
-
+    <!-- 第二階段：留言板卡片 (獨立 100vh 全畫面) -->
     <div class="wrapper" id="main-content">
         <header>
             <h1>洸限</h1>
@@ -83,6 +83,7 @@
             </div>
         </div>
             
+        <!-- 🎯 全螢幕重逢 Modal 保持原位 -->
         <div class="output-section" id="output-section">
             <button class="close-modal-btn" onclick="closeReunionModal()">✕ 關閉</button>
             <div class="card-container" id="printable-card">
@@ -111,38 +112,39 @@
                 </button>
             </div>
         </div>
+    </div> <!-- 🎯 讓 wrapper 在這裡精準結束 -->
 
-        <div class="wall-section">
-            <div class="wall-header-wrapper">
-                <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
-            </div>
-            
-            <button class="edge-arrow-btn left" onclick="slideWall('left')">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <button class="edge-arrow-btn right" onclick="slideWall('right')">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
+    <!-- 第三階段：思念留言牆 (獨立 100vh 全畫面，移到外層排列) -->
+    <div class="wall-section" id="wall-section-container">
+        <div class="wall-header-wrapper">
+            <h2><i class="fa-solid fa-feather-pointed"></i> 留白處 — 大家留下的思念痕跡</h2>
+        </div>
+        
+        <button class="edge-arrow-btn left" onclick="slideWall('left')">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="edge-arrow-btn right" onclick="slideWall('right')">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
 
-            <div class="slider-container" id="slider-container">
-                <div class="wall-grid-row" id="wall-grid">
-                    <div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">
-                        正在開啟思念終點館通道...
-                    </div>
+        <div class="slider-container" id="slider-container">
+            <div class="wall-grid-row" id="wall-grid">
+                <div style="text-align: center; color: var(--text-muted); padding: 30px; width: 100%;">
+                    正在開啟思念終點館通道...
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 🎯 階段四：化為祝福後的落幕結尾文字 (預設隱藏，加入打字機專用 id) -->
+    <!-- 第四階段：落幕結尾文字 (獨立 100vh 全畫面) -->
     <div class="exhibition-outro-section" id="outro-section">
         <div class="outro-content">
             <p class="outro-text" id="typewriter-text"></p>
             <p class="outro-brand" id="typewriter-sub"></p>
         </div>
-        <!-- 💡 對位的隱形錨點 -->
         <div id="outro-align-anchor" style="position: absolute; bottom: 0; left: 0; width: 1px; height: 1px; pointer-events: none;"></div>
     </div>
+    
     
     <!-- 🎯 載入腳本路徑 -->
     <script src="js/canvas.js"></script>
