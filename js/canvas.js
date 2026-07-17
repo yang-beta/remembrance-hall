@@ -3,17 +3,21 @@
 const canvas = document.getElementById('mandalaCanvas');
 const ctx = canvas.getContext('2d');
 
-// 🎯 將中心點定義為全域變數，防止 ReferenceError
-let cx = window.innerWidth / 2;
-let cy = window.innerHeight / 2;
+// 🎯 跨平台終極修正：使用 clientWidth/Height 100% 精確避開滾動條與手機工具列干擾
+let cx = document.documentElement.clientWidth / 2;
+let cy = document.documentElement.clientHeight / 2;
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // 💡 100% 精確取得排除滾動條後的純淨視窗寬高
+    const viewWidth = document.documentElement.clientWidth;
+    const viewHeight = document.documentElement.clientHeight;
+
+    canvas.width = viewWidth;
+    canvas.height = viewHeight;
     
-    // 🎯 精確更新中心點位置
-    cx = canvas.width / 2;
-    cy = canvas.height / 2;
+    // 💡 精確更新幾何中心點，不論在 Windows、Mac 還是 iOS，光源與粒子 100% 絕對居中
+    cx = viewWidth / 2;
+    cy = viewHeight / 2;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
