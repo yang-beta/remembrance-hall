@@ -110,7 +110,7 @@ window.generateRemembrance = async function() {
         if (releaseBtn) {
             releaseBtn.disabled = false;
             // 🎯 處 2：【請在此處修改】生成新卡片後，重置放手按鈕時的文字內容
-            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手執著`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 讓思念化為永恆`;
         }
 
         // ➔ 將滾動目標改為對齊獨立出來的 wall-section-container，且靠頂對齊（start）
@@ -280,7 +280,7 @@ window.clickWallCard = function(category, quote, nickname, isNewCard) {
         if (isNewCard) {
             releaseBtn.disabled = false;
             // 🎯 處 3：【請在此處修改】點擊新卡片開啟 Modal 時，按鈕預設呈現的文字
-            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手執著`;
+            releaseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 讓思念化為永恆`;
             hasExperiencedRelease = false;
         } else {
             releaseBtn.disabled = true;
@@ -381,7 +381,7 @@ window.downloadCard = function() {
 };
 
 // ==========================================
-// 🎯 階段四：放手執著 ── 金色星河飛散
+// 🎯 階段四：讓思念化為永恆 ── 金色星河飛散
 // ==========================================
 window.releaseCardAndFly = function() {
     const card = document.getElementById('printable-card');
