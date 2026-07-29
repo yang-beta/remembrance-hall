@@ -57,7 +57,7 @@ for (let i = 0; i < beamCount; i++) {
         width: Math.random() * 6 + 1.5,                  // 線條寬度
         baseColor: `${r}, ${g}, ${b}`,                  // RGB 基底
         baseAlpha: Math.random() * 0.45 + 0.15,         // 🎯 隨機基礎透明度（低飽和，靠疊加出質感）
-        blurAmount: Math.floor(Math.random() * 18 + 8), // 🎯 隨機柔光羽化程度
+        blurAmount: Math.floor(Math.random() * 30 + 20), // 🎯 隨機柔光羽化程度
         pulsePhase: Math.random() * Math.PI * 2,        // 動態脈動相位
         pulseSpeed: Math.random() * 0.015 + 0.005       // 輕微呼吸速度
     });
@@ -92,7 +92,7 @@ function drawLightBeams() {
     // 1. 繪製中央高亮核心光軸 (加強高斯柔光陰影)
     ctx.save();
     ctx.shadowColor = 'rgba(255, 215, 130, 0.9)';
-    ctx.shadowBlur = 45; // 🎯 強化核心大範圍柔光暈
+    ctx.shadowBlur = 90; // 🎯 強化核心大範圍柔光暈
     
     const centerGlow = ctx.createLinearGradient(cx, 0, cx, canvas.height);
     centerGlow.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
@@ -186,7 +186,7 @@ function drawGoldParticles() {
 // 動畫渲染主迴圈
 function render() {
     // 殘影塗佈：維持質感微醺尾韻
-    ctx.fillStyle = 'rgba(26, 26, 26, 0.28)'; 
+    ctx.fillStyle = 'rgba(26, 26, 26, 0.15)'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawLightBeams();
