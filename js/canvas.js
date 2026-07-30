@@ -82,23 +82,29 @@ function drawLightBeams() {
 
     // 1. 繪製中央高亮核心光軸 (鎖定沉穩暖光)
     ctx.save();
-    ctx.shadowColor = 'rgba(215, 160, 80, 0.2)';
-    ctx.shadowBlur = 50;
-    
+
+    // 🎯 a. 增加模糊擴散：將 shadowBlur 從 50 大幅提升至 120，讓光暈向外溫柔鋪開
+    ctx.shadowColor = 'rgba(215, 160, 80, 0.25)';
+    ctx.shadowBlur = 120; 
+
+    // 🎯 b. 降低亮度：調降漸層色中 alpha (最後一個數值)，將原本的 0.7~0.8 降至 0.2~0.35
     const centerGlow = ctx.createLinearGradient(cx, 0, cx, canvas.height);
-    centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.7)');
-    centerGlow.addColorStop(0.65, 'rgba(235, 190, 110, 0.8)');
-    centerGlow.addColorStop(1, 'rgba(180, 120, 50, 0.5)');
+    centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.25)');   // 頂部淡雅高光
+    centerGlow.addColorStop(0.65, 'rgba(235, 190, 110, 0.35)'); // 中段溫暖金色
+    centerGlow.addColorStop(1, 'rgba(180, 120, 50, 0.2)');      // 底部深邃沉穩
 
     ctx.fillStyle = centerGlow;
-    
-    // 中央主軸一氣呵成繪製
+
     ctx.beginPath();
-    ctx.rect(cx - 8, 0, 16, currentY);
+    // 🎯 c. 加寬寬度：原本寬度為 16px (cx - 8 到 16)，加寬 2.5 倍改為 40px (cx - 20 到 40)
+    // 如果希望更寬（3 倍），可以把 40 改為 48，`-20` 改為 `-24`
+    ctx.rect(cx - 20, 0, 40, currentY);
+
     if (spreadProgress > 0) {
         const spreadH = (canvas.height - horizonY) * spreadProgress;
-        ctx.rect(cx - 8, horizonY, 16, spreadH);
+        ctx.rect(cx - 20, horizonY, 40, spreadH);
     }
+
     ctx.fill();
     ctx.restore();
 
