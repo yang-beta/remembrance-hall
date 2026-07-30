@@ -1,4 +1,4 @@
-// js/canvas.js --- 洸限 背景光束與金色粒子特效（直線放射擴散優化版）---
+// js/canvas.js --- 洸限 背景光束與金色粒子特效（語法修復與擴散過渡版）---
 
 const canvas = document.getElementById('mandalaCanvas');
 const ctx = canvas.getContext('2d');
@@ -67,7 +67,7 @@ for (let i = 0; i < particleCount; i++) {
 }
 
 /**
- * 繪製背景光束 (去掉中間主光束 + 轉折處滑順，下半段直線放射)
+ * 繪製背景光束 (中央主光束加粗擴散 + 轉折處滑順弧度，下半段直線放射)
  */
 function drawLightBeams() {
     const horizonY = canvas.height * 0.65; // 地平線 2/3 處
@@ -77,7 +77,7 @@ function drawLightBeams() {
 
     if (beamProgress <= 0) return;
 
-    // 計算垂直下降進度
+    // 計算當前垂直下降進度
     const currentY = horizonY * beamProgress;
 
     // 1. 繪製中央高亮核心光束 (多邊形梯形路徑：自然弧線轉折 + 底部放射擴散)
@@ -92,16 +92,13 @@ function drawLightBeams() {
     
     ctx.fillStyle = centerGlow;
     
-    // 🎯 設定中央光束的關鍵維度 (預設寬度 80px: -40 到 +40)
+    // 設定中央光束的關鍵維度 (預設寬度 80px: -40 到 +40)
     const beamHalfWidth = 40;     // 上半段半寬 (總寬 80px)
-    const spreadFactor = 2.2;      // 🎯 [需求 1] 下方擴散倍率：底部會寬達 80px * 2.2 = 176px
-    const turnRadius = 35;         // 🎯 [需求 2] 轉折處圓弧半徑
+    const spreadFactor = 2.2;      // 下方擴散倍率：底部會寬達 80px * 2.2 = 176px
     
     // 幾何頂點計算
     const leftTopX = cx - beamHalfWidth;
     const rightTopX = cx + beamHalfWidth;
-    
-    const currentY = horizonY * beamProgress;
     
     ctx.beginPath();
     
@@ -110,35 +107,30 @@ function drawLightBeams() {
         ctx.rect(leftTopX, 0, beamHalfWidth * 2, currentY);
     } else {
         // 階段二：過渡到地平線轉折，並一氣呵成繪製左右兩側向外擴散路徑
-        
         const leftEndX = cx - (beamHalfWidth * spreadFactor) * spreadProgress;
         const rightEndX = cx + (beamHalfWidth * spreadFactor) * spreadProgress;
         const currentEndY = horizonY + (canvas.height - horizonY) * spreadProgress;
     
-        // --- A. 左側邊界 (順時針：從左上降至轉折點，圓弧銜接至左下) ---
+        // --- A. 左側邊界 ---
         ctx.moveTo(leftTopX, 0);
         ctx.lineTo(leftTopX, horizonY - turnRadius);
         
-        // 左邊轉折處圓弧過渡
         ctx.quadraticCurveTo(
             leftTopX, horizonY,
             leftTopX + (leftEndX - leftTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15
         );
-        // 向外斜射延伸至底部左邊界
         ctx.lineTo(leftEndX, currentEndY);
     
         // --- B. 底部邊界 ---
         ctx.lineTo(rightEndX, currentEndY);
     
-        // --- C. 右側邊界 (逆時針折回：右下斜射向上，圓弧銜接至右上) ---
+        // --- C. 右側邊界 ---
         ctx.lineTo(rightTopX + (rightEndX - rightTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
         
-        // 右邊轉折處圓弧過渡
         ctx.quadraticCurveTo(
             rightTopX, horizonY,
             rightTopX, horizonY - turnRadius
         );
-        // 連回右上頂點
         ctx.lineTo(rightTopX, 0);
     }
     
@@ -146,7 +138,7 @@ function drawLightBeams() {
     ctx.fill();
     ctx.restore();
 
-    // 繪製束狀光條
+    // 2. 繪製兩側束狀光條
     ctx.save();
     ctx.globalCompositeOperation = 'source-over'; 
 
@@ -158,37 +150,31 @@ function drawLightBeams() {
 
         const startX = cx + line.offset;
         
-        // 起點：畫面頂部
         ctx.moveTo(startX, 0);
 
         if (spreadProgress <= 0) {
             // 階段一：僅垂直向下延伸
             ctx.lineTo(startX, currentY);
         } else {
-            // 階段二：過渡到地平線轉折後，以【直線斜角】延伸向底部兩側
-            
-            // 計算地平線下的斜線終點位置 (直線放射效果)
+            // 階段二：轉折後以直線斜角延伸向底部兩側
             const endX = cx + line.offset * 2.2; 
             const finalEndY = horizonY + (canvas.height - horizonY);
             
-            // 轉折點計算
             const turnStartY = horizonY - turnRadius;
-            const turnEndY = horizonY + turnRadius;
             
-            // 動態長度插值 (隨著動畫進度延伸)
             const currentEndX = startX + (endX - startX) * spreadProgress;
             const currentEndY = horizonY + (finalEndY - horizonY) * spreadProgress;
 
             // 1. 垂直往下畫到轉折點上方
             ctx.lineTo(startX, turnStartY);
 
-            // 2. 🎯 [需求 2] 轉折處：用控制點繪製極其圓滑過渡的小弧線
+            // 2. 轉折處：用控制點繪製圓滑過渡弧線
             ctx.quadraticCurveTo(
                 startX, horizonY, 
                 startX + (currentEndX - startX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15
             );
 
-            // 3. 🎯 [需求 2] 轉折過後：直接用 LineTo 畫成完美強力的「斜直線」延伸到最底下！
+            // 3. 轉折過後：斜直線延伸至最底下
             ctx.lineTo(currentEndX, currentEndY);
         }
 
