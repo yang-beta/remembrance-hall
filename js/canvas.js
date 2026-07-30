@@ -102,7 +102,7 @@ function drawLightBeams() {
 
     if (spreadProgress > 0) {
         const spreadH = (canvas.height - horizonY) * spreadProgress;
-        ctx.rect(cx - 20, horizonY, 40, spreadH);
+        ctx.rect(cx - 30, horizonY, 80, spreadH);
     }
 
     ctx.fill();
