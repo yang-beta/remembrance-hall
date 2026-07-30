@@ -98,7 +98,7 @@ function drawLightBeams() {
     ctx.beginPath();
     // 🎯 c. 加寬寬度：原本寬度為 16px (cx - 8 到 16)，加寬 2.5 倍改為 40px (cx - 20 到 40)
     // 如果希望更寬（3 倍），可以把 40 改為 48，`-20` 改為 `-24`
-    ctx.rect(cx - 20, 0, 40, currentY);
+    ctx.rect(cx - 30, 0, 80, currentY);
 
     if (spreadProgress > 0) {
         const spreadH = (canvas.height - horizonY) * spreadProgress;
