@@ -80,31 +80,69 @@ function drawLightBeams() {
     // 計算垂直下降進度
     const currentY = horizonY * beamProgress;
 
-    // 1. 繪製中央高亮核心光軸 (鎖定沉穩暖光)
+    // 1. 繪製中央高亮核心光束 (多邊形梯形路徑：自然弧線轉折 + 底部放射擴散)
     ctx.save();
-
-    // 🎯 a. 增加模糊擴散：將 shadowBlur 從 50 大幅提升至 120，讓光暈向外溫柔鋪開
     ctx.shadowColor = 'rgba(215, 160, 80, 0.25)';
-    ctx.shadowBlur = 120; 
-
-    // 🎯 b. 降低亮度：調降漸層色中 alpha (最後一個數值)，將原本的 0.7~0.8 降至 0.2~0.35
+    ctx.shadowBlur = 120; // 柔光擴散度
+    
     const centerGlow = ctx.createLinearGradient(cx, 0, cx, canvas.height);
-    centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.25)');   // 頂部淡雅高光
-    centerGlow.addColorStop(0.65, 'rgba(235, 190, 110, 0.35)'); // 中段溫暖金色
-    centerGlow.addColorStop(1, 'rgba(180, 120, 50, 0.2)');      // 底部深邃沉穩
-
+    centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.25)');
+    centerGlow.addColorStop(0.65, 'rgba(235, 190, 110, 0.35)');
+    centerGlow.addColorStop(1, 'rgba(180, 120, 50, 0.2)');
+    
     ctx.fillStyle = centerGlow;
-
+    
+    // 🎯 設定中央光束的關鍵維度 (預設寬度 80px: -40 到 +40)
+    const beamHalfWidth = 40;     // 上半段半寬 (總寬 80px)
+    const spreadFactor = 2.2;      // 🎯 [需求 1] 下方擴散倍率：底部會寬達 80px * 2.2 = 176px
+    const turnRadius = 35;         // 🎯 [需求 2] 轉折處圓弧半徑
+    
+    // 幾何頂點計算
+    const leftTopX = cx - beamHalfWidth;
+    const rightTopX = cx + beamHalfWidth;
+    
+    const currentY = horizonY * beamProgress;
+    
     ctx.beginPath();
-    // 🎯 c. 加寬寬度：原本寬度為 16px (cx - 8 到 16)，加寬 2.5 倍改為 40px (cx - 20 到 40)
-    // 如果希望更寬（3 倍），可以把 40 改為 48，`-20` 改為 `-24`
-    ctx.rect(cx - 30, 0, 80, currentY);
-
-    if (spreadProgress > 0) {
-        const spreadH = (canvas.height - horizonY) * spreadProgress;
-        ctx.rect(cx - 30, horizonY, 80, spreadH);
+    
+    if (spreadProgress <= 0) {
+        // 階段一：向下延伸 (保持垂直 80px 寬矩形)
+        ctx.rect(leftTopX, 0, beamHalfWidth * 2, currentY);
+    } else {
+        // 階段二：過渡到地平線轉折，並一氣呵成繪製左右兩側向外擴散路徑
+        
+        const leftEndX = cx - (beamHalfWidth * spreadFactor) * spreadProgress;
+        const rightEndX = cx + (beamHalfWidth * spreadFactor) * spreadProgress;
+        const currentEndY = horizonY + (canvas.height - horizonY) * spreadProgress;
+    
+        // --- A. 左側邊界 (順時針：從左上降至轉折點，圓弧銜接至左下) ---
+        ctx.moveTo(leftTopX, 0);
+        ctx.lineTo(leftTopX, horizonY - turnRadius);
+        
+        // 左邊轉折處圓弧過渡
+        ctx.quadraticCurveTo(
+            leftTopX, horizonY,
+            leftTopX + (leftEndX - leftTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15
+        );
+        // 向外斜射延伸至底部左邊界
+        ctx.lineTo(leftEndX, currentEndY);
+    
+        // --- B. 底部邊界 ---
+        ctx.lineTo(rightEndX, currentEndY);
+    
+        // --- C. 右側邊界 (逆時針折回：右下斜射向上，圓弧銜接至右上) ---
+        ctx.lineTo(rightTopX + (rightEndX - rightTopX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15);
+        
+        // 右邊轉折處圓弧過渡
+        ctx.quadraticCurveTo(
+            rightTopX, horizonY,
+            rightTopX, horizonY - turnRadius
+        );
+        // 連回右上頂點
+        ctx.lineTo(rightTopX, 0);
     }
-
+    
+    ctx.closePath();
     ctx.fill();
     ctx.restore();
 
