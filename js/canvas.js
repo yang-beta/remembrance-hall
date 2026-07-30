@@ -43,7 +43,7 @@ for (let i = 0; i < beamCount; i++) {
 
     beamLines.push({
         offset: offset,
-        width: Math.random() * 3.5 + 1.2,
+        width: Math.random() * 6.0 + 2.0,
         color: `${r}, ${g}, ${b}`,
         alpha: Math.random() * 0.25 + 0.12,
         blurAmount: Math.floor(Math.random() * 10 + 4)
@@ -93,8 +93,8 @@ function drawLightBeams() {
     ctx.fillStyle = centerGlow;
     
     // 設定中央光束的關鍵維度 (預設寬度 80px: -40 到 +40)
-    const beamHalfWidth = 40;     // 上半段半寬 (總寬 80px)
-    const spreadFactor = 2.2;      // 下方擴散倍率：底部會寬達 80px * 2.2 = 176px
+    const beamHalfWidth = 60;     // 上半段半寬 (總寬 80px)
+    const spreadFactor = 2.5;      // 下方擴散倍率：底部會寬達 80px * 2.2 = 176px
     
     // 幾何頂點計算
     const leftTopX = cx - beamHalfWidth;
@@ -157,7 +157,7 @@ function drawLightBeams() {
             ctx.lineTo(startX, currentY);
         } else {
             // 階段二：轉折後以直線斜角延伸向底部兩側
-            const endX = cx + line.offset * 2.2; 
+            const endX = cx + line.offset * 2.6; 
             const finalEndY = horizonY + (canvas.height - horizonY);
             
             const turnStartY = horizonY - turnRadius;
