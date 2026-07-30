@@ -1,4 +1,4 @@
-// js/canvas.js --- 洸限 背景光束與金色粒子特效（優雅沉穩光感 & 無鬼影修正版）---
+// js/canvas.js --- 洸限 背景光束與金色粒子特效（直線放射擴散優化版）---
 
 const canvas = document.getElementById('mandalaCanvas');
 const ctx = canvas.getContext('2d');
@@ -23,30 +23,19 @@ window.addEventListener('resize', resizeCanvas);
 let animationParams = {
     beamDownProgress: 0,      // 階段一：垂直降落進度
     horizonSpreadProgress: 0, // 階段二：地平線橫向與延伸進度
-    particleGlowProgress: 0   // 階段三：僅控制金色粒子的出現
-    
-    // ==========================================
-    // 📌 [舊版保留] 原曼陀羅參數 (備查)
-    // ==========================================
-    /*
-    coreGlow: 0,         
-    particleConvergence: 0, 
-    mandalaProgress: 0,  
-    mandalaRotation: 0   
-    */
+    particleGlowProgress: 0   // 階段三：金色粒子出現
 };
 
 // ============================================================================
-// 🎯 光學束流與金色粒子系統（精確控制透明度與色調）
+// 光學束流與金色粒子系統
 // ============================================================================
 
 const beamLines = [];
-const beamCount = 50; 
+const beamCount = 55; 
 
 for (let i = 0; i < beamCount; i++) {
     const offset = (Math.random() - 0.5) * 600;
     
-    // 調配沉穩奢華的金琥珀色調
     const isGold = Math.random() > 0.25;
     const r = isGold ? Math.floor(200 + Math.random() * 40) : 240;
     const g = isGold ? Math.floor(130 + Math.random() * 50) : 220;
@@ -54,10 +43,10 @@ for (let i = 0; i < beamCount; i++) {
 
     beamLines.push({
         offset: offset,
-        width: Math.random() * 4 + 1.2,                // 控制較細的精緻線條
+        width: Math.random() * 3.5 + 1.2,
         color: `${r}, ${g}, ${b}`,
-        alpha: Math.random() * 0.25 + 0.1,             // 🎯 降低基礎透明度，避免疊加後過暴
-        blurAmount: Math.floor(Math.random() * 12 + 4) // 適度的柔光效果
+        alpha: Math.random() * 0.25 + 0.12,
+        blurAmount: Math.floor(Math.random() * 10 + 4)
     });
 }
 
@@ -78,22 +67,23 @@ for (let i = 0; i < particleCount; i++) {
 }
 
 /**
- * 繪製背景主視覺光束 (解決轉折跳動與過暴問題)
+ * 繪製背景光束 (去掉中間主光束 + 轉折處滑順，下半段直線放射)
  */
 function drawLightBeams() {
     const horizonY = canvas.height * 0.65; // 地平線 2/3 處
+    const turnRadius = 35;                 // 轉折處的圓滑弧度半徑
     const beamProgress = animationParams.beamDownProgress;
     const spreadProgress = animationParams.horizonSpreadProgress;
 
     if (beamProgress <= 0) return;
 
-    // 計算當前垂直下降的端點 Y 座標 (最高至 horizonY)
+    // 計算垂直下降進度
     const currentY = horizonY * beamProgress;
 
     // 1. 繪製中央高亮核心光軸 (鎖定沉穩暖光)
     ctx.save();
-    ctx.shadowColor = 'rgba(215, 160, 80, 0.5)';
-    ctx.shadowBlur = 30;
+    ctx.shadowColor = 'rgba(215, 160, 80, 0.2)';
+    ctx.shadowBlur = 50;
     
     const centerGlow = ctx.createLinearGradient(cx, 0, cx, canvas.height);
     centerGlow.addColorStop(0, 'rgba(255, 250, 230, 0.7)');
@@ -112,38 +102,50 @@ function drawLightBeams() {
     ctx.fill();
     ctx.restore();
 
-    // 2. 繪製束狀光條 (使用一筆劃連續貝茲曲線，徹底取消過暴疊加)
+    // 繪製束狀光條
     ctx.save();
-    // 🎯 核心修改 1：改用 source-over，防止動畫後期越疊越亮
     ctx.globalCompositeOperation = 'source-over'; 
 
     beamLines.forEach(line => {
         ctx.beginPath();
         ctx.lineCap = 'round';
         ctx.lineWidth = line.width;
-        
-        // 🎯 核心修改 2：恆定透明度，不再隨時間增亮
         ctx.strokeStyle = `rgba(${line.color}, ${line.alpha})`;
 
-        // 起點：頂部
-        ctx.moveTo(cx + line.offset, 0);
+        const startX = cx + line.offset;
+        
+        // 起點：畫面頂部
+        ctx.moveTo(startX, 0);
 
         if (spreadProgress <= 0) {
-            // 階段一：僅垂直向下繪製，無跳動
-            ctx.lineTo(cx + line.offset, currentY);
+            // 階段一：僅垂直向下延伸
+            ctx.lineTo(startX, currentY);
         } else {
-            // 階段二：過渡至地平線並順暢延伸向兩側
-            const startX = cx + line.offset;
-            const endX = cx + line.offset * 1.9; 
-            const currentEndY = horizonY + (canvas.height - horizonY) * spreadProgress;
+            // 階段二：過渡到地平線轉折後，以【直線斜角】延伸向底部兩側
+            
+            // 計算地平線下的斜線終點位置 (直線放射效果)
+            const endX = cx + line.offset * 2.2; 
+            const finalEndY = horizonY + (canvas.height - horizonY);
+            
+            // 轉折點計算
+            const turnStartY = horizonY - turnRadius;
+            const turnEndY = horizonY + turnRadius;
+            
+            // 動態長度插值 (隨著動畫進度延伸)
+            const currentEndX = startX + (endX - startX) * spreadProgress;
+            const currentEndY = horizonY + (finalEndY - horizonY) * spreadProgress;
 
-            // 🎯 核心修改 3：雙控制點連續三次貝茲曲線，確保轉折處極度平滑
-            ctx.lineTo(startX, horizonY - 10);
-            ctx.bezierCurveTo(
-                startX, horizonY + 40,                       // 第一控制點：維持垂直勢頭
-                startX + (endX - startX) * 0.3, horizonY + 60, // 第二控制點：順暢鋪開
-                startX + (endX - startX) * spreadProgress, currentEndY // 當前延伸終點
+            // 1. 垂直往下畫到轉折點上方
+            ctx.lineTo(startX, turnStartY);
+
+            // 2. 🎯 [需求 2] 轉折處：用控制點繪製極其圓滑過渡的小弧線
+            ctx.quadraticCurveTo(
+                startX, horizonY, 
+                startX + (currentEndX - startX) * 0.15, horizonY + (currentEndY - horizonY) * 0.15
             );
+
+            // 3. 🎯 [需求 2] 轉折過後：直接用 LineTo 畫成完美強力的「斜直線」延伸到最底下！
+            ctx.lineTo(currentEndX, currentEndY);
         }
 
         ctx.stroke();
@@ -183,10 +185,8 @@ function drawGoldParticles() {
 
 // 動畫渲染主迴圈
 function render() {
-    // 🎯 核心修改 4：徹底清空每幀畫布，完全消除殘影鬼影與底圖髒污
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 繪製極淺的背景底色維持深邃質感
     ctx.fillStyle = 'rgba(26, 26, 26, 1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -198,17 +198,15 @@ function render() {
 
 render();
 
-// GSAP 時序控制 (順暢三階段)
+// GSAP 時序控制
 const tl = gsap.timeline();
 
-// 階段一：光束向下降落
 tl.to(animationParams, { 
     beamDownProgress: 1, 
     duration: 1.6, 
     ease: "power2.inOut" 
 });
 
-// 階段二：地平線向外延伸 (與標題同步)
 tl.to(animationParams, { 
     horizonSpreadProgress: 1, 
     duration: 1.4, 
@@ -222,7 +220,6 @@ tl.to(".brand-title", {
     ease: "power1.out" 
 }, "-=1.0");
 
-// 階段三：金色飄散粒子出現 (不再影響光束亮度)
 tl.to(animationParams, { 
     particleGlowProgress: 1, 
     duration: 1.2, 
