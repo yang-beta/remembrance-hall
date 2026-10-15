@@ -12,24 +12,91 @@
 </head>
 <body>
     <canvas id="mandalaCanvas"></canvas>
-    <!--區塊 1：Banner 主視覺區塊-->
+
+    <!-- 區塊 1：Banner 主視覺區塊 -->
     <div class="hero-container">
         <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
         <h1 class="brand-title">洸限</h1>
         <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
         <div class="scroll-hint" onclick="scrollToContent()"><span class="arrow">↓</span></div>
     </div>
-    <!--區塊 2：思念表單區塊-->
+
+    <!-- 區塊 2：思念表單區塊 -->
     <div class="wrapper" id="main-content">
-        
+        <header>
+            <h1>洸限</h1>
+            <p>for<span style="color:silver">Ever</span> cher<span style="color:silver">ich</span></p>
+        </header>
+
+        <div class="grid-layout">
+            <div class="input-card">
+                <div class="form-group">
+                    <label>思念的對象</label>
+                    <div class="target-selector">
+                        <button class="target-btn active" onclick="setTarget('relative', this)">
+                            <i class="fa-solid fa-hands-holding-child"></i>
+                            <span>親人</span>
+                        </button>
+                        <button class="target-btn" onclick="setTarget('friend', this)">
+                            <i class="fa-solid fa-user-group"></i>
+                            <span>朋友</span>
+                        </button>
+                        <button class="target-btn" onclick="setTarget('pet', this)">
+                            <i class="fa-solid fa-paw"></i>
+                            <span>寵物</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nickname">如何稱呼他/她/牠？</label>
+                    <input type="text" id="nickname" placeholder="例如：外婆、老友小宇、橘貓咪咪">
+                </div>
+
+                <div class="form-group">
+                    <label for="memory">最想說的一句話/腦海中浮現的第一個畫面</label>
+                    <textarea id="memory" rows="3" placeholder="例如：廚房裡的飯菜香、一同看海的下午..."></textarea>
+                </div>
+
+                <button class="btn-submit" onclick="generateRemembrance()">⚡ 生成思念回憶卡片</button>
+            </div>
+        </div>
+
+        <!-- 重逢 Modal 彈窗 (放在 #main-content 內) -->
+        <div class="output-section" id="output-section">
+            <button class="close-modal-btn" onclick="closeReunionModal()">✕ 關閉</button>
+            <div class="card-container" id="printable-card">
+                <div class="card-header">
+                    <span class="card-tag" id="card-tag-display">思念回憶錄 / 親人</span>
+                    <span class="card-icon" id="card-icon-display"><i class="fa-solid fa-hands-holding-child"></i></span>
+                </div>
+                <div class="card-body">
+                    <div class="card-quote" id="card-text-display">記憶中的細節，如同不滅的光亮，溫柔地照亮往後的路。</div>
+                    <div class="card-sign" id="card-sign-display">— 致 外婆</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-date" id="card-date-display">2026.10.15</span>
+                    <span class="card-brand">洸限</span>
+                </div>
+            </div>
+            
+            <div class="card-actions">
+                <button class="btn-action download" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 儲存回憶卡片</button>
+                <button class="btn-action release" id="release-btn" onclick="releaseCardAndFly()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 釋懷，放手執著
+                </button>
+            </div>
+        </div>
     </div>
-    <!--區塊 3：思念留言牆區塊-->
+
+    <!-- 區塊 3：思念留言牆區塊 -->
     <div class="wall-section" id="wall-section-container">
-
+        <!-- 課題 5 寫 JavaScript 時再注入留言牆卡片 -->
     </div>
-    <!--區塊 4：落幕結尾區塊-->
-    <div class="exhibition-outro-section" id="outro-section">
 
+    <!-- 區塊 4：落幕結尾區塊 -->
+    <div class="exhibition-outro-section" id="outro-section">
+        <!-- 課題 6 寫打字機文字 -->
     </div>
 </body>
 </html>
