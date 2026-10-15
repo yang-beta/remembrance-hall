@@ -11,6 +11,25 @@
     <link rel="stylesheet" href="css/animation.css">    
 </head>
 <body>
-    <!-- 頁面視覺內容 -->
+    <canvas id="mandalaCanvas"></canvas>
+    <!--區塊 1：Banner 主視覺區塊-->
+    <div class="hero-container">
+        <button class="skip-anim-btn" onclick="scrollToContent()">Skip 略過動畫 ✕</button>
+        <h1 class="brand-title">洸限</h1>
+        <p class="main-question">如果還有一次機會，你最想告訴他/她/牠什麼？</p>
+        <div class="scroll-hint" onclick="scrollToContent()"><span class="arrow">↓</span></div>
+    </div>
+    <!--區塊 2：思念表單區塊-->
+    <div class="wrapper" id="main-content">
+        
+    </div>
+    <!--區塊 3：思念留言牆區塊-->
+    <div class="wall-section" id="wall-section-container">
+
+    </div>
+    <!--區塊 4：落幕結尾區塊-->
+    <div class="exhibition-outro-section" id="outro-section">
+
+    </div>
 </body>
 </html>
