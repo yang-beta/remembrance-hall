@@ -1,1 +1,51 @@
+:root {
+    --bg-dark: #0d0d0f;        /* 沉靜暗黑背景 */
+    --concrete-gray: #1e1e24;  /* 清水模灰色卡片 */
+    --accent-gold: #e6c875;     /* 冷金亮色 */
+    --text-primary: #e0e0e6;   /* 主要文字白 */
+    --text-muted: #8a8a93;     /* 次要文字灰 */
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* 讓 border 與 padding 計算在寬高之內 */
+}
+html {
+    scroll-snap-type: y mandatory; /* Y 軸強制磁鐵對齊 */
+    scroll-behavior: smooth;       /* 平滑滾動效果 */
+    overflow-x: hidden;            # 避免橫向溢出
+}
+.hero-container,
+.wrapper,
+.wall-section,
+.exhibition-outro-section {
+    height: 100vh;                 /* 強制全螢幕高度 */
+    width: 100vw;                  /* 強制全螢幕寬度 */
+    scroll-snap-align: start;      /* 滾動停靠點設於頂部 */
+    scroll-snap-stop: always;       /* 禁止一次滑過多個區塊 */
+    position: relative;
+}
+/* 全螢幕遮罩 Modal */
+.output-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(13, 13, 15, 0.85); /* 半透明暗色背景 */
+    backdrop-filter: blur(12px);         /* 高斯毛玻璃效果 */
+    z-index: 100;                        /* 最頂層 */
+    display: flex;                       /* 水平垂直居中 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;                          /* 預設隱藏 */
+    pointer-events: none;                /* 預設不擋點擊 */
+    transition: opacity 0.4s ease;
+}
 
+/* 開啟 Modal 時加上 active */
+.output-section.active {
+    opacity: 1;
+    pointer-events: auto;
+}
