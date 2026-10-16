@@ -1,1 +1,10 @@
-
+/* css/animation.css */
+#mandalaCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;         /* 置於最底層 */
+    pointer-events: none; /* 穿透點擊，讓下方/上方元素可被點擊 */
+}
